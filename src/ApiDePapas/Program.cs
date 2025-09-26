@@ -18,11 +18,6 @@ app.UseHttpsRedirection();
 
 // Agregar autenticación (opcional)
 
-// endpoints 
-
-
 app.Run();
-
-// modelos / records
 
 
