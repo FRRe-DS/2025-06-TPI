@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 
-namespace TuProyecto.Models
+namespace ApiDePapas.Models
 {
     public class ProductItemInput
     {
