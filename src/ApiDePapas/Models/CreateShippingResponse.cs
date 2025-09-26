@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiDePapas.Models
 {

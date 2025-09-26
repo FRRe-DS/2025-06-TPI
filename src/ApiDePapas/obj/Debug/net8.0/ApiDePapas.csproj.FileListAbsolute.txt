@@ -1,0 +1,8 @@
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.csproj.AssemblyReference.cache
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.GeneratedMSBuildEditorConfig.editorconfig
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.AssemblyInfoInputs.cache
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.AssemblyInfo.cs
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.csproj.CoreCompileInputs.cache
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.MvcApplicationPartsAssemblyInfo.cs
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.MvcApplicationPartsAssemblyInfo.cache
+/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/Debug/net8.0/ApiDePapas.sourcelink.json
