@@ -3,16 +3,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiDePapas.Models
 {
-    public class ShippingCostRequest
+    public class ShippingCostResponse
     {
         [Required]
-        public Address delivery_address { get; set; }
+        public string currency { get; set; }
 
         [Required]
-        public string departure_postal_code { get; set; }
+        public float total_cost { get; set; }
 
         [Required]
-        [MinLength(1, ErrorMessage = "At least one product is required")]
+        public TransportType transport_type { get; set; }
+
+        [Required]
         public List<ProductItemInput> products { get; set; }
     }
 }

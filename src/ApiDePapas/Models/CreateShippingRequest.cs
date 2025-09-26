@@ -1,10 +1,14 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnotations;
 
 namespace ApiDePapas.Models
+
 {
-    public class ShippingCostRequest
+    public class CreateShippingRequest
     {
+        [Required]
+        public int user_id { get; set; }
+
         [Required]
         public Address delivery_address { get; set; }
 
@@ -13,6 +17,6 @@ namespace ApiDePapas.Models
 
         [Required]
         [MinLength(1, ErrorMessage = "At least one product is required")]
-        public List<ProductItemInput> products { get; set; }
+        public List<ProductItemInput> product { get; set; }
     }
 }
