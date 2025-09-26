@@ -2,7 +2,7 @@ using ApiDePapas.Models;
 
 namespace ApiDePapas.Services
 {
-    public interface IShippingService
+    public interface ICalculateCost
     {
         ShippingCostResponse CalculateShippingCost(ShippingCostRequest request);
     }

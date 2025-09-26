@@ -1,5 +1,5 @@
 using ApiDePapas.Models;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace ApiDePapas.Services
 {
@@ -7,26 +7,24 @@ namespace ApiDePapas.Services
     {
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
-            // Ejemplo básico: costo = suma de (peso * 10) por cada producto
-            var productCosts = request.Products.Select(p =>
-                new ShippingProductCost
-                {
-                    Id = p.Id,
-                    Cost = p.Weight * p.Quantity * 10 // regla simple
-                }).ToList();
-
-            var totalCost = productCosts.Sum(p => p.Cost);
-
-            // Determinar tipo de transporte simple (ejemplo)
-            string transportType = totalCost > 50 ? "air" : "land";
-
-            return new ShippingCostResponse
+            // Lista de productos "inventados" para probar
+            var productsWithCost = new List<ProductItemInput>
             {
-                Currency = "ARS",
-                TotalCost = totalCost,
-                TransportType = transportType,
-                Products = productCosts
+                new ProductItemInput { Id = 1, Quantity = 2, Weight = 5, Length = 10, Width = 5, Height = 2 },
+                new ProductItemInput { Id = 2, Quantity = 1, Weight = 3, Length = 5, Width = 5, Height = 5 },
+                new ProductItemInput { Id = 3, Quantity = 4, Weight = 2, Length = 3, Width = 3, Height = 1 }
             };
+
+            var response = new ShippingCostResponse
+            {
+                currency = "ARS",           // moneda
+                total_cost = 300,           // costo fijo
+                transport_type = TransportType.air,
+                products = productsWithCost
+            };
+
+            return response;
         }
     }
 }
+

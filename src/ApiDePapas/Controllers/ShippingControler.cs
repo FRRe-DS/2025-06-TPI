@@ -1,6 +1,6 @@
-using ApiDePapas.Models;
-using ApiDePapas.Services;
 using Microsoft.AspNetCore.Mvc;
+using ApiDePapas.Services;
+using ApiDePapas.Models;
 
 namespace ApiDePapas.Controllers
 {
@@ -15,27 +15,23 @@ namespace ApiDePapas.Controllers
             _calculateCost = calculateCost;
         }
 
-        /// <summary>
-        /// Calcula el costo de un envío
-        /// </summary>
         [HttpPost("cost")]
-        public IActionResult CalculateCost([FromBody] ShippingCostRequest request)
+        public ActionResult<ShippingCostResponse> PostCost([FromBody] ShippingCostRequest request)
         {
-            if (request == null || request.Products == null || !request.Products.Any())
-            {
-                return BadRequest(new { message = "Request inválido" });
-            }
+            if (request == null || request.products == null || request.products.Count == 0)
+                return BadRequest("Request inválido");
 
-            try
+            // Llamamos al servicio y devolvemos el resultado completo
+            var response = _calculateCost.CalculateShippingCost(new ShippingCostRequest
             {
-                var result = _calculateCost.CalculateCost(request);
-                return Ok(result);
-            }
-            catch
-            {
-                // En caso de error interno
-                return StatusCode(500, new { message = "Error calculando el costo" });
-            }
+                delivery_address = request.delivery_address,
+                departure_postal_code = request.departure_postal_code,
+                products = request.products
+            });
+
+            return Ok(response);
         }
     }
 }
+
+

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiDePapas
+namespace ApiDePapas.Models
 {
     public class ShippingDetail
     {
