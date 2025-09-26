@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TuProyecto.Models
+namespace ApiDePapas.Models
 {
     public class Address
     {
