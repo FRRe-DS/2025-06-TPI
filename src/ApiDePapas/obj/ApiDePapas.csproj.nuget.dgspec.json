@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {}
+    "C:\\Users\\Tobias\\Desktop\\DDS\\2025-06-TPI\\src\\ApiDePapas\\ApiDePapas.csproj": {}
   },
   "projects": {
-    "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {
+    "C:\\Users\\Tobias\\Desktop\\DDS\\2025-06-TPI\\src\\ApiDePapas\\ApiDePapas.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
+        "projectUniqueName": "C:\\Users\\Tobias\\Desktop\\DDS\\2025-06-TPI\\src\\ApiDePapas\\ApiDePapas.csproj",
         "projectName": "ApiDePapas",
-        "projectPath": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
-        "packagesPath": "/home/goya/.nuget/packages/",
-        "outputPath": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/",
+        "projectPath": "C:\\Users\\Tobias\\Desktop\\DDS\\2025-06-TPI\\src\\ApiDePapas\\ApiDePapas.csproj",
+        "packagesPath": "C:\\Users\\Tobias\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tobias\\Desktop\\DDS\\2025-06-TPI\\src\\ApiDePapas\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/goya/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Tobias\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,7 +32,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -58,6 +64,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -66,7 +90,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.120/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
