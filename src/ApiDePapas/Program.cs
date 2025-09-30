@@ -1,4 +1,5 @@
 using ApiDePapas.Services;
+using ApiDePapas.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
@@ -21,7 +22,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Agregar autenticación (opcional)
+app.MapControllers(); //clave para los controllers(?)
 
 app.Run();
 

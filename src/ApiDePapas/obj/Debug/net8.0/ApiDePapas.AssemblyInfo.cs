@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApiDePapas")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a1141d06b432c7aaf9f9e68db135435a5aa48ed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d9893abe71904272bcd49ba00eba1dc737ca0063")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApiDePapas")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApiDePapas")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

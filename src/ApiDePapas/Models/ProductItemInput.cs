@@ -6,10 +6,10 @@ namespace ApiDePapas.Models
     public class ProductItemInput
     {
         [Required]
-        public BigInteger Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public BigInteger Quantity { get; set; }
+        public int Quantity { get; set; }
 
         [Required]
         public float Weight { get; set; }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {}
+    "/mnt/c/users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {}
   },
   "projects": {
-    "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {
+    "/mnt/c/users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
+        "projectUniqueName": "/mnt/c/users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
         "projectName": "ApiDePapas",
-        "projectPath": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
+        "projectPath": "/mnt/c/users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/ApiDePapas.csproj",
         "packagesPath": "/home/goya/.nuget/packages/",
-        "outputPath": "/mnt/c/Users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/",
+        "outputPath": "/mnt/c/users/franc/Desktop/Desarrollo-de-Software/2025-06-TPI/src/ApiDePapas/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/goya/.nuget/NuGet/NuGet.Config"
