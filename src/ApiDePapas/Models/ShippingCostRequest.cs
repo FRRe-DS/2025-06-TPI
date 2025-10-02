@@ -18,6 +18,6 @@ namespace ApiDePapas.Models
         //OJO, esto debería ser ProductInput, lo dejo así para poder probar
         //Explicación: cost lo sacamos del get que hacemos a stock, donde obtenemos stats del producto
         //entienden o no cabrones?
-        public List<ProductOutput> products { get; set; }
+        public List<ProductInput> products { get; set; }
     }
 }

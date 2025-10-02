@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen();
 
 //Registro de servicios
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
+builder.Services.AddScoped<IStockService, ApiDePapas.Test.FakeStockService>();
 
 var app = builder.Build();
 

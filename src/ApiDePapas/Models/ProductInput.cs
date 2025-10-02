@@ -6,7 +6,7 @@ namespace ApiDePapas.Models
     public class ProductInput
     {
         [Required]
-        public int product_id { get; set; }
+        public int id { get; set; }
 
         [Required]
         public int quantity { get; set; }
