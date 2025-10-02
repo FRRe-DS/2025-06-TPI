@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiDePapas.Models
 {
-    public class ShippingDetail
+    public class Shipments
     {
         [Required]
         public int shipping_id { get; set; }
@@ -15,11 +15,6 @@ namespace ApiDePapas.Models
         public int user_id { get; set; }
 
         [Required]
-        public Address delivery_address { get; set; }
-
-        public Address departure_address { get; set; }
-
-        [Required]
         public List<ProductInput> products { get; set; }
 
         [Required]
@@ -28,25 +23,33 @@ namespace ApiDePapas.Models
         [Required]
         public TransportType transport_type { get; set; }
 
-        public string tracking_number { get; set; }
-
-        public string carrier_name { get; set; }
-
-        public float total_cost { get; set; }
-
-        public string currency { get; set; }
+        [Required]
+        public string estimated_delivery_at { get; set; }
 
         [Required]
-        public DateTime estimated_delivery_at { get; set; }
+        public string created_at { get; set; }
+    }
+    public class Pagination
+    {
+        [Required]
+        public int current_page { get; set; }
 
         [Required]
-        public DateTime created_at { get; set; }
+        public int total_pages { get; set; }
 
         [Required]
-        public DateTime updated_at { get; set; }
+        public int total_items { get; set; }
 
         [Required]
-        public List<ShippingLog> logs { get; set; }
+        public int items_per_page { get; set; }
+    }
 
+    public class ShippingListResponse
+    {
+        [Required]
+        public List<Shipments> shipments { get; set;}
+
+        [Required]
+        public Pagination pagination { get; set; }
     }
 }

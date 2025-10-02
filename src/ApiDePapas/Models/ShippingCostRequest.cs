@@ -8,11 +8,12 @@ namespace ApiDePapas.Models
         [Required]
         public Address delivery_address { get; set; }
 
-        [Required]
-        public string departure_postal_code { get; set; }
+        //en el nuevo yaml no piden esto
+        //[Required]
+        //public string departure_postal_code { get; set; }
 
         [Required]
         [MinLength(1, ErrorMessage = "At least one product is required")]
-        public List<ProductItemInput> products { get; set; }
+        public List<ProductInput> products { get; set; }
     }
 }

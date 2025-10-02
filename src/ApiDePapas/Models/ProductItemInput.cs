@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 
+//deberiamos borrar esto, no tenemos esos datos (los pedimos a stock)
+
 namespace ApiDePapas.Models
 {
     public class ProductItemInput

@@ -6,9 +6,9 @@ namespace ApiDePapas.Models
     public class ProductQty
     {
         [Required]
-        public BigInteger Product_id { get; set; }
+        public int product_id { get; set; }
 
         [Required]
-        public BigInteger quantity { get; set; }
+        public int quantity { get; set; }
     }
 }

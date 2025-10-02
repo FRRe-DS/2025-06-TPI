@@ -15,6 +15,6 @@ namespace ApiDePapas.Models
         public TransportType transport_type { get; set; }
 
         [Required]
-        public List<ProductItemOutput> products { get; set; }
+        public List<ProductOutput> products { get; set; }
     }
 }
