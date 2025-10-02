@@ -24,7 +24,7 @@ namespace ApiDePapas.Services
             foreach (var d in details)
             {
                 float varcost = d.width + d.weight + 20; // ejemplo simple
-                totalCost += varcost;
+                total_cost += varcost;
                 productsWithCost.Add(new ProductOutput
                 {
                     id = d.id,
