@@ -12,7 +12,7 @@ namespace ApiDePapas.Services
 
             foreach (var p in request.products)
             {
-                float varcost = p.cost + 20; // ejemplo simple
+                float varcost = p.cost + 50.0f; // ejemplo simple
                 totalCost += varcost;
                 productsWithCost.Add(new ProductOutput
                 {
