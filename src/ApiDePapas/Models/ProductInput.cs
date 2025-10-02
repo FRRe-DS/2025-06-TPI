@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace ApiDePapas.Models
 {
-    public class ProductQty
+    public class ProductInput
     {
         [Required]
         public int product_id { get; set; }

@@ -14,6 +14,10 @@ namespace ApiDePapas.Models
 
         [Required]
         [MinLength(1, ErrorMessage = "At least one product is required")]
-        public List<ProductInput> products { get; set; }
+        
+        //OJO, esto debería ser ProductInput, lo dejo así para poder probar
+        //Explicación: cost lo sacamos del get que hacemos a stock, donde obtenemos stats del producto
+        //entienden o no cabrones?
+        public List<ProductOutput> products { get; set; }
     }
 }

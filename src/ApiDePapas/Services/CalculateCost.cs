@@ -8,16 +8,16 @@ namespace ApiDePapas.Services
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
             float totalCost = 0;
-            var productsWithCost = new List<ProductItemOutput>();
+            var productsWithCost = new List<ProductOutput>();
 
             foreach (var p in request.products)
             {
-                float cost = p.Weight * p.Quantity * 10; // ejemplo simple
-                totalCost += cost;
-                productsWithCost.Add(new ProductItemOutput
+                float varcost = p.cost + 20; // ejemplo simple
+                totalCost += varcost;
+                productsWithCost.Add(new ProductOutput
                 {
-                    Id = p.Id,
-                    Cost = cost
+                    id = p.id,
+                    cost = varcost
                 });
             }
             var response = new ShippingCostResponse

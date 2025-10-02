@@ -25,7 +25,7 @@ namespace ApiDePapas.Controllers
             var response = _calculateCost.CalculateShippingCost(new ShippingCostRequest
             {
                 delivery_address = request.delivery_address,
-                departure_postal_code = request.departure_postal_code,
+                //departure_postal_code = request.departure_postal_code,
                 products = request.products
             });
 
