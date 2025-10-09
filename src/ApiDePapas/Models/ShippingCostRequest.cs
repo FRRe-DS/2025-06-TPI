@@ -6,10 +6,10 @@ namespace ApiDePapas.Models
     public record ShippingCostRequest(
         [property: JsonPropertyName("delivery_address")]
         [property: Required]
-        Address DeliveryAddress,
+        Address delivery_address,
 
         [property: JsonPropertyName("products")]
         [property: Required]
-        List<ProductRequest> Products
+        List<ProductRequest> products
     );
 }

@@ -6,23 +6,23 @@ namespace ApiDePapas.Models
     public record Address(
         [property: JsonPropertyName("street")]
         [property: Required]
-        string Street,
+        string street,
 
         [property: JsonPropertyName("city")]
         [property: Required]
-        string City,
+        string city,
 
         [property: JsonPropertyName("state")]
         [property: Required]
-        string State,
+        string state,
 
         [property: JsonPropertyName("postal_code")]
         [property: Required]
         [property: RegularExpression(@"^([A-Z]{1}\d{4}[A-Z]{3})$", ErrorMessage = "Invalid postal code format")]
-        string PostalCode,
+        string postal_code,
 
         [property: JsonPropertyName("country")]
         [property: Required]
-        string Country
+        string country
     );
 }

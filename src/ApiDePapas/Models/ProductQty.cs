@@ -9,11 +9,11 @@ namespace ApiDePapas.Models
     public record ProductQty(
         [property: JsonPropertyName("product_id")]
         [property: Required]
-        int? ProductId,
+        int? product_id,
 
         [property: JsonPropertyName("quantity")]
         [property: Required]
         [property: Range(1, int.MaxValue)]
-        int? Quantity
+        int? quantity
     );
 }

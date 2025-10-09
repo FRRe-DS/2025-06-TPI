@@ -7,18 +7,18 @@ namespace ApiDePapas.Models
     public record PaginationData(
         [property: JsonPropertyName("current_page")]
         [property: Required]
-        int? CurrentPage,
+        int? current_page,
 
         [property: JsonPropertyName("total_pages")]
         [property: Required]
-        int? TotalPages,
+        int? total_pages,
 
         [property: JsonPropertyName("total_items")]
         [property: Required]
-        int? TotalItems,
+        int? total_items,
 
         [property: JsonPropertyName("items_per_page")]
         [property: Required]
-        int? ItemsPerPage
+        int? items_per_page
     );
 }

@@ -6,18 +6,18 @@ namespace ApiDePapas.Models
     public record ShippingCostResponse(
         [property: JsonPropertyName("currency")]
         [property: Required]
-        string Currency,
+        string currency,
 
         [property: JsonPropertyName("total_cost")]
         [property: Required]
-        double? TotalCost,
+        double? total_cost,
 
         [property: JsonPropertyName("transport_type")]
         [property: Required]
-        TransportType? TransportType,
+        TransportType? transport_type,
 
         [property: JsonPropertyName("products")]
         [property: Required]
-        List<ProductOutput> Products
+        List<ProductOutput> products
     );
 }

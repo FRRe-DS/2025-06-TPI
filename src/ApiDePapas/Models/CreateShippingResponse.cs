@@ -6,18 +6,18 @@ namespace ApiDePapas.Models
     public record CreateShippingResponse(
         [property: JsonPropertyName("shipping_id")]
         [property: Required]
-        int? ShippingId,
+        int? shipping_id,
 
         [property: JsonPropertyName("status")]
         [property: Required]
-        ShippingStatus? Status,
+        ShippingStatus? status,
 
         [property: JsonPropertyName("transport_type")]
         [property: Required]
-        TransportType? TransportType,
+        TransportType? transport_type,
 
         [property: JsonPropertyName("estimated_delivery_at")]
         [property: Required]
-        DateTime? EstimatedDeliveryAt
+        DateTime? estimated_delivery_at
     );
 }

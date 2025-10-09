@@ -9,10 +9,10 @@ namespace ApiDePapas.Models
     public record ProductCost(
         [property: JsonPropertyName("id")]
         [property: Required]
-        int? Id,
+        int? id,
 
         [property: JsonPropertyName("cost")]
         [property: Required]
-        double? Cost
+        double? cost
     );
 }
