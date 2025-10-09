@@ -1,16 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Models
 {
-    public class CancelShippingResponse
-    {
-        [Required]
-        public int shipping_id { get; set; }
+    public record CancelShippingResponse(
+        [property: JsonPropertyName("shipping_id")]
+        [property: Required]
+        int? ShippingId,
 
-        [Required]
-        public ShippingStatus status { get; set; }
+        [property: JsonPropertyName("status")]
+        [property: Required]
+        ShippingStatus? Status,
 
-        [Required]
-        public DateTime cancelled_at { get; set; }
-    }
+        [property: JsonPropertyName("cancelled_at")]
+        [property: Required]
+        DateTime? CancelledAt
+    );
 }

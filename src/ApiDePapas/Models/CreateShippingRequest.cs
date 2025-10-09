@@ -1,29 +1,27 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Models
-
 {
-    public class CreateShippingRequest
-    {
-        //order_id es lo nuevo
-        [Required]
-        public int order_id { get; set; }
+    public record CreateShippingRequest(
+        [property: JsonPropertyName("order_id")]
+        [property: Required]
+        int? order_id,
 
-        [Required]
-        public int user_id { get; set; }
+        [property: JsonPropertyName("user_id")]
+        [property: Required]
+        int? user_id,
 
-        [Required]
-        public Address delivery_address { get; set; }
+        [property: JsonPropertyName("delivery_address")]
+        [property: Required]
+        Address delivery_address,
 
-        [Required]
-        public string departure_postal_code { get; set; }
+        [property: JsonPropertyName("transport_type")]
+        [property: Required]
+        TransportType? transport_type,
 
-        [Required]
-        public TransportType transport_type { get; set; }
-
-        [Required]
-        [MinLength(1, ErrorMessage = "At least one product is required")]
-        public List<ProductInput> product { get; set; }
-    }
+        [property: JsonPropertyName("products")]
+        [property: Required]
+        List<ProductRequest> products
+    );
 }

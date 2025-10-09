@@ -1,20 +1,23 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Models
 {
-    public class CreateShippingResponse
-    {
-        [Required]
-        public int shipping_id { get; set; }
+    public record CreateShippingResponse(
+        [property: JsonPropertyName("shipping_id")]
+        [property: Required]
+        int? ShippingId,
 
-        [Required]
-        public ShippingStatus status { get; set; }
+        [property: JsonPropertyName("status")]
+        [property: Required]
+        ShippingStatus? Status,
 
-        [Required]
-        public TransportType transport_type { get; set; }
+        [property: JsonPropertyName("transport_type")]
+        [property: Required]
+        TransportType? TransportType,
 
-        [Required]
-        public string estimated_delivery_at { get; set; }
-    }
+        [property: JsonPropertyName("estimated_delivery_at")]
+        [property: Required]
+        DateTime? EstimatedDeliveryAt
+    );
 }

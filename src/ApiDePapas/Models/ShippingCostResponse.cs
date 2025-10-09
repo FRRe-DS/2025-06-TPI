@@ -1,20 +1,23 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Models
 {
-    public class ShippingCostResponse
-    {
-        [Required]
-        public string currency { get; set; }
+    public record ShippingCostResponse(
+        [property: JsonPropertyName("currency")]
+        [property: Required]
+        string Currency,
 
-        [Required]
-        public float total_cost { get; set; }
+        [property: JsonPropertyName("total_cost")]
+        [property: Required]
+        double? TotalCost,
 
-        [Required]
-        public TransportType transport_type { get; set; }
+        [property: JsonPropertyName("transport_type")]
+        [property: Required]
+        TransportType? TransportType,
 
-        [Required]
-        public List<ProductOutput> products { get; set; }
-    }
+        [property: JsonPropertyName("products")]
+        [property: Required]
+        List<ProductOutput> Products
+    );
 }

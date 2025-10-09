@@ -6,13 +6,13 @@ namespace ApiDePapas.Models
     public class ShippingDetail
     {
         [Required]
-        public int shipping_id { get; set; }
+        public int? shipping_id { get; set; }
 
         [Required]
-        public int order_id { get; set; }
+        public int? order_id { get; set; }
 
         [Required]
-        public int user_id { get; set; }
+        public int? user_id { get; set; }
 
         [Required]
         public Address delivery_address { get; set; }
@@ -20,7 +20,7 @@ namespace ApiDePapas.Models
         public Address departure_address { get; set; }
 
         [Required]
-        public List<ProductInput> products { get; set; }
+        public List<ProductQty> products { get; set; }
 
         [Required]
         public ShippingStatus status { get; set; }

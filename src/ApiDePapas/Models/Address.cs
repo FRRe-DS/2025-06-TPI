@@ -1,24 +1,28 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Models
 {
-    public class Address
-    {
-        [Required]
-        public string street { get; set; }
+    public record Address(
+        [property: JsonPropertyName("street")]
+        [property: Required]
+        string Street,
 
-        [Required]
-        public string city { get; set; }
+        [property: JsonPropertyName("city")]
+        [property: Required]
+        string City,
 
-        [Required]
-        public string state { get; set; }
+        [property: JsonPropertyName("state")]
+        [property: Required]
+        string State,
 
-        [Required]
-        [RegularExpression(@"^([A-Z]{1}\d{4}[A-Z]{3})$", ErrorMessage = "Invalid postal code format")]
-        public string postal_code { get; set; }
+        [property: JsonPropertyName("postal_code")]
+        [property: Required]
+        [property: RegularExpression(@"^([A-Z]{1}\d{4}[A-Z]{3})$", ErrorMessage = "Invalid postal code format")]
+        string PostalCode,
 
-        [Required]
-        [StringLength(2, MinimumLength = 2, ErrorMessage = "Country code must be 2 characters")]
-        public string country { get; set; }
-    }
+        [property: JsonPropertyName("country")]
+        [property: Required]
+        string Country
+    );
 }
