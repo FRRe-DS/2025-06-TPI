@@ -10,11 +10,11 @@ namespace ApiDePapas.Models
 
         [property: JsonPropertyName("total_cost")]
         [property: Required]
-        double? total_cost,
+        double total_cost,
 
         [property: JsonPropertyName("transport_type")]
         [property: Required]
-        TransportType? transport_type,
+        TransportType transport_type,
 
         [property: JsonPropertyName("products")]
         [property: Required]

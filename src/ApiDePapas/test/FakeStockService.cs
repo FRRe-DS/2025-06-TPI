@@ -6,25 +6,21 @@ namespace ApiDePapas.Test
 {
     public class FakeStockService : IStockService
     {
-        public List<ProductDetail> GetProductsDetail(List<ProductInput> products)
+        public ProductDetail GetProductDetail(ProductQty product)
         {
-            var result = new List<ProductDetail>();
+            // ejemplo simple, con datos fijos para simular
 
-            foreach (var p in products)
-            {
-                // devolvemos datos ficticios por producto
-                result.Add(new ProductDetail
-                {
-                    id = p.id,
-                    base_price = p.id * 100, // ejemplo simple, solo para simular
+            var detail = new ProductDetail
+            { 
+                    id = product.id,
+                    base_price = product.id * 100,
                     weight = 20,
-                    length = 10,   // fijo para prueba
+                    length = 10,
                     width = 5,
                     height = 2,
-                });
-            }
+            };
 
-            return result;
+            return detail;
         }
     }
 }

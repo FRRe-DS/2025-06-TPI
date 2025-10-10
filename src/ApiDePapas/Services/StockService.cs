@@ -5,6 +5,6 @@ namespace ApiDePapas.Services
 {
     public interface IStockService
     {
-        List<ProductDetail> GetProductsDetail(List<ProductInput> products);
+        ProductDetail GetProductDetail(ProductQty product);
     }
 }

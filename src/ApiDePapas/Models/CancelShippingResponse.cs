@@ -6,14 +6,14 @@ namespace ApiDePapas.Models
     public record CancelShippingResponse(
         [property: JsonPropertyName("shipping_id")]
         [property: Required]
-        int? shipping_id,
+        int shipping_id,
 
         [property: JsonPropertyName("status")]
         [property: Required]
-        ShippingStatus? status,
+        ShippingStatus status,
 
         [property: JsonPropertyName("cancelled_at")]
         [property: Required]
-        DateTime? cancelled_at
+        DateTime cancelled_at
     );
 }

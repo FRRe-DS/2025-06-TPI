@@ -6,6 +6,6 @@ namespace ApiDePapas.Models
     public class TransportMethodsResponde
     {
         [Required]
-        public List<TransportMethods> transport_methods { get; set;}
+        public List<TransportMethods> transport_methods { get; set; } = new List<TransportMethods>();
     }
 }

@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 namespace ApiDePapas.Models
 {
     // Modelo de SALIDA (Cotización): Representa el costo de un producto en una cotización.
-    public record ProductCost(
+    public record ProductOutput (
         [property: JsonPropertyName("id")]
         [property: Required]
-        int? id,
+        int id,
 
         [property: JsonPropertyName("cost")]
         [property: Required]
-        double? cost
+        double cost
     );
 }

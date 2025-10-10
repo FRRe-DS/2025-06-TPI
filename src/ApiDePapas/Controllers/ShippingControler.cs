@@ -22,12 +22,7 @@ namespace ApiDePapas.Controllers
                 return BadRequest("Request inválido");
 
             // Llamamos al servicio y devolvemos el resultado completo
-            var response = _calculateCost.CalculateShippingCost(new ShippingCostRequest
-            {
-                delivery_address = request.delivery_address,
-                //departure_postal_code = request.departure_postal_code,
-                products = request.products
-            });
+            var response = _calculateCost.CalculateShippingCost(request);
 
             return Ok(response);
         }

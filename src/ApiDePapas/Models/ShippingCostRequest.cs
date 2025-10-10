@@ -10,6 +10,6 @@ namespace ApiDePapas.Models
 
         [property: JsonPropertyName("products")]
         [property: Required]
-        List<ProductRequest> products
+        List<ProductQty> products
     );
 }
