@@ -1,0 +1,30 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+using ApiDePapas.Application.Services;
+
+namespace ApiDePapas.Controllers
+{
+    [ApiController]
+    [Route("shipping/transport-methods")]
+    public class ShippingTransportMethodsController : ControllerBase
+    {
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(TransportMethodsResponse), StatusCodes.Status200OK)]
+        public ActionResult<TransportMethodsResponse> Get()
+        {
+            var resp = new TransportMethodsResponse
+            {
+                transport_methods = new List<TransportMethods>
+                {
+                    new() { type = TransportType.air,  name = "Air Freight",  estimated_days = "1-3" },
+                    new() { type = TransportType.road, name = "Road Transport", estimated_days = "3-7" },
+                    new() { type = TransportType.rail, name = "Rail Freight",  estimated_days = "5-10" },
+                    new() { type = TransportType.sea,  name = "Sea Freight",   estimated_days = "15-30" },
+                }
+            };
+            return Ok(resp);
+        }
+    }
+}
