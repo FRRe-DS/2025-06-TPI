@@ -1,4 +1,4 @@
-namespace ApiDePapas.Models
+namespace ApiDePapas.Domain.Entities
 {
     public enum ShippingStatus
     {

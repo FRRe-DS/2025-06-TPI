@@ -1,5 +1,6 @@
-using ApiDePapas.Services;
-using ApiDePapas.Models;
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
@@ -9,7 +10,7 @@ builder.Services.AddSwaggerGen();
 
 //Registro de servicios
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
-builder.Services.AddScoped<IStockService, ApiDePapas.Test.FakeStockService>();
+builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 
 var app = builder.Build();
 

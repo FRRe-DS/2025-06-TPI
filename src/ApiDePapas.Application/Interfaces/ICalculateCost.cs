@@ -1,6 +1,6 @@
-using ApiDePapas.Models;
+using ApiDePapas.Application.DTOs;
 
-namespace ApiDePapas.Services
+namespace ApiDePapas.Application.Interfaces
 {
     public interface ICalculateCost
     {

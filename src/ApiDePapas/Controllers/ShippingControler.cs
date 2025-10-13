@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using ApiDePapas.Services;
-using ApiDePapas.Models;
+using ApiDePapas.Application.DTOs;
+using ApiDePapas.Application.Interfaces;
 
 namespace ApiDePapas.Controllers
 {

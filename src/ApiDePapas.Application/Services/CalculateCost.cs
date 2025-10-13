@@ -1,4 +1,6 @@
-using ApiDePapas.Models;
+using ApiDePapas.Domain.Entities;
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Application.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,7 +25,7 @@ using System.ComponentModel.DataAnnotations;
  * Como se determina qué medio de transporse se utiliza?
  */
 
-namespace ApiDePapas.Services
+namespace ApiDePapas.Application.Services
 {
     public class CalculateCost : ICalculateCost
     {
@@ -39,9 +41,9 @@ namespace ApiDePapas.Services
             float total_cost = 0;
             List<ProductOutput> products_with_cost = new List<ProductOutput>();
 
-            foreach (ProductQty prod in request.products)
+            foreach (var prod in request.products)
             {
-                var prod_detail = _stockService.GetProductDetail(prod);
+                ProductDetail prod_detail = _stockService.GetProductDetail(prod);
 
                 float total_weight_grs = prod_detail.weight * prod.quantity;
 

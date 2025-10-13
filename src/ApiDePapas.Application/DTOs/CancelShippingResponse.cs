@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ApiDePapas.Models
+using ApiDePapas.Domain.Entities;
+
+namespace ApiDePapas.Application.DTOs
 {
     public record CancelShippingResponse(
         [property: JsonPropertyName("shipping_id")]

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Application.DTOs
 {
     public class Error
     {

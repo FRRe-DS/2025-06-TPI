@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Application.DTOs
 {
     public class TransportMethodsResponde
     {

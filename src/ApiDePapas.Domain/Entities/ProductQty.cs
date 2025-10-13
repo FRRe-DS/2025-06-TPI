@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 //Se usa en ShippingDetails
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Domain.Entities
 {
     // Modelo de SALIDA (Detalle): Representa un producto dentro de un envío ya creado.
     public record ProductQty(

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Application.DTOs
 {
     public record ProductRequest(
         [property: JsonPropertyName("id")]

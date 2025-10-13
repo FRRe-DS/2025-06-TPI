@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiDePapas.Models
+using ApiDePapas.Domain.Entities;
+
+namespace ApiDePapas.Application.DTOs
 {
     public class TransportMethods
     {

@@ -1,10 +1,11 @@
 using System;
-using ApiDePapas.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace LogisticsApi.Models
+using ApiDePapas.Domain.Entities;
+
+namespace LogisticsApi.Application.DTOs
 {
     // Representa el resumen de un envío en una lista.
     public record ShipmentSummary(

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Domain.Entities
 {
     public record Address(
         [property: JsonPropertyName("street")]

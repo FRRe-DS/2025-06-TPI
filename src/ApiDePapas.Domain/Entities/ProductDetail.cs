@@ -4,7 +4,7 @@ using System.Numerics;
 //deberiamos borrar esto, no tenemos esos datos (los pedimos a stock)
 //lo dejo como clase de testing, para probar lo que nos debería devolver stock.
 
-namespace ApiDePapas.Models
+namespace ApiDePapas.Domain.Entities
 {
     public class ProductDetail
     {
