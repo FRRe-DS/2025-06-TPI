@@ -7,19 +7,19 @@ namespace ApiDePapas.Application.DTOs
 {
     public record ShippingCostResponse(
         [property: JsonPropertyName("currency")]
-        [property: Required]
+        [Required]
         string currency,
 
         [property: JsonPropertyName("total_cost")]
-        [property: Required]
+        [Required]
         double total_cost,
 
         [property: JsonPropertyName("transport_type")]
-        [property: Required]
+        [Required]
         TransportType transport_type,
 
         [property: JsonPropertyName("products")]
-        [property: Required]
+        [Required]
         List<ProductOutput> products
     );
 }

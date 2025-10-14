@@ -8,11 +8,11 @@ namespace ApiDePapas.Application.DTOs
     // Modelo de SALIDA (Cotización): Representa el costo de un producto en una cotización.
     public record ProductOutput (
         [property: JsonPropertyName("id")]
-        [property: Required]
+        [Required]
         int id,
 
         [property: JsonPropertyName("cost")]
-        [property: Required]
+        [Required]
         double cost
     );
 }

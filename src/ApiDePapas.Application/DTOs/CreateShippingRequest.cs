@@ -7,23 +7,23 @@ namespace ApiDePapas.Application.DTOs
 {
     public record CreateShippingRequest(
         [property: JsonPropertyName("order_id")]
-        [property: Required]
+        [Required]
         int? order_id,
 
         [property: JsonPropertyName("user_id")]
-        [property: Required]
+        [Required]
         int? user_id,
 
         [property: JsonPropertyName("delivery_address")]
-        [property: Required]
+        [Required]
         Address delivery_address,
 
         [property: JsonPropertyName("transport_type")]
-        [property: Required]
+        [Required]
         TransportType? transport_type,
 
         [property: JsonPropertyName("products")]
-        [property: Required]
+        [Required]
         List<ProductRequest> products
     );
 }
