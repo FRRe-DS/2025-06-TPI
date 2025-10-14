@@ -1,5 +1,6 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
+using ApiDePapas.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.AddSwaggerGen();
 //Registro de servicios
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
+builder.Services.AddScoped<TransportService>();
+builder.Services.AddScoped<IShippingService, ShippingService>();
+builder.Services.AddScoped<IShippingStore, ShippingStore>();
 
 var app = builder.Build();
 
