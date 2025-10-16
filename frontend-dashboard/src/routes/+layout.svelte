@@ -12,9 +12,9 @@
 
 <style>
   header {
-    background-color: #f8f9fa;
+    background-color: #2a2a2a;
     padding: 1rem 2rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid #444;
   }
 
   main {
