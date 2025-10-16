@@ -1,5 +1,6 @@
 <script>
    import { onMount } from 'svelte';
+   import { getShipments } from '../../services/shipmentService';
 
    let shipments = [];
 
@@ -23,8 +24,6 @@
      'arrived': '#8fbc8f', // Verde mar oscuro
    };
 
-   const colors = ['#ff6347', '#9370db', '#f08080']; // Fallback colors
-
    function getColorForStatus(status) {
      if (statusColors[status]) {
        return statusColors[status];
@@ -33,20 +32,12 @@
      for (let i = 0; i < status.length; i++) {
        hash += status.charCodeAt(i);
      }
+     const colors = ['#ff6347', '#9370db', '#f08080']; // Fallback colors
      return colors[hash % colors.length];
    }
 
    onMount(async () => {
-     try {
-       const response = await fetch('/api/shipments?cache_bust=' + new Date().getTime());
-       if (response.ok) {
-         shipments = await response.json();
-       } else {
-         console.error('Error fetching shipments:', response.statusText);
-       }
-     } catch (error) {
-       console.error('Error fetching shipments:', error);
-     }
+     shipments = await getShipments();
    });
  </script>
 
@@ -72,7 +63,7 @@
             {statusNames[shipment.status] || shipment.status}
          </td>
          <td>{shipment.entryDate}</td>
-         <td><button>Ver Detalles</button></td>
+         <td><a href="/shipments/{shipment.id}" class="button">Ver Detalles</a></td>
        </tr>
      {/each}
    </tbody>
@@ -104,8 +95,18 @@
     cursor: pointer;
    }
 
-   button:hover {
+   button:hover, a.button:hover {
     background-color: #2563eb;
+   }
+
+   a.button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
    }
 
    .status-circle {
