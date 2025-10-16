@@ -21,5 +21,9 @@ namespace ApiDePapas.Application.Interfaces
         // Otros métodos necesarios para manejar envíos
         // Por ejemplo, actualizar estado, listar envíos, etc.
         //esto permite leer el envío por su ID
+
+        CancelShippingResponse Cancel(int shippingId, DateTime now); 
+        //esto permite cancelar un envío
+        //cancel asumimos que el controller verifica que el envío existe y es valido para cancelar
     }
 }

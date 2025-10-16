@@ -1,6 +1,7 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
 using System.Collections.Concurrent;
+using ApiDePapas.Domain.Entities;
 
 namespace ApiDePapas.Infrastructure
 {
@@ -34,5 +35,24 @@ namespace ApiDePapas.Infrastructure
         // Otros métodos necesarios para manejar envíos
         // Por ejemplo, actualizar estado, listar envíos, etc.
         //esto permite leer el envío por su ID
+        public CancelShippingResponse Cancel(int shippingId, DateTime now)
+        {
+            // Actualizamos el objeto guardado a estado "cancelled"
+            var current = _db[shippingId];
+            var updated = new CreateShippingResponse(
+                shipping_id: shippingId,
+                status: ShippingStatus.cancelled,
+                transport_type: current.transport_type,
+                estimated_delivery_at: current.estimated_delivery_at
+            );
+            _db[shippingId] = updated;
+
+            return new CancelShippingResponse(
+                shipping_id: shippingId,
+                status: ShippingStatus.cancelled,
+                cancelled_at: now
+            );
+        }
+    
     }
 }
