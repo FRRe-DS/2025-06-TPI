@@ -18,13 +18,14 @@ namespace ApiDePapas.Application.Services
             _calculateCost = calculateCost;
         }
 
-        public async Task<CreateShippingResponse> CreateNewShipping(CreateShippingRequest req)
+        public Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest req)
         {
             // 1. Validación de negocio
             if (req.products == null || req.products.Count == 0)
             {
                 // Si la validación falla, simplemente devolvemos null
-                return null;
+                return Task.FromResult<CreateShippingResponse?>(null);
+
             }
 
             // 2. El resto de la lógica sigue igual
@@ -53,7 +54,7 @@ namespace ApiDePapas.Application.Services
             //var id = _store.Save(created);
             //created.shipping_id = id;
 
-            return created;
+            return Task.FromResult<CreateShippingResponse?>(created);
         }
     }
 }

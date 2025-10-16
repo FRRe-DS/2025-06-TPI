@@ -7,6 +7,6 @@ namespace ApiDePapas.Application.Interfaces
     public interface IShippingService
     {
         // El servicio tomará el request y devolverá el response ya creado
-        Task<CreateShippingResponse> CreateNewShipping(CreateShippingRequest request);
+        Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest request);
     }
 }
