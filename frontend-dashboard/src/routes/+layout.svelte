@@ -11,12 +11,6 @@
 </main>
 
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: #333;
-  }
-
   header {
     background-color: #f8f9fa;
     padding: 1rem 2rem;
