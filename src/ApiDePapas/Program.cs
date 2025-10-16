@@ -3,6 +3,8 @@ using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
 using ApiDePapas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,14 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
 builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
+        );
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,7 +34,6 @@ builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeSt
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IShippingStore, ShippingStore>();
-builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
 
 var app = builder.Build();
 
