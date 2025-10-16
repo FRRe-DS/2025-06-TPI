@@ -1,8 +1,17 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
+using ApiDePapas.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Base de datos
+builder.Services.AddDbContext<DatabaseContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        mySqlOptions => mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure")));
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
 builder.Services.AddControllers();
