@@ -7,11 +7,11 @@ namespace ApiDePapas.Application.DTOs
 {
     public record ShippingCostRequest(
         [property: JsonPropertyName("delivery_address")]
-        [property: Required]
+        [Required]
         Address delivery_address,
 
         [property: JsonPropertyName("products")]
-        [property: Required]
+        [Required]
         List<ProductQty> products
     );
 }

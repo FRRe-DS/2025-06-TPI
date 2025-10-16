@@ -8,12 +8,12 @@ namespace ApiDePapas.Domain.Entities
     // Modelo de SALIDA (Detalle): Representa un producto dentro de un envío ya creado.
     public record ProductQty(
         [property: JsonPropertyName("product_id")]
-        [property: Required]
+        [Required]
         int id,
 
         [property: JsonPropertyName("quantity")]
-        [property: Required]
-        [property: Range(1, int.MaxValue)]
+        [Required]
+        [Range(1, int.MaxValue)]
         int quantity
     );
 }

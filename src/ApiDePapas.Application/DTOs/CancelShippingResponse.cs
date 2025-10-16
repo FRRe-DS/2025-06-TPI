@@ -7,15 +7,15 @@ namespace ApiDePapas.Application.DTOs
 {
     public record CancelShippingResponse(
         [property: JsonPropertyName("shipping_id")]
-        [property: Required]
+        [Required]
         int shipping_id,
 
         [property: JsonPropertyName("status")]
-        [property: Required]
+        [Required]
         ShippingStatus status,
 
         [property: JsonPropertyName("cancelled_at")]
-        [property: Required]
+        [Required]
         DateTime cancelled_at
     );
 }

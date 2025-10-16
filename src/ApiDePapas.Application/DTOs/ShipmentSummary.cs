@@ -10,35 +10,35 @@ namespace LogisticsApi.Application.DTOs
     // Representa el resumen de un envío en una lista.
     public record ShipmentSummary(
         [property: JsonPropertyName("shipping_id")]
-        [property: Required]
+        [Required]
         int? ShippingId,
 
         [property: JsonPropertyName("order_id")]
-        [property: Required]
+        [Required]
         int? OrderId,
 
         [property: JsonPropertyName("user_id")]
-        [property: Required]
+        [Required]
         int? UserId,
 
         [property: JsonPropertyName("products")]
-        [property: Required]
+        [Required]
         List<ProductQty> Products,
 
         [property: JsonPropertyName("status")]
-        [property: Required]
+        [Required]
         ShippingStatus? Status,
 
         [property: JsonPropertyName("transport_type")]
-        [property: Required]
+        [Required]
         TransportType? TransportType,
 
         [property: JsonPropertyName("estimated_delivery_at")]
-        [property: Required]
+        [Required]
         DateTime? EstimatedDeliveryAt,
 
         [property: JsonPropertyName("created_at")]
-        [property: Required]
+        [Required]
         DateTime? CreatedAt
     );
 }

@@ -5,24 +5,24 @@ namespace ApiDePapas.Domain.Entities
 {
     public record Address(
         [property: JsonPropertyName("street")]
-        [property: Required]
+        [Required]
         string street = "",
 
         [property: JsonPropertyName("city")]
-        [property: Required]
+        [Required]
         string city = "",
 
         [property: JsonPropertyName("state")]
-        [property: Required]
+        [Required]
         string state = "",
 
         [property: JsonPropertyName("postal_code")]
-        [property: Required]
-        [property: RegularExpression(@"^([A-Z]{1}\d{4}[A-Z]{3})$", ErrorMessage = "Invalid postal code format")]
+        [Required]
+        [RegularExpression(@"^([A-Z]{1}\d{4}[A-Z]{3})$", ErrorMessage = "Invalid postal code format")]
         string postal_code = "",
 
         [property: JsonPropertyName("country")]
-        [property: Required]
+        [Required]
         string country = ""
     );
 }

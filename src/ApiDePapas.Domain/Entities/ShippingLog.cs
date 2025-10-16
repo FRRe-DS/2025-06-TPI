@@ -5,15 +5,15 @@ namespace ApiDePapas.Domain.Entities
 {
     public record ShippingLog(
         [property: JsonPropertyName("timestamp")]
-        [property: Required]
+        [Required]
         DateTime? Timestamp,
 
         [property: JsonPropertyName("status")]
-        [property: Required]
+        [Required]
         ShippingStatus? Status,
 
         [property: JsonPropertyName("message")]
-        [property: Required]
+        [Required]
         string Message
     );
 }

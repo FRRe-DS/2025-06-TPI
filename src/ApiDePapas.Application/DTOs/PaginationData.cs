@@ -6,19 +6,19 @@ namespace ApiDePapas.Application.DTOs
     // Contiene la metadata para las respuestas paginadas.
     public record PaginationData(
         [property: JsonPropertyName("current_page")]
-        [property: Required]
+        [Required]
         int? current_page,
 
         [property: JsonPropertyName("total_pages")]
-        [property: Required]
+        [Required]
         int? total_pages,
 
         [property: JsonPropertyName("total_items")]
-        [property: Required]
+        [Required]
         int? total_items,
 
         [property: JsonPropertyName("items_per_page")]
-        [property: Required]
+        [Required]
         int? items_per_page
     );
 }

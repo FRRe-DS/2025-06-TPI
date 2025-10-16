@@ -9,11 +9,11 @@ namespace LogisticsApi.Application.DTOs
     // Modelo para la respuesta de la lista paginada de envíos.
     public record ShippingListResponse(
         [property: JsonPropertyName("shipments")]
-        [property: Required]
+        [Required]
         List<ShipmentSummary> Shipments,
 
         [property: JsonPropertyName("pagination")]
-        [property: Required]
+        [Required]
         PaginationData Pagination
     );
 }
