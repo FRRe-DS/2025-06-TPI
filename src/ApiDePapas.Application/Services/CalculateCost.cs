@@ -30,19 +30,34 @@ namespace ApiDePapas.Application.Services
     public class CalculateCost : ICalculateCost
     {
         private readonly IStockService _stockService;
+        private readonly IDistanceService _distance;
+        // como no tenemos un servicio de distancia, usamos uno en memoria
+        private const string DEFAULT_ORIGIN_CPA = "H3500ABC";
 
-        public CalculateCost(IStockService stockService)
+        public CalculateCost(IStockService stockService, IDistanceService distance)
         {
             _stockService = stockService;
+            _distance = distance;
         }
 
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
-            float total_cost = 0;
+            float total_cost = 0f;
             List<ProductOutput> products_with_cost = new List<ProductOutput>();
+
+            // Distancia base: de un CD por defecto al destino
+            // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
+            var distance_km_request = (float)_distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
 
             foreach (var prod in request.products)
             {
+                //Si usamos api real de stock, esto va a ser una llamada HTTP
+                //DistanceServiceExternal : IDistanceService (HTTP → geocoding).
+                //En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
+                //aqui dentro del FOREACH DEBE CAMBIAR:
+                //var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
+                //float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
+
                 ProductDetail prod_detail = _stockService.GetProductDetail(prod);
 
                 float total_weight_grs = prod_detail.weight * prod.quantity;
@@ -50,9 +65,9 @@ namespace ApiDePapas.Application.Services
                 float prod_volume_cm3 = prod_detail.length * prod_detail.width * prod_detail.height;
                 float total_volume = prod_volume_cm3 * prod.quantity;
 
-                // Hay que calcular utilizando una api o algo segun los codigos postales.
+                
                 // float distance_km = _CalculateDistance(request.delivery_address.postal_code, prod_detail.postal_code);
-                float distance_km = 500;
+                float distance_km =distance_km_request;
 
                 // Calcular costo, formula de ejemplo
                 float partial_cost = total_weight_grs * 1.2f + prod_volume_cm3 * 0.5f + distance_km * 8.0f;
