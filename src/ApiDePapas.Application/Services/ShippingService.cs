@@ -9,51 +9,51 @@ namespace ApiDePapas.Application.Services
 {
     public class ShippingService : IShippingService
     {
-        private readonly IShippingStore _store;
         private readonly ICalculateCost _calculateCost;
+        private readonly IShippingStore _store;
 
-        public ShippingService(IShippingStore store, ICalculateCost calculateCost)
+        public ShippingService(ICalculateCost calculateCost, IShippingStore store)
         {
-            _store = store;
             _calculateCost = calculateCost;
+            _store = store;
         }
 
-        public async Task<CreateShippingResponse> CreateNewShipping(CreateShippingRequest req)
+        public async Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest req)
         {
-            // 1. Validación de negocio
-            if (req.products == null || req.products.Count == 0)
-            {
-                // Si la validación falla, simplemente devolvemos null
-                return null;
-            }
+            // Validación mínima: mismo criterio que venías usando
+            if (req == null || req.products == null || req.products.Count == 0)
+                return null; // El controller responde 422 (tu patrón)
 
-            // 2. El resto de la lógica sigue igual
-
-            var ProductQuantities = req.products.Select(p => new ProductQty
-            (
-                p.id,
-                p.quantity
-            )).ToList();
-
-            var costReq = new ShippingCostRequest(req.delivery_address, ProductQuantities);
-            _calculateCost.CalculateShippingCost(costReq);
-
-            // acá iriá el método que solicitamos a BDvar id = asnda
-
-            var created = new CreateShippingResponse(
-                0,
-                ShippingStatus.created,
-                req.transport_type,
-                DateTime.UtcNow.AddDays(3)
+            // Reutilizamos EXACTO el flujo de /shipping/cost
+            var costReq = new ShippingCostRequest(
+                req.delivery_address,
+                // OJO: ProductRequest tiene 'id' y 'quantity' (no 'product_id')
+                req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()
             );
 
+            var cost = _calculateCost.CalculateShippingCost(costReq); // misma fuente de verdad del cálculo
+            // (ICalculateCost ya lo usás en ShippingCostController) :contentReference[oaicite:1]{index=1} 
 
-            //created debería ser un método para pedir a infraestructura el id que necesitamos
+            // Armamos la respuesta de creación (simple y directa)
+            var created = new CreateShippingResponse(
+                shipping_id: 0, // lo sobreescribimos con el ID del store
+                status: ShippingStatus.created,
+                transport_type: req.transport_type ?? TransportType.road,
+                estimated_delivery_at: DateTime.UtcNow.AddDays(3) // placeholder simple
+            );
 
-            //var id = _store.Save(created);
-            //created.shipping_id = id;
+            // Guardamos usando TU store actual y obtenemos ID real
+            var newId = _store.Save(created);
+            var final = new CreateShippingResponse(
+                shipping_id: newId,
+                status: created.status,
+                transport_type: created.transport_type,
+                estimated_delivery_at: created.estimated_delivery_at
+            );
 
-            return created;
+            // simulamos async para respetar la firma del contrato
+            await Task.CompletedTask;
+            return final;
         }
     }
 }
