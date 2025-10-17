@@ -24,6 +24,7 @@ builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeSt
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IShippingStore, ShippingStore>();
+builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
 
 var app = builder.Build();
 
