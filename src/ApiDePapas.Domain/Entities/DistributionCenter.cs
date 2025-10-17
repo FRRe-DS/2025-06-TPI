@@ -3,14 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace ApiDePapas.Domain.Entities
 {
-    public record DistributionCenter(
+    public class DistributionCenter
+        {
+            // Clave primaria
+            public int distribution_center_id { get; set; } 
 
-        [property: JsonPropertyName("distribution_center_id")]
-        [Required]
-        int distribution_center_id,
-
-        [property: JsonPropertyName("address")]
-        [Required]
-        Address distribution_center_address
-    );
+            // Referencia a su Objeto de Valor (Address)
+            public Address distribution_center_address { get; set; } = new Address(); 
+            
+    }
 }

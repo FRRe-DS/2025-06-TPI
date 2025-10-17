@@ -26,13 +26,13 @@ namespace ApiDePapas.Domain.Entities
         public ShippingStatus status { get; set; }
 
 
-        //Acá debería ser TransportMethod que es un id de un transporte
+        //Acá debería ser TransportMethod que es un id de un transporte en específico (por ejemplo Camión ID 739)
         [Required]
-        public TransportMethod transport_method { get; set; }
+        public int transport_method_id { get; set; }
 
-        //Nuevo
+        //Nuevo -> ojo que es ID en ambos porq usamos como clave foranea, tanto transport_method como distribution_center_id van a tener sus tablas
         [Required]
-        public DistributionCenter distribution_center { get; set; }
+        public int distribution_center_id { get; set; }
 
         public string tracking_number { get; set; } = string.Empty;
 

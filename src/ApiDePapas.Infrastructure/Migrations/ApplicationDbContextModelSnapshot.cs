@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiDePapas.Infrastructure.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,19 @@ namespace ApiDePapas.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("ApiDePapas.Domain.Entities.DistributionCenter", b =>
+                {
+                    b.Property<int>("distribution_center_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("distribution_center_id"));
+
+                    b.HasKey("distribution_center_id");
+
+                    b.ToTable("DistributionCenters");
+                });
 
             modelBuilder.Entity("ApiDePapas.Domain.Entities.ShippingDetail", b =>
                 {
@@ -41,15 +54,17 @@ namespace ApiDePapas.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("distribution_center_id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("estimated_delivery_at")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("order_id")
                         .HasColumnType("int");
 
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("status")
+                        .HasColumnType("int");
 
                     b.Property<float>("total_cost")
                         .HasColumnType("float");
@@ -58,9 +73,8 @@ namespace ApiDePapas.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("transport_type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("transport_method_id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("updated_at")
                         .HasColumnType("datetime(6)");
@@ -70,11 +84,93 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("shipping_id");
 
-                    b.ToTable("ShippingDetails", (string)null);
+                    b.HasIndex("distribution_center_id");
+
+                    b.HasIndex("transport_method_id");
+
+                    b.ToTable("Shippings");
+                });
+
+            modelBuilder.Entity("ApiDePapas.Domain.Entities.TransportMethod", b =>
+                {
+                    b.Property<int>("transport_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("transport_id"));
+
+                    b.Property<bool>("available")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<float>("average_speed")
+                        .HasColumnType("float");
+
+                    b.Property<float>("max_capacity")
+                        .HasColumnType("float");
+
+                    b.HasKey("transport_id");
+
+                    b.ToTable("TransportMethods");
+                });
+
+            modelBuilder.Entity("ApiDePapas.Domain.Entities.DistributionCenter", b =>
+                {
+                    b.OwnsOne("ApiDePapas.Domain.Entities.Address", "distribution_center_address", b1 =>
+                        {
+                            b1.Property<int>("DistributionCenterdistribution_center_id")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("city")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasAnnotation("Relational:JsonPropertyName", "city");
+
+                            b1.Property<string>("country")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasAnnotation("Relational:JsonPropertyName", "country");
+
+                            b1.Property<string>("postal_code")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasAnnotation("Relational:JsonPropertyName", "postal_code");
+
+                            b1.Property<string>("state")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasAnnotation("Relational:JsonPropertyName", "state");
+
+                            b1.Property<string>("street")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasAnnotation("Relational:JsonPropertyName", "street");
+
+                            b1.HasKey("DistributionCenterdistribution_center_id");
+
+                            b1.ToTable("DistributionCenters");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DistributionCenterdistribution_center_id");
+                        });
+
+                    b.Navigation("distribution_center_address")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ApiDePapas.Domain.Entities.ShippingDetail", b =>
                 {
+                    b.HasOne("ApiDePapas.Domain.Entities.DistributionCenter", null)
+                        .WithMany()
+                        .HasForeignKey("distribution_center_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ApiDePapas.Domain.Entities.TransportMethod", null)
+                        .WithMany()
+                        .HasForeignKey("transport_method_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsMany("ApiDePapas.Domain.Entities.ProductQty", "products", b1 =>
                         {
                             b1.Property<int>("ShippingDetailshipping_id")
@@ -93,7 +189,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id", "id");
 
-                            b1.ToTable("ShippingProducts", (string)null);
+                            b1.ToTable("ProductQty");
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
@@ -131,7 +227,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id");
 
-                            b1.ToTable("ShippingDetails");
+                            b1.ToTable("Shippings");
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
@@ -169,7 +265,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id");
 
-                            b1.ToTable("ShippingDetails");
+                            b1.ToTable("Shippings");
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
@@ -201,7 +297,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id", "Id");
 
-                            b1.ToTable("ShippingLogs", (string)null);
+                            b1.ToTable("ShippingLog");
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
