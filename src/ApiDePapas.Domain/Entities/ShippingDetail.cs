@@ -15,9 +15,8 @@ namespace ApiDePapas.Domain.Entities
         public int user_id { get; set; }
 
         [Required]
-        public Address delivery_address { get; set; } = new Address();
-
-        public Address departure_address { get; set; } = new Address();
+        public int delivery_address_id { get; set; }
+        public Address DeliveryAddress { get; set; } = null!; // Navegación
 
         [Required]
         public List<ProductQty> products { get; set; } = new List<ProductQty>();
@@ -25,14 +24,9 @@ namespace ApiDePapas.Domain.Entities
         [Required]
         public ShippingStatus status { get; set; }
 
-
-        //Acá debería ser TransportMethod que es un id de un transporte en específico (por ejemplo Camión ID 739)
         [Required]
-        public int transport_method_id { get; set; }
-
-        //Nuevo -> ojo que es ID en ambos porq usamos como clave foranea, tanto transport_method como distribution_center_id van a tener sus tablas
-        [Required]
-        public int distribution_center_id { get; set; }
+        public int travel_id { get; set; }
+        public Travel Travel { get; set; } = null!; // Propiedad de navegación
 
         public string tracking_number { get; set; } = string.Empty;
 

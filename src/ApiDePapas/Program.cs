@@ -2,6 +2,8 @@ using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
 using ApiDePapas.Infrastructure.Persistence;
+using ApiDePapas.Infrastructure.Repositories;
+using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,7 +18,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         mySqlOptions => mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure")));
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
-builder.Services.AddControllers();
 builder.Services
     .AddControllers()
     .AddJsonOptions(o =>
@@ -29,6 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Registro de servicios
+builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 builder.Services.AddScoped<TransportService>();

@@ -38,7 +38,7 @@ namespace ApiDePapas.Application.Services
             var created = new CreateShippingResponse(
                 shipping_id: 0, // lo sobreescribimos con el ID del store
                 status: ShippingStatus.created,
-                transport_type: req.transport_type ?? TransportType.road,
+                transport_type: req.transport_type ?? TransportType.truck,
                 estimated_delivery_at: DateTime.UtcNow.AddDays(3) // placeholder simple
             );
 
