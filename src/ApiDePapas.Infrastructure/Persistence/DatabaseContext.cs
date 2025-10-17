@@ -43,7 +43,7 @@ public class DatabaseContext : DbContext
 
             // 4. Convertir los Enums a strings en la base de datos para que sean legibles.
             entity.Property(e => e.status).HasConversion<string>();
-            entity.Property(e => e.transport_type).HasConversion<string>();
+            entity.Property(e => e.transport_method).HasConversion<string>();
         });
     }
 }
