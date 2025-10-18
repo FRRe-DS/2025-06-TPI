@@ -8,7 +8,7 @@ namespace ApiDePapas.Application.DTOs
     public record ShippingCostRequest(
         [property: JsonPropertyName("delivery_address")]
         [Required]
-        Address delivery_address,
+        DeliveryAddressRequest delivery_address,
 
         [property: JsonPropertyName("products")]
         [Required]

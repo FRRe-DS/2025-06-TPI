@@ -7,18 +7,18 @@ namespace ApiDePapas.Application.DTOs
     public record PaginationData(
         [property: JsonPropertyName("current_page")]
         [Required]
-        int? current_page,
+        int current_page,
 
         [property: JsonPropertyName("total_pages")]
         [Required]
-        int? total_pages,
+        int total_pages,
 
         [property: JsonPropertyName("total_items")]
         [Required]
-        int? total_items,
+        int total_items,
 
         [property: JsonPropertyName("items_per_page")]
         [Required]
-        int? items_per_page
+        int items_per_page
     );
 }

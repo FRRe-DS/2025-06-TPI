@@ -80,9 +80,6 @@ namespace ApiDePapas.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
             
-            // C. ELIMINAMOS los mapeos de OwnsOne(s => s.delivery_address) anteriores
-            //    y el OwnsOne(s => s.departure_address) ya que ahora son FKs a la tabla Addresses.
-
             base.OnModelCreating(modelBuilder);
         }
     }
