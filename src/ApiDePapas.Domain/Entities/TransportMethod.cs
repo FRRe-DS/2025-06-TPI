@@ -14,7 +14,7 @@ namespace ApiDePapas.Domain.Entities{
         public float average_speed { get; set; }
 
         [Required]
-        public bool available { get; set; }
+        public string available { get; set; }
 
         [Required]
         public float max_capacity { get; set; }

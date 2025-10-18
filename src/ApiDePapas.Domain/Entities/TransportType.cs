@@ -4,6 +4,6 @@ namespace ApiDePapas.Domain.Entities
     {
         truck,
         boat,
-        plain
+        plane
     } 
 }

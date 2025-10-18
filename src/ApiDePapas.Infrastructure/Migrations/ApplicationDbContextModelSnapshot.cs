@@ -165,8 +165,9 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("transport_id"));
 
-                    b.Property<bool>("available")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("available")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<float>("average_speed")
                         .HasColumnType("float");
@@ -174,8 +175,9 @@ namespace ApiDePapas.Infrastructure.Migrations
                     b.Property<float>("max_capacity")
                         .HasColumnType("float");
 
-                    b.Property<int>("transport_type")
-                        .HasColumnType("int");
+                    b.Property<string>("transport_type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("transport_id");
 

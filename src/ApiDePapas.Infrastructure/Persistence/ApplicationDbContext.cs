@@ -1,5 +1,6 @@
 using ApiDePapas.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Reflection.Metadata;
 
 namespace ApiDePapas.Infrastructure.Persistence
@@ -79,6 +80,11 @@ namespace ApiDePapas.Infrastructure.Persistence
                     .HasForeignKey(dc => dc.address_id)
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
+
+            // 5. Mapeo necesario para TransportMethods
+            modelBuilder.Entity<TransportMethod>()
+                    .Property(t => t.transport_type)
+                    .HasConversion<string>();
             
             base.OnModelCreating(modelBuilder);
         }

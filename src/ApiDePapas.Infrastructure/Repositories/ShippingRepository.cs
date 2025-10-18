@@ -27,10 +27,29 @@ namespace ApiDePapas.Infrastructure.Repositories
 
         public async Task<ShippingDetail?> GetByIdAsync(int id)
         {
-            return await _context.Shippings
-                .Include(s => s.delivery_address_id)
+            // Usamos IQueryable para construir la consulta
+            var query = _context.Shippings
+                
+                // 1. Incluir el Travel (y sus dependencias)
+                .Include(s => s.Travel) 
+                    // Cargar el TransportMethod asociado al Travel
+                    .ThenInclude(t => t.TransportMethod) 
+                .Include(s => s.Travel)
+                    // Cargar el DistributionCenter asociado al Travel
+                    .ThenInclude(t => t.DistributionCenter)
+                        .ThenInclude(dc => dc.Address)
+                
+                // 2. Incluir la Dirección de Entrega (y su Localidad)
+                .Include(s => s.DeliveryAddress)
+                    // Cargar la Localidad (clave compuesta) asociada a la Address
+                    .ThenInclude(a => a.Locality) 
+
+                // 3. Incluir colecciones (Owned Entities)
                 .Include(s => s.products)
-                .FirstOrDefaultAsync(s => s.shipping_id == id);
+                .Include(s => s.logs);
+
+            // Ejecutar la consulta
+            return await query.FirstOrDefaultAsync(s => s.shipping_id == id);
         }
 
         public async Task AddAsync(ShippingDetail entity)

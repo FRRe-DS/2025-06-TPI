@@ -77,7 +77,7 @@ namespace ApiDePapas.Application.Services
                 products_with_cost.Add(new ProductOutput(prod.id, partial_cost));
             }
 
-            var response = new ShippingCostResponse("ARS", total_cost, TransportType.plain, products_with_cost);
+            var response = new ShippingCostResponse("ARS", total_cost, TransportType.plane, products_with_cost);
 
             return response;
         }
