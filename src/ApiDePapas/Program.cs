@@ -39,7 +39,7 @@ builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-builder.Services.AddScoped<ITravelRepository, TravelRepository>();
+builder.Services.AddScoped<ITravelRepository, TravelRepository>();           
 
 // Tu store in-memory:
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
@@ -56,7 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.MapControllers(); //clave para los controllers(?)
 
