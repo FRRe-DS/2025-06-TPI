@@ -16,4 +16,8 @@ export async function getAllShipments(): Promise<Shipment[]> {
   return mockShipments;
 }
 
+export async function getShipmentById(id: string): Promise<Shipment | undefined> {
+  return mockShipments.find(s => s.id === id);
+}
+
 // ... resto del archivo
