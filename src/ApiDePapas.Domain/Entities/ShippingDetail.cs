@@ -25,8 +25,14 @@ namespace ApiDePapas.Domain.Entities
         [Required]
         public ShippingStatus status { get; set; }
 
+
+        //Acá debería ser TransportMethod que es un id de un transporte
         [Required]
-        public TransportType transport_type { get; set; }
+        public TransportMethod transport_method { get; set; }
+
+        //Nuevo
+        [Required]
+        public DistributionCenter distribution_center { get; set; }
 
         public string tracking_number { get; set; } = string.Empty;
 

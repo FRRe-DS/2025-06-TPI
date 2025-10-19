@@ -1,11 +1,30 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
+using ApiDePapas.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Base de datos
+builder.Services.AddDbContext<DatabaseContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        mySqlOptions => mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure")));
+
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
 builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
+        );
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,6 +34,12 @@ builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeSt
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IShippingStore, ShippingStore>();
+builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
+
+// Tu store in-memory:
+builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
+// Nota: singleton para que persista en memoria mientras corre la app
+// (si la reiniciás, se pierde todo, claro)
 
 var app = builder.Build();
 
