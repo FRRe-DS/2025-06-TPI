@@ -34,6 +34,12 @@ builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeSt
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IShippingStore, ShippingStore>();
+builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
+
+// Tu store in-memory:
+builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
+// Nota: singleton para que persista en memoria mientras corre la app
+// (si la reiniciás, se pierde todo, claro)
 
 var app = builder.Build();
 
