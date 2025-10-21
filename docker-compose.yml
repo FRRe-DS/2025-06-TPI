@@ -39,5 +39,16 @@ services:
       - ./db-init:/app/db-init
       - ./docs/csvs:/app/csvs
 
+  frontend:
+    build:
+      context: ./frontend-dashboard
+      dockerfile: Dockerfile
+    container_name: apipapas_frontend
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "3000:80"
+
 volumes:
   db_data:
