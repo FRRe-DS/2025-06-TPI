@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
 using ApiDePapas.Domain.Entities;
 
-namespace LogisticsApi.Application.DTOs
+namespace ApiDePapas.Application.DTOs
 {
     // Representa el resumen de un envío en una lista.
     public record ShipmentSummary(
@@ -25,13 +24,14 @@ namespace LogisticsApi.Application.DTOs
         [property: Required]
         List<ProductQty> Products,
 
+        // ⇩⇩ ahora como texto (snake_case)
         [property: JsonPropertyName("status")]
         [property: Required]
-        ShippingStatus? Status,
+        string Status,
 
         [property: JsonPropertyName("transport_type")]
         [property: Required]
-        TransportType? TransportType,
+        string TransportType,
 
         [property: JsonPropertyName("estimated_delivery_at")]
         [property: Required]

@@ -49,3 +49,4 @@ namespace ApiDePapas.Domain.Entities
         public List<ShippingLog> logs { get; set; } = new List<ShippingLog>();
     }
 }
+ 
