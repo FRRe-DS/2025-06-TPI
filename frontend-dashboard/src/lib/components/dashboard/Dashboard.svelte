@@ -1,28 +1,50 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { getAllShipments } from '../../services/shipmentService';
-  import type { Shipment, FiltersState } from '$lib/types';
+  import type { Shipment, FiltersState, PaginatedShipmentsResponse } from '$lib/types';
 
   import Filters from './Filters.svelte';
   import ShipmentList from './ShipmentList.svelte';
 
   let allShipments: Shipment[] = [];
   let filteredShipments: Shipment[] = [];
+  let currentPage: number = 1;
+  let totalPages: number = 1;
+  let isLoading: boolean = false;
+  let hasMore: boolean = true;
+  let observer: IntersectionObserver;
+  let loadMoreElement: HTMLElement;
 
-  onMount(async () => {
-    allShipments = await getAllShipments();
-    filteredShipments = allShipments;
-  });
+  const PAGE_SIZE = 20; // Define a page size for infinite scrolling
 
-  function handleFilterChange(event: CustomEvent<FiltersState>) {
-    const { id, city, status, startDate, endDate } = event.detail;
+  async function loadShipments() {
+    if (isLoading || !hasMore) return;
+
+    isLoading = true;
+    try {
+      const response: PaginatedShipmentsResponse = await getAllShipments(currentPage, PAGE_SIZE);
+      allShipments = [...allShipments, ...response.shipments];
+      totalPages = response.pagination.total_pages;
+      hasMore = currentPage < totalPages;
+      currentPage++;
+      applyFilters(); // Re-apply filters after loading more shipments
+    } catch (error) {
+      console.error('Error loading shipments:', error);
+      // Optionally, display an error message to the user
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function applyFilters() {
+    const { id, city, status, startDate, endDate } = currentFilters; // Use currentFilters for filtering
     
     filteredShipments = allShipments.filter(shipment => {
       // 1. Filtro por ID
-      const idMatch = id ? shipment.id.toUpperCase().includes(id) : true;
+      const idMatch = id ? shipment.id.toUpperCase().includes(id.toUpperCase()) : true;
 
       // 2. Filtro por Ciudad
-      const cityMatch = city ? shipment.destination.toLowerCase().includes(city) : true;
+      const cityMatch = city ? shipment.destination.toLowerCase().includes(city.toLowerCase()) : true;
 
       // 3. Filtro por Estado
       const statusMatch = status ? shipment.status === status : true;
@@ -41,6 +63,52 @@
       return idMatch && cityMatch && statusMatch && dateMatch;
     });
   }
+
+  let currentFilters: FiltersState = {
+    id: '',
+    city: '',
+    status: '',
+    startDate: '',
+    endDate: ''
+  };
+
+  function handleFilterChange(event: CustomEvent<FiltersState>) {
+    currentFilters = event.detail;
+    // Reset pagination and reload from scratch when filters change
+    allShipments = [];
+    currentPage = 1;
+    hasMore = true;
+    loadShipments();
+  }
+
+  onMount(async () => {
+    await loadShipments();
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasMore && !isLoading) {
+          loadShipments();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreElement) {
+      observer.observe(loadMoreElement);
+    }
+  });
+
+  onDestroy(() => {
+    if (observer) {
+      observer.disconnect();
+    }
+  });
+
+  // Reactively apply filters whenever allShipments or currentFilters change
+  $: {
+    applyFilters();
+  }
 </script>
 
 <h2>Dashboard de Pedidos</h2>
@@ -49,3 +117,11 @@
 <Filters on:filterChange={handleFilterChange} />
 
 <ShipmentList shipments={filteredShipments} />
+
+{#if isLoading}
+  <p>Cargando más pedidos...</p>
+{:else if !hasMore && allShipments.length > 0}
+  <p>No hay más pedidos para cargar.</p>
+{/if}
+
+<div bind:this={loadMoreElement} style="height: 1px; margin-top: -1px;"></div>

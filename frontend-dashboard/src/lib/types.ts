@@ -14,6 +14,18 @@ export interface Shipment {
   entryDate: string; // Formato 'YYYY-MM-DD'
 }
 
+export interface PaginationData {
+  current_page: number;
+  total_pages: number;
+  total_items: number;
+  items_per_page: number;
+}
+
+export interface PaginatedShipmentsResponse {
+  shipments: Shipment[];
+  pagination: PaginationData;
+}
+
 /**
  * Define la estructura del objeto que maneja el estado de los filtros.
  */

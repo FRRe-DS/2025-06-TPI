@@ -1,13 +1,15 @@
 // src/lib/services/shipmentService.ts
 import type { Shipment } from '$lib/types';
 
-export async function getAllShipments(): Promise<Shipment[]> {
-  const response = await fetch('/api/shipping');
+export async function getAllShipments(page: number = 1, page_size: number = 10): Promise<PaginatedShipmentsResponse> {
+  const url = `/api/shipping?page=${page}&page_size=${page_size}`;
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch shipments: ${response.statusText}`);
   }
   const data = await response.json();
   const backendShipments = data.shipments;
+  const pagination = data.pagination;
 
   const shipments: Shipment[] = await Promise.all(
     backendShipments.map(async (backendShipment: any) => {
@@ -28,7 +30,10 @@ export async function getAllShipments(): Promise<Shipment[]> {
     })
   );
 
-  return shipments.filter(s => s !== null) as Shipment[];
+  return {
+    shipments: shipments.filter(s => s !== null) as Shipment[],
+    pagination: pagination
+  };
 }
 
 export async function getShipmentById(id: string): Promise<Shipment | undefined> {
