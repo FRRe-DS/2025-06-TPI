@@ -27,6 +27,12 @@
     'arrived': 'Arribado',
   };
 
+  const transportTypeNames: Record<TransportType, string> = {
+    'truck': 'Camión',
+    'plane': 'Avión',
+    'boat': 'Barco',
+  };
+
   getShipmentById(shipmentId).then(details => {
     shipmentDetails = details;
   });
@@ -43,7 +49,7 @@
     <p><strong>Origen:</strong> {shipmentDetails.departure_address.locality_name}, {shipmentDetails.departure_address.street} {shipmentDetails.departure_address.number}</p>
     <p><strong>Destino:</strong> {shipmentDetails.delivery_address.locality_name}, {shipmentDetails.delivery_address.street} {shipmentDetails.delivery_address.number}</p>
     <p><strong>Estado Actual:</strong> {statusNames[shipmentDetails.status] || shipmentDetails.status}</p>
-    <p><strong>Tipo de Transporte:</strong> {shipmentDetails.transport_type}</p>
+    <p><strong>Tipo de Transporte:</strong> {transportTypeNames[shipmentDetails.transport_type] || shipmentDetails.transport_type}</p>
     <p><strong>Costo Total:</strong> {shipmentDetails.total_cost} {shipmentDetails.currency}</p>
     <p><strong>Número de Seguimiento:</strong> {shipmentDetails.tracking_number}</p>
     <p><strong>Transportista:</strong> {shipmentDetails.carrier_name}</p>
