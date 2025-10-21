@@ -11,15 +11,15 @@ namespace LogisticsApi.Application.DTOs
     public record ShipmentSummary(
         [property: JsonPropertyName("shipping_id")]
         [Required]
-        int? ShippingId,
+        int ShippingId,
 
         [property: JsonPropertyName("order_id")]
         [Required]
-        int? OrderId,
+        int OrderId,
 
         [property: JsonPropertyName("user_id")]
         [Required]
-        int? UserId,
+        int UserId,
 
         [property: JsonPropertyName("products")]
         [Required]
@@ -27,18 +27,18 @@ namespace LogisticsApi.Application.DTOs
 
         [property: JsonPropertyName("status")]
         [Required]
-        ShippingStatus? Status,
+        ShippingStatus Status,
 
         [property: JsonPropertyName("transport_type")]
         [Required]
-        TransportType? TransportType,
+        TransportType TransportType,
 
         [property: JsonPropertyName("estimated_delivery_at")]
         [Required]
-        DateTime? EstimatedDeliveryAt,
+        DateTime EstimatedDeliveryAt,
 
         [property: JsonPropertyName("created_at")]
         [Required]
-        DateTime? CreatedAt
+        DateTime CreatedAt
     );
 }

@@ -8,18 +8,18 @@ namespace ApiDePapas.Application.DTOs
     public record CreateShippingResponse(
         [property: JsonPropertyName("shipping_id")]
         [Required]
-        int? shipping_id,
+        int shipping_id,
 
         [property: JsonPropertyName("status")]
         [Required]
-        ShippingStatus? status,
+        ShippingStatus status,
 
         [property: JsonPropertyName("transport_type")]
         [Required]
-        TransportType? transport_type,
+        TransportType transport_type,
 
         [property: JsonPropertyName("estimated_delivery_at")]
         [Required]
-        DateTime? estimated_delivery_at
+        DateTime estimated_delivery_at
     );
 }

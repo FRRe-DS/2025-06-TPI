@@ -8,10 +8,13 @@ namespace ApiDePapas.Domain.Entities{
         public int transport_id { get; set; }
 
         [Required]
+        public TransportType transport_type { get; set; }
+
+        [Required]
         public float average_speed { get; set; }
 
         [Required]
-        public bool available { get; set; }
+        public string available { get; set; }
 
         [Required]
         public float max_capacity { get; set; }
