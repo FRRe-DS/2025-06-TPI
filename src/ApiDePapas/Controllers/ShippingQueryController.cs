@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ApiDePapas.Domain.Repositories; 
 using ApiDePapas.Application.DTOs; 
+using LogisticsApi.Application.DTOs; // Added for ShippingListResponse and ShipmentSummary
 using ApiDePapas.Domain.Entities; 
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore; // Added for CountAsync and ToListAsync
 
 namespace ApiDePapas.Controllers
 {
@@ -16,6 +18,50 @@ namespace ApiDePapas.Controllers
         public ShippingQueryController(IShippingRepository shippingRepository)
         {
             _shipping_repository = shippingRepository;
+        }
+
+        [HttpGet] // New endpoint for listing all shipments
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ShippingListResponse), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ShippingListResponse>> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int page_size = 10)
+        {
+            if (page < 1) page = 1;
+            if (page_size < 1) page_size = 10; // Default page size
+
+            var query = _shipping_repository.GetAllQueryable();
+
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalItems / page_size);
+
+            var paginatedShipments = await query
+                .Skip((page - 1) * page_size)
+                .Take(page_size)
+                .ToListAsync();
+
+            var shipmentSummaries = paginatedShipments.Select(s => new ShipmentSummary(
+                s.shipping_id,
+                s.order_id,
+                s.user_id,
+                s.products.Select(p => new ProductQty(p.id, p.quantity)).ToList(),
+                s.status,
+                s.Travel.TransportMethod.transport_type,
+                s.estimated_delivery_at,
+                s.created_at
+            )).ToList();
+
+            var response = new ShippingListResponse(
+                shipmentSummaries,
+                new PaginationData(
+                    total_items: totalItems,
+                    total_pages: totalPages,
+                    current_page: page,
+                    items_per_page: page_size
+                )
+            );
+
+            return Ok(response);
         }
 
         [HttpGet("{id:int}")]

@@ -1,23 +1,51 @@
 // src/lib/services/shipmentService.ts
 import type { Shipment } from '$lib/types';
 
-const mockShipments: Shipment[] = [
-  // Fechas corregidas al formato estándar
-  { id: 'PAP-00123', destination: 'Buenos Aires, Argentina', status: 'in_transit', entryDate: '2025-10-15' },
-  { id: 'PAP-00124', destination: 'Córdoba, Argentina', status: 'created', entryDate: '2025-10-16' },
-  { id: 'PAP-00125', destination: 'Rosario, Argentina', status: 'delivered', entryDate: '2025-10-11' },
-  { id: 'PAP-00126', destination: 'Mendoza, Argentina', status: 'cancelled', entryDate: '2025-10-11' },
-  { id: 'PAP-00127', destination: 'Tucumán, Argentina', status: 'in_distribution', entryDate: '2025-10-17' },
-  { id: 'PAP-00128', destination: 'Salta, Argentina', status: 'arrived', entryDate: '2025-10-18' },
-  { id: 'PAP-00129', destination: 'La Plata, Argentina', status: 'reserved', entryDate: '2025-10-19' }
-];
-
 export async function getAllShipments(): Promise<Shipment[]> {
-  return mockShipments;
+  const response = await fetch('/api/shipping');
+  if (!response.ok) {
+    throw new Error(`Failed to fetch shipments: ${response.statusText}`);
+  }
+  const data = await response.json();
+  const backendShipments = data.shipments;
+
+  const shipments: Shipment[] = await Promise.all(
+    backendShipments.map(async (backendShipment: any) => {
+      const detailResponse = await fetch(`/api/shipping/${backendShipment.shipping_id}`);
+      if (!detailResponse.ok) {
+        console.error(`Failed to fetch detail for shipment ${backendShipment.shipping_id}: ${detailResponse.statusText}`);
+        return null; // Or handle error as appropriate
+      }
+      const detailData = await detailResponse.json();
+      const destination = detailData.delivery_address?.locality_name || 'Unknown';
+
+      return {
+        id: backendShipment.shipping_id.toString(),
+        destination: destination,
+        status: backendShipment.status.toLowerCase(), // Assuming status names match
+        entryDate: new Date(backendShipment.created_at).toISOString().split('T')[0] // Format to YYYY-MM-DD
+      };
+    })
+  );
+
+  return shipments.filter(s => s !== null) as Shipment[];
 }
 
 export async function getShipmentById(id: string): Promise<Shipment | undefined> {
-  return mockShipments.find(s => s.id === id);
-}
+  const response = await fetch(`/api/shipping/${id}`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      return undefined; // Shipment not found
+    }
+    throw new Error(`Failed to fetch shipment ${id}: ${response.statusText}`);
+  }
+  const detailData = await response.json();
+  const destination = detailData.delivery_address?.locality_name || 'Unknown';
 
-// ... resto del archivo
+  return {
+    id: detailData.shipping_id.toString(),
+    destination: destination,
+    status: detailData.status.toLowerCase(),
+    entryDate: new Date(detailData.created_at).toISOString().split('T')[0]
+  };
+}

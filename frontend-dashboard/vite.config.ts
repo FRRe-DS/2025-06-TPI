@@ -6,7 +6,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://localhost:5001',
+				target: 'http://api:8080', // Corrected target for Docker Compose
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, '')
 			}

@@ -11,5 +11,7 @@ namespace ApiDePapas.Domain.Repositories
         
         // Operación para el patrón CQRS/actualización atómica
         Task UpdateStatusAsync(int shippingId, ShippingStatus newStatus);
+
+        IQueryable<ShippingDetail> GetAllQueryable(); // New method for pagination
     }
 }

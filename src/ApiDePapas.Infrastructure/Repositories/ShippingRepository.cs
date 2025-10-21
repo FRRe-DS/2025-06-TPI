@@ -16,13 +16,19 @@ namespace ApiDePapas.Infrastructure.Repositories
         }
         
         // Implementación de IGenericRepository<ShippingDetail>
+        public IQueryable<ShippingDetail> GetAllQueryable()
+        {
+            return _context.Shippings
+                .Include(s => s.DeliveryAddress)
+                    .ThenInclude(da => da.Locality)
+                .Include(s => s.products)
+                .Include(s => s.Travel)
+                    .ThenInclude(t => t.TransportMethod);
+        }
+
         public async Task<IEnumerable<ShippingDetail>> GetAllAsync()
         {
-            // Incluye las entidades que mapeaste como Owned Entities
-            return await _context.Shippings
-                .Include(s => s.delivery_address_id)
-                .Include(s => s.products)
-                .ToListAsync();
+            return await GetAllQueryable().ToListAsync();
         }
 
         public async Task<ShippingDetail?> GetByIdAsync(int id)
