@@ -29,6 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started  
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "server=db;port=3306;database=apidepapas;user=ApiUser;password=ApiDePapas_G6_Logistica;ConvertZeroDateTime=True;"
@@ -39,5 +41,20 @@ services:
       - ./db-init:/app/db-init
       - ./docs/csvs:/app/csvs
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: apipapas_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+
 volumes:
   db_data:
+
+
+
+

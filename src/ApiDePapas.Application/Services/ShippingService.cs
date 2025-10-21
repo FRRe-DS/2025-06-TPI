@@ -123,6 +123,16 @@ namespace ApiDePapas.Application.Services
                 transport_type: req.transport_type, 
                 estimated_delivery_at: newShipping.estimated_delivery_at
             );
+
+            await _publisher.PublishAsync(new
+            {
+                Event = "ShippingCreated",
+                ShippingId = response.shipping_id,
+                Status = response.status.ToString(),
+                CreatedAt = DateTime.UtcNow
+            }, "logistics.exchange");
+
+            return response;
         }
     }
 }
