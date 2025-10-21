@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { getAllShipments } from '../../services/shipmentService';
-  import type { Shipment, FiltersState, PaginatedShipmentsResponse } from '$lib/types';
+  import { getDashboardShipments } from '../../services/shipmentService';
+  import type { DashboardShipmentDto, FiltersState, PaginatedDashboardShipmentsResponse } from '$lib/types';
 
   import Filters from './Filters.svelte';
   import ShipmentList from './ShipmentList.svelte';
 
-  let allShipments: Shipment[] = [];
-  let filteredShipments: Shipment[] = [];
+  let allShipments: DashboardShipmentDto[] = [];
+  let filteredShipments: DashboardShipmentDto[] = [];
   let currentPage: number = 1;
   let totalPages: number = 1;
   let isLoading: boolean = false;
@@ -22,7 +22,7 @@
 
     isLoading = true;
     try {
-      const response: PaginatedShipmentsResponse = await getAllShipments(currentPage, PAGE_SIZE);
+      const response: PaginatedDashboardShipmentsResponse = await getDashboardShipments(currentPage, PAGE_SIZE);
       allShipments = [...allShipments, ...response.shipments];
       totalPages = response.pagination.total_pages;
       hasMore = currentPage < totalPages;
@@ -41,16 +41,16 @@
     
     filteredShipments = allShipments.filter(shipment => {
       // 1. Filtro por ID
-      const idMatch = id ? shipment.id.toUpperCase().includes(id.toUpperCase()) : true;
+      const idMatch = id ? shipment.shipping_id.toString().toUpperCase().includes(id.toUpperCase()) : true;
 
       // 2. Filtro por Ciudad
-      const cityMatch = city ? shipment.destination.toLowerCase().includes(city.toLowerCase()) : true;
+      const cityMatch = city ? shipment.delivery_address.locality_name.toLowerCase().includes(city.toLowerCase()) : true;
 
       // 3. Filtro por Estado
       const statusMatch = status ? shipment.status === status : true;
 
       // 4. Filtro por Rango de Fechas
-      const entryDate = new Date(shipment.entryDate);
+      const entryDate = new Date(shipment.created_at);
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
       // Ajustamos las fechas para que la comparación sea inclusiva

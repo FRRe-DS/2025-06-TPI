@@ -36,3 +36,69 @@ export interface FiltersState {
   startDate: string; // Para el filtro por fecha
   endDate: string;   // Para el filtro por fecha
 }
+
+export interface ProductQty {
+  id: number;
+  quantity: number;
+}
+
+export type TransportType =
+  | 'truck'
+  | 'plane'
+  | 'boat';
+
+export interface AddressReadDto {
+  address_id: number;
+  street: string;
+  number: number;
+  postal_code: string;
+  locality_name: string;
+}
+
+export interface DashboardShipmentDto {
+  shipping_id: number;
+  order_id: number;
+  user_id: number;
+  products: ProductQty[];
+  status: ShipmentStatus;
+  transport_type: TransportType;
+  estimated_delivery_at: string;
+  created_at: string;
+  delivery_address: AddressReadDto;
+  departure_address: AddressReadDto;
+}
+
+export interface PaginatedDashboardShipmentsResponse {
+  shipments: DashboardShipmentDto[];
+  pagination: PaginationData;
+}
+
+export interface ShippingLogReadDto {
+  timestamp: string;
+  status: ShipmentStatus;
+  message: string;
+}
+
+export interface ProductQtyReadDto {
+  id: number;
+  quantity: number;
+}
+
+export interface ShippingDetail {
+  shipping_id: number;
+  order_id: number;
+  user_id: number;
+  status: ShipmentStatus;
+  tracking_number: string;
+  carrier_name: string;
+  total_cost: number;
+  currency: string;
+  estimated_delivery_at: string;
+  created_at: string;
+  updated_at: string;
+  transport_type: TransportType;
+  delivery_address: AddressReadDto;
+  departure_address: AddressReadDto;
+  products: ProductQtyReadDto[];
+  logs: ShippingLogReadDto[];
+}

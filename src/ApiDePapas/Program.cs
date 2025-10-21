@@ -40,6 +40,7 @@ builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>();
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ITravelRepository, TravelRepository>();           
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Tu store in-memory:
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();

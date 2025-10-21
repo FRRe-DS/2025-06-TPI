@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore; // Added for CountAsync and ToListAsync
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("shipping")]
+    [Route("api/shipping")]
     public class ShippingQueryController : ControllerBase
     {
         private readonly IShippingRepository _shipping_repository;
@@ -83,8 +83,7 @@ namespace ApiDePapas.Controllers
             }
 
             // Mapeo del DistributionCenter Address para llenar el campo departure_address
-            // CORRECCIÓN: Usamos data.travel.DistributionCenter.Address
-            var departureAddressEntity = data.Travel.DistributionCenter.Address;
+            var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
 
             // 2. Mapeo a DTO con nombres EXACTOS del YAML
             var responseDto = new ShippingDetailResponse
@@ -103,27 +102,27 @@ namespace ApiDePapas.Controllers
                 updated_at = data.updated_at,
                 
                 // Mapeo de ENUM a STRING
-                transport_type = data.Travel.TransportMethod.transport_type.ToString(), 
+                transport_type = data.Travel?.TransportMethod?.transport_type.ToString() ?? string.Empty, 
 
                 // Domicilios - Usamos los nombres EXACTOS del YAML
                 delivery_address = new AddressReadDto // Coincide con delivery_address del YAML
                 {
-                    address_id = data.DeliveryAddress.address_id,
-                    street = data.DeliveryAddress.street,
-                    number = data.DeliveryAddress.number,
-                    postal_code = data.DeliveryAddress.postal_code,
-                    locality_name = data.DeliveryAddress.locality_name,
+                    address_id = data.DeliveryAddress?.address_id ?? 0,
+                    street = data.DeliveryAddress?.street ?? string.Empty,
+                    number = data.DeliveryAddress?.number ?? 0,
+                    postal_code = data.DeliveryAddress?.postal_code ?? string.Empty,
+                    locality_name = data.DeliveryAddress?.locality_name ?? string.Empty,
                 },
                 // Mapeo del DEPARTURE ADDRESS (Origen del viaje)
                 departure_address = new AddressReadDto 
                 {
                     // CORRECCIÓN: Usamos address_id de la entidad DistributionCenter
-                    address_id = data.Travel.DistributionCenter.address_id, 
+                    address_id = departureAddressEntity?.address_id ?? 0, 
                     // Mapeamos los detalles de la dirección cargada
-                    street = departureAddressEntity.street,
-                    number = departureAddressEntity.number,
-                    postal_code = departureAddressEntity.postal_code,
-                    locality_name = departureAddressEntity.locality_name,
+                    street = departureAddressEntity?.street ?? string.Empty,
+                    number = departureAddressEntity?.number ?? 0,
+                    postal_code = departureAddressEntity?.postal_code ?? string.Empty,
+                    locality_name = departureAddressEntity?.locality_name ?? string.Empty,
                 },
                 
                 // Colecciones (Logs y Products)

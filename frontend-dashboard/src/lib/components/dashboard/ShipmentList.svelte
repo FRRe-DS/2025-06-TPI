@@ -1,8 +1,7 @@
 <script lang="ts">
-  // Correcto: Los tipos vienen del archivo de tipos
-  import type { Shipment, ShipmentStatus } from '$lib/types';
+  import type { DashboardShipmentDto, ShipmentStatus } from '$lib/types';
 
-  export let shipments: Shipment[] = [];
+  export let shipments: DashboardShipmentDto[] = [];
 
   const statusNames: Record<ShipmentStatus, string> = {
     'created': 'Creado',
@@ -29,11 +28,14 @@
   }
 
   /**
-   * TOMA UNA FECHA 'YYYY-MM-DD' Y LA DEVUELVE COMO 'DD/MM/YYYY'.
+   * TOMA UNA FECHA ISO STRING Y LA DEVUELVE COMO 'DD/MM/YYYY'.
    */
   function formatDate(dateString: string): string {
     if (!dateString) return '';
-    const [year, month, day] = dateString.split('-');
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
 </script>
@@ -51,14 +53,14 @@
   <tbody>
     {#each shipments as shipment}
       <tr>
-        <td>{shipment.id}</td>
-        <td>{shipment.destination}</td>
+        <td>{shipment.shipping_id}</td>
+        <td>{shipment.delivery_address.locality_name}</td>
         <td>
           <span class="status-circle" style="background-color: {getColorForStatus(shipment.status)}"></span>
           {statusNames[shipment.status] || shipment.status}
         </td>
-        <td>{formatDate(shipment.entryDate)}</td>
-        <td><a href="/shipments/{shipment.id}" class="button">Ver Detalles</a></td>
+        <td>{formatDate(shipment.created_at)}</td>
+        <td><a href="/shipments/{shipment.shipping_id}" class="button">Ver Detalles</a></td>
       </tr>
     {:else}
       <tr>
