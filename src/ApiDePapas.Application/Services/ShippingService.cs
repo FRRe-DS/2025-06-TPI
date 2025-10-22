@@ -7,6 +7,7 @@ using ApiDePapas.Domain.Entities;
 using ApiDePapas.Domain.Repositories;
 using System.Collections.Generic;
 
+
 namespace ApiDePapas.Application.Services
 {
     public class ShippingService : IShippingService
@@ -157,6 +158,58 @@ namespace ApiDePapas.Application.Services
                 transport_type: req.transport_type, 
                 estimated_delivery_at: newShipping.estimated_delivery_at
             );
+        }
+        public async Task<ShippingListResponse> List(
+            int? userId, ShippingStatus? status, DateOnly? fromDate, DateOnly? toDate, int page, int limit)
+        {
+            if (page < 1) page = 1;
+            if (limit < 1) limit = 20;
+
+            var all = await _shipping_repository.GetAllAsync();
+
+            // filtros
+            if (userId.HasValue) all = all.Where(s => s.user_id == userId.Value);
+            if (status.HasValue) all = all.Where(s => s.status == status.Value);
+            if (fromDate.HasValue)
+            {
+                var from = fromDate.Value.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+                all = all.Where(s => s.created_at >= from);
+            }
+            if (toDate.HasValue)
+            {
+                var to = toDate.Value.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc);
+                all = all.Where(s => s.created_at <= to);
+            }
+
+            // orden + paginado
+            var ordered = all.OrderByDescending(s => s.created_at);
+            var total = ordered.Count();
+            var totalPages = (int)Math.Ceiling(total / (double)limit);
+            var slice = ordered.Skip((page - 1) * limit).Take(limit).ToList();
+
+            // ⬅️ OJO: tu ShipmentSummary actual espera ENUMS (ShippingStatus y TransportType), no strings
+            var summaries = slice.Select(s => new ShipmentSummary(
+                ShippingId: s.shipping_id,
+                OrderId:    s.order_id,
+                UserId:     s.user_id,
+                Products:   s.products?.ToList() ?? new List<ProductQty>(),
+                Status:     s.status, // enum ShippingStatus (evita el error “cannot convert string → ShippingStatus”)
+                TransportType: (s.Travel != null && s.Travel.TransportMethod != null)
+                                ? s.Travel.TransportMethod.transport_type
+                                : TransportType.truck,  // valor por defecto si faltan las navs
+                EstimatedDeliveryAt: s.estimated_delivery_at,
+                CreatedAt:           s.created_at
+            )).ToList();
+
+            // ⬅️ PaginationData es posicional: (current_page, total_pages, total_items, items_per_page)
+            var pagination = new PaginationData(
+                current_page:  page,
+                total_pages:   totalPages,
+                total_items:   total,
+                items_per_page:limit
+            );
+
+            return new ShippingListResponse(summaries, pagination);
         }
     }
 }
