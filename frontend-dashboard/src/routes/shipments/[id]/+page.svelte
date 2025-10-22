@@ -44,7 +44,6 @@
 
   <div class="details-section">
     <h3>Información General</h3>
-    <p><strong>ID de Pedido:</strong> {shipmentDetails.order_id}</p>
     <p><strong>ID de Usuario:</strong> {shipmentDetails.user_id}</p>
     <p><strong>Origen:</strong> {shipmentDetails.departure_address.locality_name}, {shipmentDetails.departure_address.street} {shipmentDetails.departure_address.number}</p>
     <p><strong>Destino:</strong> {shipmentDetails.delivery_address.locality_name}, {shipmentDetails.delivery_address.street} {shipmentDetails.delivery_address.number}</p>

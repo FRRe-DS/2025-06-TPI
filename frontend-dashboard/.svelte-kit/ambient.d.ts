@@ -26,61 +26,37 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const LESSOPEN: string;
-	export const USER: string;
 	export const npm_config_user_agent: string;
-	export const SSH_AGENT_PID: string;
+	export const NODE_VERSION: string;
+	export const HOSTNAME: string;
+	export const YARN_VERSION: string;
 	export const npm_node_execpath: string;
 	export const SHLVL: string;
 	export const npm_config_noproxy: string;
 	export const HOME: string;
-	export const OLDPWD: string;
-	export const NVM_BIN: string;
 	export const npm_package_json: string;
-	export const NVM_INC: string;
+	export const VITE_PRIVATE_API_URL: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_local_prefix: string;
-	export const DBUS_SESSION_BUS_ADDRESS: string;
 	export const npm_config_engine_strict: string;
-	export const WSL_DISTRO_NAME: string;
 	export const COLOR: string;
-	export const NVM_DIR: string;
-	export const WAYLAND_DISPLAY: string;
-	export const LOGNAME: string;
-	export const NAME: string;
-	export const WSL_INTEROP: string;
-	export const PULSE_SERVER: string;
-	export const _: string;
 	export const npm_config_prefix: string;
 	export const npm_config_npm_version: string;
-	export const TERM: string;
 	export const npm_config_cache: string;
 	export const npm_config_node_gyp: string;
 	export const PATH: string;
 	export const NODE: string;
 	export const npm_package_name: string;
-	export const XDG_RUNTIME_DIR: string;
-	export const DISPLAY: string;
-	export const LANG: string;
-	export const DOTNET_BUNDLE_EXTRACT_BASE_DIR: string;
-	export const LS_COLORS: string;
 	export const npm_lifecycle_script: string;
-	export const SSH_AUTH_SOCK: string;
-	export const SHELL: string;
 	export const npm_package_version: string;
 	export const npm_lifecycle_event: string;
-	export const LESSCLOSE: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
 	export const PWD: string;
 	export const npm_execpath: string;
-	export const NVM_CD_FLAGS: string;
-	export const XDG_DATA_DIRS: string;
+	export const VITE_PUBLIC_API_URL: string;
 	export const npm_config_global_prefix: string;
 	export const npm_command: string;
-	export const WSL2_GUI_APPS_ENABLED: string;
-	export const HOSTTYPE: string;
-	export const WSLENV: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
 	export const NODE_ENV: string;
@@ -96,7 +72,7 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	
+	export const PUBLIC_BACKEND_API_KEY: string;
 }
 
 /**
@@ -113,61 +89,37 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		LESSOPEN: string;
-		USER: string;
 		npm_config_user_agent: string;
-		SSH_AGENT_PID: string;
+		NODE_VERSION: string;
+		HOSTNAME: string;
+		YARN_VERSION: string;
 		npm_node_execpath: string;
 		SHLVL: string;
 		npm_config_noproxy: string;
 		HOME: string;
-		OLDPWD: string;
-		NVM_BIN: string;
 		npm_package_json: string;
-		NVM_INC: string;
+		VITE_PRIVATE_API_URL: string;
 		npm_config_userconfig: string;
 		npm_config_local_prefix: string;
-		DBUS_SESSION_BUS_ADDRESS: string;
 		npm_config_engine_strict: string;
-		WSL_DISTRO_NAME: string;
 		COLOR: string;
-		NVM_DIR: string;
-		WAYLAND_DISPLAY: string;
-		LOGNAME: string;
-		NAME: string;
-		WSL_INTEROP: string;
-		PULSE_SERVER: string;
-		_: string;
 		npm_config_prefix: string;
 		npm_config_npm_version: string;
-		TERM: string;
 		npm_config_cache: string;
 		npm_config_node_gyp: string;
 		PATH: string;
 		NODE: string;
 		npm_package_name: string;
-		XDG_RUNTIME_DIR: string;
-		DISPLAY: string;
-		LANG: string;
-		DOTNET_BUNDLE_EXTRACT_BASE_DIR: string;
-		LS_COLORS: string;
 		npm_lifecycle_script: string;
-		SSH_AUTH_SOCK: string;
-		SHELL: string;
 		npm_package_version: string;
 		npm_lifecycle_event: string;
-		LESSCLOSE: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
 		PWD: string;
 		npm_execpath: string;
-		NVM_CD_FLAGS: string;
-		XDG_DATA_DIRS: string;
+		VITE_PUBLIC_API_URL: string;
 		npm_config_global_prefix: string;
 		npm_command: string;
-		WSL2_GUI_APPS_ENABLED: string;
-		HOSTTYPE: string;
-		WSLENV: string;
 		INIT_CWD: string;
 		EDITOR: string;
 		NODE_ENV: string;
@@ -188,6 +140,7 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_BACKEND_API_KEY: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }

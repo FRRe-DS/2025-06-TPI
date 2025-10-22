@@ -1,4 +1,3 @@
-// src/lib/services/shipmentService.ts
 import type { DashboardShipmentDto, PaginatedDashboardShipmentsResponse, ShippingDetail } from '$lib/types';
 import { PUBLIC_BACKEND_API_KEY } from '$env/static/public'; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from '$app/environment'; // Import 'browser'
@@ -6,8 +5,6 @@ import { browser } from '$app/environment'; // Import 'browser'
 // Conditionally set API_BASE_URL based on environment
 // Access variables via import.meta.env
 const API_BASE_URL = browser ? import.meta.env.VITE_PUBLIC_API_URL : import.meta.env.VITE_PRIVATE_API_URL;
-
-console.log('API_BASE_URL:', API_BASE_URL); // <--- ADD THIS LINE FOR DEBUGGING
 
 export async function getDashboardShipments(page: number = 1, pageSize: number = 10): Promise<PaginatedDashboardShipmentsResponse> {
   const url = `${API_BASE_URL}/dashboard/shipments?page=${page}&pageSize=${pageSize}`;
