@@ -29,6 +29,19 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --- ADD CORS CONFIGURATION START ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000") // Allow your frontend origin
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+// --- ADD CORS CONFIGURATION END ---
+
 //Registro de servicios
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
@@ -58,6 +71,10 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+// --- USE CORS MIDDLEWARE START ---
+app.UseCors("AllowFrontend"); // Apply the CORS policy
+// --- USE CORS MIDDLEWARE END ---
 
 app.MapControllers(); //clave para los controllers(?)
 
