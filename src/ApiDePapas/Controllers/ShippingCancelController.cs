@@ -10,22 +10,24 @@ namespace ApiDePapas.Controllers
     [Route("shipping")]
     public class ShippingCancelController : ControllerBase
     {
-        private readonly IShippingStore _store;
+        private readonly IShippingService _service;
 
-        public ShippingCancelController(IShippingStore store)
+        public ShippingCancelController(IShippingService service)
         {
-            _store = store;
+            _service = service;
         }
-//DE MOMENTO PUSE COMO PATCH PERO PODRÍA SER POST, EN EL YAML DICE POST
-        [HttpPatch("{id:int}/cancel")]
+
+        // POST /shipping/{id}/cancel
+        [HttpPost("{id:int}/cancel")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(CancelShippingResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)]
-        public ActionResult<CancelShippingResponse> Cancel([FromRoute] int id)
+        public async Task<ActionResult<CancelShippingResponse>> Cancel([FromRoute] int id)
         {
-            var current = _store.GetById(id);
-            if (current is null)
+            // 1) buscar en DB
+            var shipping = await _service.GetAsync(id);  // <-- método del servicio
+            if (shipping is null)
             {
                 return NotFound(new Error
                 {
@@ -34,16 +36,18 @@ namespace ApiDePapas.Controllers
                 });
             }
 
-            if (current.status == ShippingStatus.delivered || current.status == ShippingStatus.cancelled)
+            // 2) validar estado
+            if (shipping.status is ShippingStatus.delivered or ShippingStatus.cancelled)
             {
                 return Conflict(new Error
                 {
                     code = "conflict",
-                    message = $"Shipping {id} cannot be cancelled in state '{current.status}'."
+                    message = $"Shipping {id} cannot be cancelled in state '{shipping.status}'."
                 });
             }
 
-            var resp = _store.Cancel(id, DateTime.UtcNow);
+            // 3) cancelar (DB)
+            var resp = await _service.CancelAsync(id, DateTime.UtcNow);
             return Ok(resp);
         }
     }

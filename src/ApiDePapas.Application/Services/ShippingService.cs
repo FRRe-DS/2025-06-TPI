@@ -16,10 +16,10 @@ namespace ApiDePapas.Application.Services
         private readonly ILocalityRepository _locality_repository;
         private readonly IAddressRepository _address_repository;
         private readonly ITravelRepository _travel_repository;
-        
+
         // Constructor, inyecciones...
         public ShippingService(
-            ICalculateCost calculateCost, 
+            ICalculateCost calculateCost,
             IShippingRepository shippingRepository,
             ILocalityRepository localityRepository,
             IAddressRepository addressRepository,
@@ -31,6 +31,33 @@ namespace ApiDePapas.Application.Services
             _address_repository = addressRepository;
             _travel_repository = travelRepository;
         }
+        
+        public async Task<ShippingDetail?> GetAsync(int id)
+        => await _shipping_repository.GetByIdAsync(id); // con Includes correctos en el repo
+
+        public async Task<CancelShippingResponse> CancelAsync(int id, DateTime whenUtc)
+        {
+            // 1) leer de DB (heredado de IGenericRepository)
+            var s = await _shipping_repository.GetByIdAsync(id);
+            if (s is null)
+                throw new KeyNotFoundException($"Shipping {id} not found");
+
+            // 2) validar estado en el servicio (opcional si lo validarás en el repo)
+            if (s.status is ShippingStatus.delivered or ShippingStatus.cancelled)
+                throw new InvalidOperationException(
+                    $"Shipping {id} cannot be cancelled in state '{s.status}'.");
+
+            // 3) persistir el cambio de estado (el repo también agregará el log)
+            await _shipping_repository.UpdateStatusAsync(id, ShippingStatus.cancelled);
+
+            // 4) respuesta
+            return new CancelShippingResponse(
+                shipping_id: id,
+                status: ShippingStatus.cancelled,
+                cancelled_at: whenUtc
+            );
+        }
+
 
         public async Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest req)
         {

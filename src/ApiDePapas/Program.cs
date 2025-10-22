@@ -22,10 +22,21 @@ builder.Services
     .AddControllers()
     .AddJsonOptions(o =>
     {
+        o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; //nuevo
+        o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;//nuevo
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;//nuevo
         o.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
         );
     });
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("spa", p => p
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithOrigins("http://localhost:5173", "http://localhost:3000")); // tus orígenes
+});//nuevo
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -40,11 +51,6 @@ builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>();
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ITravelRepository, TravelRepository>();           
-
-// Tu store in-memory:
-builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
-// Nota: singleton para que persista en memoria mientras corre la app
-// (si la reiniciás, se pierde todo, claro)
 
 var app = builder.Build();
 
