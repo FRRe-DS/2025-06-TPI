@@ -62,18 +62,22 @@ namespace ApiDePapas.Application.Services
         public async Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest req)
         {
             // 1. Validación Mínima y Cálculo de Costo
-            if (req == null || req.products == null || req.products.Count == 0)
-                return null;
+            // (A) VALIDACIÓN BÁSICA → 400 con código específico
+            if (req == null)
+                throw new ArgumentException("bad_request: Body requerido.");
 
+            if (req.products == null || req.products.Count == 0)
+                throw new ArgumentException("products_empty: La lista de productos no puede estar vacía.");
+
+            // 1. Cotización (igual que antes)
             var costReq = new ShippingCostRequest(
                 req.delivery_address,
                 req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()
             );
             var cost = _calculate_cost.CalculateShippingCost(costReq);
-
+            int default_estimated_days = 3;
             // **IMPORTANTE: Si 'cost' NO contiene los días, usaremos un valor por defecto.**
             // Asumo que quieres usar 3 días, como en tu código original.
-            int default_estimated_days = 3; 
 
             // 2. LÓGICA DE NORMALIZACIÓN Y FKs
             
@@ -82,7 +86,10 @@ namespace ApiDePapas.Application.Services
                 req.delivery_address.postal_code, 
                 req.delivery_address.locality_name);
 
-            if (locality == null) return null; 
+            if (locality == null)
+            throw new ArgumentException(
+            $"invalid_locality: La localidad '{req.delivery_address.locality_name}' no pertenece al CP '{req.delivery_address.postal_code}'.");
+ 
 
             // B. OBTENER/CREAR ADDRESS
             var existingAddress = await _address_repository.FindExistingAddressAsync(

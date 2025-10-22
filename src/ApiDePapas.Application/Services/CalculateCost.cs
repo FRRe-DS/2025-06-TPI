@@ -42,6 +42,18 @@ namespace ApiDePapas.Application.Services
 
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
+        
+            // defensivo: si el controller lo valida, esto igual protege
+            if (request.products == null || request.products.Count == 0)
+                throw new ArgumentException("products_empty: La lista de productos no puede estar vacía.");
+
+            if (request.products.Any(p => p.quantity <= 0))
+                throw new ArgumentException("invalid_quantity: Todas las cantidades deben ser mayores a 0.");
+
+            if (request.delivery_address is null ||
+                string.IsNullOrWhiteSpace(request.delivery_address.postal_code))
+                throw new ArgumentException("address_incomplete: postal_code es obligatorio.");
+                
             float total_cost = 0f;
             List<ProductOutput> products_with_cost = new List<ProductOutput>();
 

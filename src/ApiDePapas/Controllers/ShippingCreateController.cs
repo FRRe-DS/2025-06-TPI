@@ -21,27 +21,29 @@ namespace ApiDePapas.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(CreateShippingResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CreateShippingResponse>> Post([FromBody] CreateShippingRequest req)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new Error { code = "bad_request", message = "Malformed request body." });
+        return BadRequest(new Error { code = "bad_request", message = "Malformed request body." });
 
-            // Llamamos al servicio
-            var createdShipping = await _shippingService.CreateNewShipping(req);
-
-            // Comprobamos el resultado
-            if (createdShipping == null)
+            try
             {
-                // Si es null, hubo un error de validación de negocio
-                return UnprocessableEntity(new Error
-                {
-                    code = "unprocessable_entity",
-                    message = "Products list cannot be empty."
-                });
+                var created = await _shippingService.CreateNewShipping(req);
+                // Si el servicio llegó aquí, no devolvió null ni lanzó excepción → OK
+                return Created($"/shipping/{created!.shipping_id}", created);
             }
+            catch (ArgumentException ex)
+            {
+                // Esperamos mensajes con el patrón "code: mensaje"
+                var msg = ex.Message;
+                var sep = msg.IndexOf(':');
+                var code = sep > 0 ? msg[..sep].Trim() : "bad_request";
+                var text = sep > 0 ? msg[(sep + 1)..].Trim() : msg;
 
-            // Si no es null, todo salió bien
-            return Created($"/shipping/{createdShipping.shipping_id}", createdShipping);
+                return BadRequest(new Error { code = code, message = text });
+            }
         }
     }
 }
