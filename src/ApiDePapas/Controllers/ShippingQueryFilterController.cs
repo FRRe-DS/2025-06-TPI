@@ -26,8 +26,8 @@ namespace ApiDePapas.Controllers
         public async Task<ActionResult<ShippingListResponse>> Get(
             [FromQuery(Name = "user_id")] int? userId,
             [FromQuery(Name = "status")] string? statusStr,
-            [FromQuery(Name = "from_date")] DateOnly? fromDate,
-            [FromQuery(Name = "to_date")] DateOnly? toDate,
+            [FromQuery(Name = "from_date(YYYY-MM-DD)")] DateOnly? fromDate,
+            [FromQuery(Name = "to_date(YYYY-MM-DD)")] DateOnly? toDate,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 20)
         {
