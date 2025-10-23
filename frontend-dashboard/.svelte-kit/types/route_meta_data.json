@@ -1,4 +1,9 @@
 {
 	"/": [],
-	"/shipments/[id]": []
+	"/shipments/[id]": [
+		"src/routes/shipments/[id]/+page.ts"
+	],
+	"/transport-methods": [
+		"src/routes/transport-methods/+page.server.js"
+	]
 }
