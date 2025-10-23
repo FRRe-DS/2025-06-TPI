@@ -47,14 +47,14 @@ Para crear un envío (`Shipping`), necesitás usar los IDs de productos que ya e
 Los datos de prueba ya incluyen productos. Para ver algunos, abrí **una nueva terminal** y conectate a la base de datos:
 
 ```bash
-docker exec -it apipapas_mysql mysql -u ApiUser -p
+docker exec -it apidepapas_mysql mysql -u ApiUser -p
 ```
 * Te pedirá la contraseña: `ApiDePapas_G6_Logistica`
 
 Una vez adentro (`mysql>`), ejecutá esta consulta para ver 5 productos:
 
 ```sql
-USE apipapas;
+USE apidepapas;
 SELECT * FROM Products LIMIT 5;
 ```
 Anotá uno de los `id` que te aparezcan.
