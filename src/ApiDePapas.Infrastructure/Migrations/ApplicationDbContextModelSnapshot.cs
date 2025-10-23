@@ -251,23 +251,28 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.OwnsMany("ApiDePapas.Domain.Entities.ProductQty", "products", b1 =>
                         {
+                            b1.Property<int>("RowId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b1.Property<int>("RowId"));
+
                             b1.Property<int>("ShippingDetailshipping_id")
                                 .HasColumnType("int");
 
                             b1.Property<int>("id")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("int")
                                 .HasAnnotation("Relational:JsonPropertyName", "product_id");
-
-                            MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b1.Property<int>("id"));
 
                             b1.Property<int>("quantity")
                                 .HasColumnType("int")
                                 .HasAnnotation("Relational:JsonPropertyName", "quantity");
 
-                            b1.HasKey("ShippingDetailshipping_id", "id");
+                            b1.HasKey("RowId", "ShippingDetailshipping_id");
 
-                            b1.ToTable("ProductQty");
+                            b1.HasIndex("ShippingDetailshipping_id");
+
+                            b1.ToTable("ProductQty", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");

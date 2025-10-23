@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiDePapas.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FinalSchema : Migration
+    public partial class InitialCreateClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -174,14 +174,15 @@ namespace ApiDePapas.Infrastructure.Migrations
                 name: "ProductQty",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    RowId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ShippingDetailshipping_id = table.Column<int>(type: "int", nullable: false),
+                    id = table.Column<int>(type: "int", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductQty", x => new { x.ShippingDetailshipping_id, x.id });
+                    table.PrimaryKey("PK_ProductQty", x => new { x.RowId, x.ShippingDetailshipping_id });
                     table.ForeignKey(
                         name: "FK_ProductQty_Shippings_ShippingDetailshipping_id",
                         column: x => x.ShippingDetailshipping_id,
@@ -224,6 +225,11 @@ namespace ApiDePapas.Infrastructure.Migrations
                 name: "IX_DistributionCenters_address_id",
                 table: "DistributionCenters",
                 column: "address_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductQty_ShippingDetailshipping_id",
+                table: "ProductQty",
+                column: "ShippingDetailshipping_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shippings_delivery_address_id",
