@@ -27,7 +27,6 @@
       totalPages = response.pagination.total_pages;
       hasMore = currentPage < totalPages;
       currentPage++;
-      applyFilters(); // Re-apply filters after loading more shipments
     } catch (error) {
       console.error('Error loading shipments:', error);
       // Optionally, display an error message to the user
