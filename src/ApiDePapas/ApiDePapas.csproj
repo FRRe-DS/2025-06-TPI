@@ -11,6 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+
 
     <!-- Entity Framework Core y MySQL -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
