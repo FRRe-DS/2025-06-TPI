@@ -1,10 +1,10 @@
 # =========================================================
-# ETAPA 1: BUILD (Construcción)
+# STAGE 1: BUILD
 # =========================================================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia los archivos de proyecto y restaura dependencias
+# Copy project files and restore dependencies
 COPY ["ApiDePapas.sln", "./"]
 COPY src/ApiDePapas/ApiDePapas.csproj src/ApiDePapas/
 COPY src/ApiDePapas.Domain/ApiDePapas.Domain.csproj src/ApiDePapas.Domain/
@@ -12,34 +12,33 @@ COPY src/ApiDePapas.Application/ApiDePapas.Application.csproj src/ApiDePapas.App
 COPY src/ApiDePapas.Infrastructure/ApiDePapas.Infrastructure.csproj src/ApiDePapas.Infrastructure/
 RUN dotnet restore "ApiDePapas.sln"
 
-# Copia el resto del código y publica la aplicación
+# Copy the rest of the code and publish the application
 COPY . .
 RUN dotnet publish "src/ApiDePapas/ApiDePapas.csproj" -c Release -o /app/publish
 
 # =========================================================
-# ETAPA 2: FINAL (Ejecución y Orquestación)
+# STAGE 2: FINAL
 # =========================================================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
 WORKDIR /app
 
-# Instala herramientas (cliente MySQL y netcat)
+# Install tools (MySQL client and netcat)
 RUN apt-get update && apt-get install -y mariadb-client netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-# --- ¡CAMBIO CLAVE AQUÍ! ---
-# Instala las herramientas de Entity Framework Core globalmente
+# Install Entity Framework Core tools globally
 RUN dotnet tool install --global dotnet-ef
 
-# Agrega las herramientas de dotnet al PATH para que el entrypoint las encuentre
+# Add dotnet tools to the PATH so the entrypoint can find them
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Copia los archivos publicados desde la etapa 'build'
+# Copy the published files from the 'build' stage
 COPY --from=build /app/publish .
 
-# Copia los archivos de proyecto (.csproj) y la solución (.sln) a una subcarpeta.
-# Esto le da a 'dotnet ef' los archivos que necesita para trabajar.
+# Copy the project files (.csproj) and solution (.sln) to a subfolder.
+# This gives 'dotnet ef' the files it needs to work.
 COPY --from=build /src .
 
-# Copia el script de inicio y le da permisos
+# Copy the entrypoint script and give it execute permissions
 COPY entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
