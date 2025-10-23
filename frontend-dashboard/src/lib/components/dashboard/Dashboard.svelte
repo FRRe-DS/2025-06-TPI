@@ -9,10 +9,20 @@
   let allShipments: Shipment[] = [];
   let filteredShipments: Shipment[] = [];
 
-  onMount(async () => {
-    allShipments = await getAllShipments();
-    filteredShipments = allShipments;
+  onMount(() => {
+    loadShipments();
+    const interval = setInterval(loadShipments, 10000);
+    return () => clearInterval(interval);
   });
+
+  async function loadShipments() {
+    try {
+      allShipments = await getAllShipments();
+      filteredShipments = allShipments;
+    } catch (error) {
+      console.error('Error al cargar envíos:', error);
+    }
+  }
 
   function handleFilterChange(event: CustomEvent<FiltersState>) {
     const { id, city, status, startDate, endDate } = event.detail;

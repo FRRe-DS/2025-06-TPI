@@ -1,49 +1,72 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
-  import { getShipmentById } from '../../../lib/services/shipmentService';
+  import { get } from 'svelte/store';
+  import { onMount } from 'svelte';
+  import { getShipmentById } from '$lib/services/shipmentService';
+  import type { Shipment } from '$lib/types';
 
-  const shipmentId = $page.params.id;
-  let shipmentDetails;
+  let shipmentDetails: Shipment | null = null;
+  let error = '';
 
-  getShipmentById(shipmentId).then(details => {
-    shipmentDetails = details;
+  onMount(async () => {
+    const shipmentId = get(page).params.id;
+    try {
+      shipmentDetails = await getShipmentById(shipmentId);
+      if (!shipmentDetails) {
+        error = 'Envío no encontrado';
+      }
+    } catch (e) {
+      error = 'Error al cargar el envío';
+    }
   });
 </script>
 
-{#if shipmentDetails}
-<div class="details-container">
-  <h2>Detalles del Pedido {shipmentDetails.id}</h2>
-
-  <div class="details-section">
-    <h3>Información General</h3>
-    <p><strong>Origen:</strong> {shipmentDetails.origin}</p>
-    <p><strong>Destino:</strong> {shipmentDetails.destination}</p>
-    <p><strong>Estado Actual:</strong> {shipmentDetails.status}</p>
-    <p><strong>Fecha Estimada de Entrega:</strong> {shipmentDetails.estimatedDelivery}</p>
-  </div>
-
-  <div class="details-section">
-    <h3>Historial de Estados</h3>
-    <ul>
-      {#each shipmentDetails.history as event}
-        <li><strong>{event.date}:</strong> {event.status} - {event.description}</li>
-      {/each}
-    </ul>
-  </div>
-
-  <div class="details-section">
-    <h3>Productos</h3>
-    <ul>
-      {#each shipmentDetails.products as product}
-        <li>{product.name} (Cantidad: {product.quantity})</li>
-      {/each}
-    </ul>
-  </div>
-
-  <a href="/" class="button">Volver al Listado</a>
-</div>
+{#if error}
+  <p style="color: red;">{error}</p>
+{:else if !shipmentDetails}
+  <p>Cargando...</p>
 {:else}
-<p>Cargando...</p>
+  <div class="details-container">
+    <h2>Detalles del Pedido {shipmentDetails.id}</h2>
+
+    <div class="details-section">
+      <h3>Información General</h3>
+      <p><strong>Destino:</strong> {shipmentDetails.destination}</p>
+      <p><strong>Estado Actual:</strong> {shipmentDetails.status}</p>
+      <p><strong>Fecha de Ingreso:</strong> {shipmentDetails.entryDate}</p>
+    </div>
+
+    {#if shipmentDetails.estimatedDelivery}
+      <div class="details-section">
+        <h3>Fecha Estimada de Entrega</h3>
+        <p>{shipmentDetails.estimatedDelivery}</p>
+      </div>
+    {/if}
+
+    {#if shipmentDetails.history}
+      <div class="details-section">
+        <h3>Historial de Estados</h3>
+        <ul>
+          {#each shipmentDetails.history as event}
+            <li><strong>{event.date}:</strong> {event.status} - {event.description}</li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
+
+    {#if shipmentDetails.products}
+      <div class="details-section">
+        <h3>Productos</h3>
+        <ul>
+          {#each shipmentDetails.products as product}
+            <li>{product.name} (Cantidad: {product.quantity})</li>
+          {/each}
+        </ul>
+      </div>
+    {/if}
+
+    <a href="/shipments" class="button">Volver al Listado</a>
+  </div>
 {/if}
 
 <style>
@@ -51,6 +74,9 @@
     padding: 2rem;
     background-color: #1e1e1e;
     border-radius: 8px;
+    border: 1px solid #444;
+    max-width: 700px;
+    margin: auto;
   }
 
   .details-section {
