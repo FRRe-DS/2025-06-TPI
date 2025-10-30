@@ -13,15 +13,15 @@ namespace ApiDePapas.Application.Services
     
     public class DistanceServiceInMemory : IDistanceService
     {
-        public double GetDistanceKm(string originCpa, string destinationCpa)
+        public Task<double> GetDistanceKm(string originCpa, string destinationCpa)
         {
             char o = FirstLetter(originCpa);
             char d = FirstLetter(destinationCpa);
 
             if (!coords.TryGetValue(o, out var O) || !coords.TryGetValue(d, out var D))
-                return 300.0; // fallback neutro
+                return Task.FromResult(300.0); // fallback neutro
 
-            return HaversineKm(O.lat, O.lon, D.lat, D.lon);
+            return Task.FromResult(HaversineKm(O.lat, O.lon, D.lat, D.lon));
         }
 
         private static char FirstLetter(string cpa)

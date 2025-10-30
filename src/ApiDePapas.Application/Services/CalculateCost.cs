@@ -32,14 +32,13 @@ namespace ApiDePapas.Application.Services
         private readonly IStockService _stockService;
         private readonly IDistanceService _distance;
         // como no tenemos un servicio de distancia, usamos uno en memoria
-        private const string DEFAULT_ORIGIN_CPA = "H3500ABC";
+        private const string DEFAULT_ORIGIN_CPA = "H3500";
 
         public CalculateCost(IStockService stockService, IDistanceService distance)
         {
             _stockService = stockService;
             _distance = distance;
         }
-
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
             float total_cost = 0f;
@@ -47,7 +46,7 @@ namespace ApiDePapas.Application.Services
 
             // Distancia base: de un CD por defecto al destino
             // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
-            var distance_km_request = (float)_distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
+            var distance_km_request = (float)_distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code).Result;
 
             foreach (var prod in request.products)
             {
