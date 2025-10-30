@@ -15,6 +15,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d # <-- CORRECCIÓN AQUÍ
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
@@ -36,7 +37,6 @@ services:
     ports:
       - "5002:8080"
     volumes:
-      - ./db-init:/app/db-init
       - ./docs/csvs:/app/csvs
 
   frontend:
