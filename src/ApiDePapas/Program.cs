@@ -49,7 +49,8 @@ builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeSt
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 // comento esto porq se usa para devolver un shipping no DB builder.Services.AddScoped<IShippingStore, ShippingStore>();
-builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
+// builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
+builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>(); 
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ITravelRepository, TravelRepository>();           

@@ -17,16 +17,23 @@ namespace ApiDePapas.Infrastructure.Repositories
         {
             _context = context;
         }
-        
+
         // La implementación del método específico
         public async Task<Locality?> GetByCompositeKeyAsync(string postalCode, string localityName)
         {
             // Usamos FindAsync o FirstOrDefaultAsync para buscar por la clave compuesta.
             // EF Core maneja la clave compuesta automáticamente en la consulta.
             return await _context.Localities
-                                .FirstOrDefaultAsync(l => 
-                                    l.postal_code == postalCode && 
+                                .FirstOrDefaultAsync(l =>
+                                    l.postal_code == postalCode &&
                                     l.locality_name == localityName);
+        }
+
+        public async Task<List<Locality>> GetByPostalCodeAsync(string postalCode)
+        {
+            return await _context.Localities
+                                .Where(l => l.postal_code == postalCode)
+                                .ToListAsync();
         }
 
         // --- Implementaciones de IGenericRepository<Locality> van aquí ---

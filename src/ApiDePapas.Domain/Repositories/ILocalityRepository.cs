@@ -9,5 +9,7 @@ namespace ApiDePapas.Domain.Repositories
     {
         // Método específico para obtener por clave compuesta
         Task<Locality?> GetByCompositeKeyAsync(string postalCode, string localityName);
+
+        Task<List<Locality>> GetByPostalCodeAsync(string postalCode);
     }
 }
