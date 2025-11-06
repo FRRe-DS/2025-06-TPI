@@ -11,6 +11,7 @@ namespace ApiDePapas.Application.DTOs
         public string message { get; set; } = string.Empty;
 
         [Required]
+        // CORRECCIÓN: Usar string, como en la rama actual/final
         public string details { get; set; } = string.Empty;
         // details es diferente de como esta definido en el YAML
     }

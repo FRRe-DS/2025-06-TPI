@@ -24,7 +24,7 @@ if [ "$MIGRATIONS_TABLE_EXISTS" -eq 0 ]; then
   cd /app/src/ApiDePapas.Infrastructure
   dotnet ef database update --startup-project ../ApiDePapas
   echo "Migraciones aplicadas."
-
+  sed -i 's/\r$//' /app/csvs/_addresses.csv
   # 2. Cargar datos masivos
   cd /app
   if [ -f "/app/db-init/load_all_data.sql" ]; then
