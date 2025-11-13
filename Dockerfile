@@ -25,15 +25,16 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
 
-# Instala solo netcat (para el entrypoint)
-RUN apt-get update && apt-get install -y netcat-openbsd && \
+# --- ¡CAMBIO AQUÍ! ---
+# Instalamos netcat (para esperar) Y sed (para limpiar CSVs)
+RUN apt-get update && apt-get install -y netcat-openbsd sed && \
     rm -rf /var/lib/apt/lists/*
 
 # Copia SÓLO la aplicación compilada
 COPY --from=build /app/publish .
 
-# ¡NUEVO! Copia el script de carga masiva para que C# lo use
-# Asumiendo que está en una carpeta 'db-init' en la raíz de tu proyecto
+# --- ¡LIMPIEZA! ---
+# Borramos los comentarios viejos sobre 'db-init' porque ya no se usa.
 
 # Copia el script de inicio (el NUEVO, simple)
 COPY entrypoint.sh .

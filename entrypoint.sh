@@ -12,8 +12,22 @@ until nc -z "$DB_HOST" "$DB_PORT"; do
   sleep 1
 done
 
-echo "¡Base de datos lista! Iniciando la aplicación..."
+echo "¡Base de datos lista!"
+
+# --- ¡NUEVO! ---
+# Limpiamos los saltos de línea de Windows (\r) de TODOS los archivos CSV
+# antes de que la aplicación C# intente leerlos.
+echo "Limpiando saltos de línea de Windows de los archivos CSV..."
+for file in /app/csvs/*.csv; do
+  # Comprobamos si el archivo existe antes de intentar limpiarlo
+  if [ -f "$file" ]; then
+    sed -i 's/\r$//' "$file"
+  fi
+done
+echo "Limpieza de CSVs completada."
+# --- FIN DEL BLOQUE NUEVO ---
+
+echo "Iniciando la aplicación..."
 
 # Ejecuta la aplicación de .NET
-# (Reemplaza 'ApiDePapas.dll' si tu DLL principal es otra)
 exec dotnet ApiDePapas.dll
