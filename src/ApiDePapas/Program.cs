@@ -1,12 +1,13 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
-using ApiDePapas.Infrastructure.Persistence;
+using ApiDePapas.Infrastructure.Persistence; // <-- 1. Añadimos el 'using' de la nueva clase
 using ApiDePapas.Infrastructure.Repositories;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+// Ya no necesitamos 'MySqlConnector' aquí
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,37 +49,30 @@ builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
-// comento esto porq se usa para devolver un shipping no DB builder.Services.AddScoped<IShippingStore, ShippingStore>();
-// builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
-builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>(); 
+builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>();
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-builder.Services.AddScoped<ITravelRepository, TravelRepository>();           
+builder.Services.AddScoped<ITravelRepository, TravelRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-// Tu store in-memory:
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
-// Nota: singleton para que persista en memoria mientras corre la app
-// (si la reiniciás, se pierde todo, claro)
 
 var app = builder.Build();
 
-// Configurar pipeline HTTP
+// --- 2. ¡MIRA QUÉ LIMPIO! ---
+// Toda la lógica de inicialización ahora está en este método de extensión
+await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+// --- FIN DEL CAMBIO ---
 
+// Configurar pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
-
-// --- USE CORS MIDDLEWARE START ---
-app.UseCors("AllowFrontend"); // Apply the CORS policy
-// --- USE CORS MIDDLEWARE END ---
-
-app.MapControllers(); //clave para los controllers(?)
-
+app.UseCors("AllowFrontend");
+app.MapControllers();
 app.Run();
 
-
+// 3. Todo el código 'static async Task InitializeDatabaseAsync...'
+//    y 'static async Task LoadCsvDataAsync...'
+//    ha desaparecido de este archivo.

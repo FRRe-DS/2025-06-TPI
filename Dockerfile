@@ -4,7 +4,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia los archivos de proyecto y restaura dependencias
+# Copia y restaura dependencias
 COPY ["ApiDePapas.sln", "./"]
 COPY src/ApiDePapas/ApiDePapas.csproj src/ApiDePapas/
 COPY src/ApiDePapas.Domain/ApiDePapas.Domain.csproj src/ApiDePapas.Domain/
@@ -12,36 +12,31 @@ COPY src/ApiDePapas.Application/ApiDePapas.Application.csproj src/ApiDePapas.App
 COPY src/ApiDePapas.Infrastructure/ApiDePapas.Infrastructure.csproj src/ApiDePapas.Infrastructure/
 RUN dotnet restore "ApiDePapas.sln"
 
-# Copia el resto del código y publica la aplicación
+# Copia el resto del código y publica
 COPY . .
-RUN dotnet publish "src/ApiDePapas/ApiDePapas.csproj" -c Release -o /app/publish
+WORKDIR "/src/src/ApiDePapas"
+RUN dotnet publish "ApiDePapas.csproj" -c Release -o /app/publish
 
 # =========================================================
-# ETAPA 2: FINAL (Ejecución y Orquestación)
+# ETAPA 2: FINAL (Ejecución)
+# ¡Usamos la imagen ASPNET liviana!
 # =========================================================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+EXPOSE 8080
 
-# Instala herramientas (cliente MySQL y netcat)
-RUN apt-get update && apt-get install -y mariadb-client netcat-openbsd && rm -rf /var/lib/apt/lists/*
+# Instala solo netcat (para el entrypoint)
+RUN apt-get update && apt-get install -y netcat-openbsd && \
+    rm -rf /var/lib/apt/lists/*
 
-# --- ¡CAMBIO CLAVE AQUÍ! ---
-# Instala las herramientas de Entity Framework Core globalmente
-RUN dotnet tool install --global dotnet-ef
-
-# Agrega las herramientas de dotnet al PATH para que el entrypoint las encuentre
-ENV PATH="$PATH:/root/.dotnet/tools"
-
-# Copia los archivos publicados desde la etapa 'build'
+# Copia SÓLO la aplicación compilada
 COPY --from=build /app/publish .
 
-# Copia los archivos de proyecto (.csproj) y la solución (.sln) a una subcarpeta.
-# Esto le da a 'dotnet ef' los archivos que necesita para trabajar.
-COPY --from=build /src .
+# ¡NUEVO! Copia el script de carga masiva para que C# lo use
+# Asumiendo que está en una carpeta 'db-init' en la raíz de tu proyecto
 
-# Copia el script de inicio y le da permisos
+# Copia el script de inicio (el NUEVO, simple)
 COPY entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
-EXPOSE 8080
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]
