@@ -25,9 +25,11 @@ WORKDIR /app
 # Instala herramientas (cliente MySQL y netcat)
 RUN apt-get update && apt-get install -y mariadb-client netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-# --- ¡CAMBIO CLAVE AQUÍ! ---
-# Instala las herramientas de Entity Framework Core globalmente
-RUN dotnet tool install --global dotnet-ef
+# 1. Desinstala cualquier versión previa o cacheada (el '|| true' ignora errores si no estaba instalado)
+RUN dotnet tool uninstall --global dotnet-ef --verbosity quiet || true
+
+# 2. Instala una versión específica y estable (coincidente con tu SDK 8.0)
+RUN dotnet tool install --global dotnet-ef --version 8.0.0
 
 # Agrega las herramientas de dotnet al PATH para que el entrypoint las encuentre
 ENV PATH="$PATH:/root/.dotnet/tools"
