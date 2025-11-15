@@ -1,5 +1,6 @@
 // ApiDePapas/Controllers/ShippingCancelController.cs
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Domain.Entities;
@@ -8,6 +9,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("shipping")]
+    [Authorize]
     public class ShippingCancelController : ControllerBase
     {
         private readonly IShippingStore _store;

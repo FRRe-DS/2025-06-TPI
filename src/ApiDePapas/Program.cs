@@ -7,6 +7,8 @@ using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,64 @@ builder.Services
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// --- CONFIGURACIÓN KEYCLOAK JWT START ---
+var keycloakAuthority = builder.Configuration["Keycloak:Authority"];
+var keycloakAudience = builder.Configuration["Keycloak:Audience"];
+var requireHttpsMetadata = builder.Configuration.GetValue<bool>("Keycloak:RequireHttpsMetadata");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = keycloakAuthority;
+    options.Audience = keycloakAudience;
+    options.RequireHttpsMetadata = requireHttpsMetadata;
+    
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = keycloakAuthority,
+        ValidateAudience = true,
+        ValidAudience = keycloakAudience,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.FromMinutes(5)
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"Token validated for: {context.Principal?.Identity?.Name}");
+            return Task.CompletedTask;
+        }
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    // Política: requiere rol "logistica-be"
+    options.AddPolicy("LogisticaBackend", policy =>
+        policy.RequireClaim("realm_access.roles", "logistica-be"));
+    
+    // Política: requiere scope "envios:read"
+    options.AddPolicy("EnviosRead", policy =>
+        policy.RequireClaim("scope", "envios:read"));
+    
+    // Política: requiere scope "envios:write"
+    options.AddPolicy("EnviosWrite", policy =>
+        policy.RequireClaim("scope", "envios:write"));
+});
+// --- CONFIGURACIÓN KEYCLOAK JWT END ---
 
 // --- ADD CORS CONFIGURATION START ---
 builder.Services.AddCors(options =>
@@ -60,6 +120,33 @@ builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.Shipping
 // Nota: singleton para que persista en memoria mientras corre la app
 // (si la reiniciás, se pierde todo, claro)
 
+// --- CONFIGURACIÓN HTTP CLIENTS PARA APIS EXTERNAS START ---
+// Servicio de tokens de Keycloak
+builder.Services.AddHttpClient<IKeycloakTokenService, KeycloakTokenService>();
+
+// Cliente HTTP para API de Compras
+var comprasApiBaseUrl = builder.Configuration["ExternalApis:ComprasApi:BaseUrl"] ?? "http://localhost:8081";
+var comprasApiTimeout = builder.Configuration.GetValue<int>("ExternalApis:ComprasApi:Timeout", 30);
+
+builder.Services.AddHttpClient<IComprasApiClient, ComprasApiClient>(client =>
+{
+    client.BaseAddress = new Uri(comprasApiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(comprasApiTimeout);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+// Cliente HTTP para API de Stock
+var stockApiBaseUrl = builder.Configuration["ExternalApis:StockApi:BaseUrl"] ?? "http://localhost:8082";
+var stockApiTimeout = builder.Configuration.GetValue<int>("ExternalApis:StockApi:Timeout", 30);
+
+builder.Services.AddHttpClient<IStockApiClient, StockApiClient>(client =>
+{
+    client.BaseAddress = new Uri(stockApiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(stockApiTimeout);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+// --- CONFIGURACIÓN HTTP CLIENTS PARA APIS EXTERNAS END ---
+
 var app = builder.Build();
 
 // Configurar pipeline HTTP
@@ -75,6 +162,11 @@ if (app.Environment.IsDevelopment())
 // --- USE CORS MIDDLEWARE START ---
 app.UseCors("AllowFrontend"); // Apply the CORS policy
 // --- USE CORS MIDDLEWARE END ---
+
+// --- USE AUTHENTICATION & AUTHORIZATION START ---
+app.UseAuthentication(); // IMPORTANTE: Antes de UseAuthorization
+app.UseAuthorization();
+// --- USE AUTHENTICATION & AUTHORIZATION END ---
 
 app.MapControllers(); //clave para los controllers(?)
 

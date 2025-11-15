@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Domain.Repositories; 
 using ApiDePapas.Application.DTOs; 
 using LogisticsApi.Application.DTOs; // Added for ShippingListResponse and ShipmentSummary
@@ -11,6 +12,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/shipping")]
+    [Authorize]
     public class ShippingQueryController : ControllerBase
     {
         private readonly IShippingRepository _shipping_repository;

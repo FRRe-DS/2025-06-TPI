@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Domain.Repositories;
 using ApiDePapas.Domain.Entities;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace ApiDePapas.Controllers
     // Nombre del Controller y Ruta Base
     [ApiController]
     [Route("locality")]
+    [Authorize]
     public class LocalityController : ControllerBase
     {
         // Inyectamos la interfaz del Repositorio
