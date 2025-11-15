@@ -8,7 +8,7 @@ using ApiDePapas.Application.DTOs;
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("shipping/cost")]
+    [Route("api/shipping/cost")]
     public class ShippingCostController : ControllerBase
     {
         private readonly ICalculateCost _calculateCost;

@@ -7,7 +7,7 @@ namespace ApiDePapas.Controllers
 {
     // Nombre del Controller y Ruta Base
     [ApiController]
-    [Route("locality")]
+    [Route("api/locality")]
     public class LocalityController : ControllerBase
     {
         // Inyectamos la interfaz del Repositorio
@@ -60,6 +60,18 @@ namespace ApiDePapas.Controllers
 
             // Devolvemos la instancia de Locality completa
             return Ok(locality);
+        }
+        /// <summary>
+        /// Obtiene todas las localidades.
+        /// </summary>
+        /// <returns>Una lista de todas las localidades.</returns>
+        [HttpGet("all")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<Locality>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllLocalities()
+        {
+            var localities = await _locality_repository.GetAllAsync();
+            return Ok(localities);
         }
     }
 }

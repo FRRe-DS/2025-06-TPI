@@ -1,4 +1,4 @@
-import type { DashboardShipmentDto, PaginatedDashboardShipmentsResponse, ShippingDetail } from '$lib/types';
+import type { DashboardShipmentDto, PaginatedDashboardShipmentsResponse, ShippingDetail, Locality } from '$lib/types';
 import { PUBLIC_BACKEND_API_KEY } from '$env/static/public'; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from '$app/environment'; // Import 'browser'
 
@@ -35,4 +35,28 @@ export async function getShipmentById(id: string): Promise<ShippingDetail | unde
   }
   const detailData: ShippingDetail = await response.json();
   return detailData;
+}
+
+export async function getAllLocalities(): Promise<Locality[]> {
+  const response = await fetch(`${API_BASE_URL}/locality/all`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch localities: ${response.statusText}`);
+  }
+  return await response.json();
+}
+
+export async function createShipment(shipment: import('$lib/types').CreateShippingRequest): Promise<import('$lib/types').CreateShippingResponse> {
+    const response = await fetch(`${API_BASE_URL}/shipping`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-API-Key': PUBLIC_BACKEND_API_KEY,
+        },
+        body: JSON.stringify(shipment),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to create shipment: ${response.statusText}`);
+    }
+    return await response.json();
 }

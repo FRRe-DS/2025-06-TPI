@@ -7,7 +7,7 @@ using ApiDePapas.Domain.Entities;
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("shipping")]
+    [Route("api/shipping")]
     public class ShippingCancelController : ControllerBase
     {
         private readonly IShippingStore _store;

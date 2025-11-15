@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { getDashboardShipments } from '../../services/shipmentService';
+  import { getDashboardShipments } from '../../../lib/services/shipmentService';
   import type { DashboardShipmentDto, FiltersState, PaginatedDashboardShipmentsResponse } from '$lib/types';
 
-  import Filters from './Filters.svelte';
-  import ShipmentList from './ShipmentList.svelte';
+  import Filters from '$lib/components/dashboard/Filters.svelte';
+  import ShipmentList from '$lib/components/dashboard/ShipmentList.svelte';
 
   let allShipments: DashboardShipmentDto[] = [];
   let filteredShipments: DashboardShipmentDto[] = [];
@@ -15,7 +15,7 @@
   let observer: IntersectionObserver;
   let loadMoreElement: HTMLElement;
 
-  const PAGE_SIZE = 20; // Define a page size for infinite scrolling
+  const PAGE_SIZE = 100; // Define a page size for infinite scrolling
 
   async function loadShipments() {
     if (isLoading || !hasMore) return;
