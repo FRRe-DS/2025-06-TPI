@@ -1,66 +1,50 @@
 // ApiDePapas/Controllers/ShippingCancelController.cs
 using Microsoft.AspNetCore.Mvc;
-using ApiDePapas.Application.Interfaces; // Para IShippingService
-using ApiDePapas.Application.DTOs;      // Para los DTOs
-using System.Threading.Tasks;           // Para async Task
-using System;                          // Para Exception
-using Microsoft.AspNetCore.Http;        // Para StatusCodes
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Application.DTOs;
+using ApiDePapas.Domain.Entities;
 
 namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("shipping")]
-    [Produces("application/json")]
     public class ShippingCancelController : ControllerBase
     {
-        // Inyectamos el SERVICIO
-        private readonly IShippingService _shippingService;
+        private readonly IShippingStore _store;
 
-        public ShippingCancelController(IShippingService shippingService)
+        public ShippingCancelController(IShippingStore store)
         {
-            _shippingService = shippingService;
+            _store = store;
         }
-
-        // ---
-        // MÉTODO DE CANCELACIÓN (PATCH)
-        // ---
+//DE MOMENTO PUSE COMO PATCH PERO PODRÍA SER POST, EN EL YAML DICE POST
         [HttpPatch("{id:int}/cancel")]
+        [Produces("application/json")]
         [ProducesResponseType(typeof(CancelShippingResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(Error), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CancelShippingResponse>> Cancel([FromRoute] int id)
+        public ActionResult<CancelShippingResponse> Cancel([FromRoute] int id)
         {
-            // El controller es "tonto": solo llama al servicio y traduce errores.
-            try
+            var current = _store.GetById(id);
+            if (current is null)
             {
-                // 1. Llama a la lógica de negocio en el servicio
-                var resp = await _shippingService.CancelShippingAsync(id);
-                return Ok(resp);
-            }
-            // 2. Traduce la excepción "Not Found"
-            catch (Exception ex) when (ex.Message.Contains("not found")) 
-            {
-                return NotFound(new Error 
-                { 
-                    code = "not_found", 
-                    message = ex.Message 
+                return NotFound(new Error
+                {
+                    code = "not_found",
+                    message = $"Shipping {id} not found."
                 });
             }
-            // 3. Traduce la excepción "Conflict"
-            catch (Exception ex) when (ex.Message.Contains("cannot be cancelled"))
+
+            if (current.status == ShippingStatus.delivered || current.status == ShippingStatus.cancelled)
             {
-                return Conflict(new Error 
-                { 
-                    code = "conflict", 
-                    message = ex.Message 
+                return Conflict(new Error
+                {
+                    code = "conflict",
+                    message = $"Shipping {id} cannot be cancelled in state '{current.status}'."
                 });
             }
-            // 4. Captura cualquier otro error inesperado
-            catch (Exception ex)
-            {
-                return StatusCode(500, new Error { code = "server_error", message = ex.Message });
-            }
+
+            var resp = _store.Cancel(id, DateTime.UtcNow);
+            return Ok(resp);
         }
     }
 }
