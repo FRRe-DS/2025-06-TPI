@@ -6,6 +6,7 @@ using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace ApiDePapas.Application.Services
 {
@@ -13,11 +14,13 @@ namespace ApiDePapas.Application.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _externalApiUrl;
+        private readonly ILogger<StockService> _logger;
 
-        public StockService(HttpClient httpClient, IConfiguration configuration)
+        public StockService(HttpClient httpClient, IConfiguration configuration, ILogger<StockService> logger)
         {
             _httpClient = httpClient;
             _externalApiUrl = configuration["ExternalApi:StockUrl"];
+            _logger = logger;
         }
 
         public async Task<ProductDetail> GetProductDetailAsync(ProductQty product)
@@ -43,8 +46,15 @@ namespace ApiDePapas.Application.Services
             }
             catch (Exception ex)
             {
-                // Log exception here
-                throw new Exception($"Error fetching product detail for id {product.id}", ex);
+                _logger.LogError(ex, "Error fetching product detail for id {ProductId}. Returning default values.", product.id);
+                return new ProductDetail
+                {
+                    id = product.id,
+                    weight = 0,
+                    length = 0,
+                    width = 0,
+                    height = 0,
+                };
             }
         }
     }
