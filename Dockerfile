@@ -30,7 +30,20 @@ EXPOSE 8080
 RUN apt-get update && apt-get install -y netcat-openbsd sed && \
     rm -rf /var/lib/apt/lists/*
 
+<<<<<<< HEAD
 # Copia SÓLO la aplicación compilada
+=======
+# 1. Desinstala cualquier versión previa o cacheada (el '|| true' ignora errores si no estaba instalado)
+RUN dotnet tool uninstall --global dotnet-ef --verbosity quiet || true
+
+# 2. Instala una versión específica y estable (coincidente con tu SDK 8.0)
+RUN dotnet tool install --global dotnet-ef --version 8.0.0
+
+# Agrega las herramientas de dotnet al PATH para que el entrypoint las encuentre
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copia los archivos publicados desde la etapa 'build'
+>>>>>>> origin/Features/endpoints
 COPY --from=build /app/publish .
 
 # --- ¡LIMPIEZA! ---
