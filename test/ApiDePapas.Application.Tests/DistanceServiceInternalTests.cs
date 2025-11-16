@@ -40,7 +40,7 @@ namespace ApiDePapas.Application.Tests
 
             double distance_km = _service.GetDistanceKm(originCpa, destinationCpa).Result;
 
-            Assert.InRange(distance_km, distance_km * (1.0 / 1.33), distance_km * 1.33);
+            Assert.InRange(distance_km, distance_km * (1.0 / tolerance), distance_km * tolerance);
         }
     }
 }
