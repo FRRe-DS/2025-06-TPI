@@ -14,7 +14,6 @@ done
 
 echo "¡Base de datos lista!"
 
-<<<<<<< HEAD
 # --- ¡NUEVO! ---
 # Limpiamos los saltos de línea de Windows (\r) de TODOS los archivos CSV
 # antes de que la aplicación C# intente leerlos.
@@ -23,23 +22,6 @@ for file in /app/csvs/*.csv; do
   # Comprobamos si el archivo existe antes de intentar limpiarlo
   if [ -f "$file" ]; then
     sed -i 's/\r$//' "$file"
-=======
-if [ "$MIGRATIONS_TABLE_EXISTS" -eq 0 ]; then
-  echo "La base de datos parece ser nueva. Aplicando migraciones y cargando datos..."
-
-  # 1. Aplicar migraciones de EF Core
-  cd /app/src/ApiDePapas.Infrastructure
-  dotnet ef database update --startup-project ../ApiDePapas
-  echo "Migraciones aplicadas."
-  sed -i 's/\r$//' /app/csvs/_addresses.csv
-  # 2. Cargar datos masivos
-  cd /app
-  if [ -f "/app/db-init/load_all_data.sql" ]; then
-    mysql --local-infile=1 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$MYSQL_PASSWORD" "$DB_NAME" < /app/db-init/load_all_data.sql
-    echo "Carga masiva completada."
-  else
-    echo "No se encontró /app/db-init/load_all_data.sql, se omite la carga masiva."
->>>>>>> origin/Features/endpoints
   fi
 done
 echo "Limpieza de CSVs completada."
