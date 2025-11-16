@@ -32,6 +32,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "server=db;port=3306;database=apidepapas;user=ApiUser;password=ApiDePapas_G6_Logistica;ConvertZeroDateTime=True;AllowLoadLocalInfile=true"
       MYSQL_PASSWORD: ApiDePapas_G6_Logistica
+      Authentication__Keycloak__Authority: "http://keycloak-keycloak-1:8080/realms/ds-2025-realm"
     ports:
       - "5002:8080"
     volumes:

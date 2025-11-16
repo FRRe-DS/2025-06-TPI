@@ -5,6 +5,8 @@ using ApiDePapas.Infrastructure.Persistence; // <-- 1. Añadimos el 'using' de l
 using ApiDePapas.Infrastructure.Repositories;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 // Ya no necesitamos 'MySqlConnector' aquí
@@ -43,6 +45,63 @@ builder.Services.AddCors(options =>
 });
 // --- ADD CORS CONFIGURATION END ---
 
+// --- JWT AUTHENTICATION CONFIGURATION START ---
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var keycloakConfig = builder.Configuration.GetSection("Authentication:Keycloak");
+        var authority = keycloakConfig["Authority"];
+        
+        options.Authority = authority;
+        options.RequireHttpsMetadata = false; // Solo para desarrollo local
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false, // Keycloak no siempre incluye audience in client_credentials
+            ValidateIssuer = true,
+            ValidIssuer = authority,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(5)
+            // NO usar RoleClaimType aquí, lo manejamos manualmente
+        };
+        
+        // Logging para debugging (opcional)
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                
+                // Transformar los roles del token en claims de rol reconocidos por .NET
+                var claimsIdentity = context.Principal?.Identity as System.Security.Claims.ClaimsIdentity;
+                if (claimsIdentity != null)
+                {
+                    // Buscar todos los claims "roles" (Keycloak puede enviarlos como múltiples claims)
+                    var rolesClaims = claimsIdentity.FindAll("roles").ToList();
+                    
+                    foreach (var roleClaim in rolesClaims)
+                    {
+                        // Agregar cada rol como claim estándar de .NET
+                        claimsIdentity.AddClaim(new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, roleClaim.Value));
+                    }
+                    
+                    // Debug: Mostrar todos los claims
+                    var claims = claimsIdentity.Claims.Select(c => $"{c.Type}: {c.Value}");
+                    Console.WriteLine("All claims: " + string.Join(" | ", claims));
+                }
+                
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
+// --- JWT AUTHENTICATION CONFIGURATION END ---
+
 //Registro de servicios
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
@@ -58,10 +117,8 @@ builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.Shipping
 
 var app = builder.Build();
 
-// --- 2. ¡MIRA QUÉ LIMPIO! ---
-// Toda la lógica de inicialización ahora está en este método de extensión
+// Inicialización de base de datos
 await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
-// --- FIN DEL CAMBIO ---
 
 // Configurar pipeline HTTP
 if (app.Environment.IsDevelopment())
@@ -70,6 +127,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowFrontend");
+app.UseAuthentication(); // DEBE ir antes de UseAuthorization
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
