@@ -44,9 +44,9 @@ builder.Services.AddCors(options =>
 // --- ADD CORS CONFIGURATION END ---
 
 //Registro de servicios
+builder.Services.AddHttpClient<IStockService, StockService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
-builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>();

@@ -42,7 +42,7 @@ namespace ApiDePapas.Application.Services
                 req.delivery_address,
                 req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()
             );
-            var cost = _calculate_cost.CalculateShippingCost(costReq);
+            var cost = await _calculate_cost.CalculateShippingCostAsync(costReq);
 
             // **IMPORTANTE: Si 'cost' NO contiene los días, usaremos un valor por defecto.**
             // Asumo que quieres usar 3 días, como en tu código original.
