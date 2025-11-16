@@ -125,42 +125,42 @@ namespace ApiDePapas.Application.Services
             );
         }
         public async Task<CancelShippingResponse> CancelShippingAsync(int shippingId)
-        {
-            // 1. BUSCAR LA ENTIDAD (USANDO TU REPOSITORIO)
-            var shipping = await _shipping_repository.GetByIdAsync(shippingId);
+        {
+            // 1. BUSCAR LA ENTIDAD (USANDO TU REPOSITORIO)
+            var shipping = await _shipping_repository.GetByIdAsync(shippingId);
 
-            // 2. LÓGICA DE NEGOCIO (¡La que NO debe estar en el controller!)
-            if (shipping is null)
-            {
+            // 2. LÓGICA DE NEGOCIO (¡La que NO debe estar en el controller!)
+            if (shipping is null)
+            {
                 // Idealmente, lanzar una excepción personalizada (ej: NotFoundException)
-                throw new Exception($"Shipping {shippingId} not found."); 
-            }
+                throw new Exception($"Shipping {shippingId} not found."); 
+            }
         
-            // Esta es LA regla de negocio
-            if (shipping.status == ShippingStatus.delivered || shipping.status == ShippingStatus.cancelled)
-            {
+            // Esta es LA regla de negocio
+            if (shipping.status == ShippingStatus.delivered || shipping.status == ShippingStatus.cancelled)
+            {
                 // Idealmente, lanzar una excepción personalizada (ej: ConflictException)
-                throw new Exception($"Shipping {shippingId} cannot be cancelled because its status is '{shipping.status}'.");
-            }
+                throw new Exception($"Shipping {shippingId} cannot be cancelled because its status is '{shipping.status}'.");
+            }
 
-            // 3. ACTUALIZAR LA ENTIDAD (Soft Delete)
-            var now = DateTime.UtcNow;
-            shipping.status = ShippingStatus.cancelled;
-            shipping.updated_at = now;
-            
-            // (Opcional pero recomendado: agregar un log)
-            shipping.logs.Add(new ShippingLog(now, ShippingStatus.cancelled, "Shipping cancelled by user request."));
+            // 3. ACTUALIZAR LA ENTIDAD (Soft Delete)
+            var now = DateTime.UtcNow;
+            shipping.status = ShippingStatus.cancelled;
+            shipping.updated_at = now;
+            
+            // (Opcional pero recomendado: agregar un log)
+            shipping.logs.Add(new ShippingLog(now, ShippingStatus.cancelled, "Shipping cancelled by user request."));
 
-            // 4. AVISAR AL REPOSITORIO DEL CAMBIO
+            // 4. AVISAR AL REPOSITORIO DEL CAMBIO
             // (¡Importante! Este método Update() NO debe llamar a SaveChanges())
-            _shipping_repository.Update(shipping); 
+            _shipping_repository.Update(shipping); 
 
-            // 5. DEVOLVER EL DTO DE RESPUESTA
-            return new CancelShippingResponse(
+            // 5. DEVOLVER EL DTO DE RESPUESTA
+            return new CancelShippingResponse(
                 shipping_id: shipping.shipping_id,
                 status: shipping.status,
                 cancelled_at: now 
             );
-        }
+        }
     }
 }
