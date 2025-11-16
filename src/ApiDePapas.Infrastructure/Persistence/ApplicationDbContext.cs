@@ -69,24 +69,7 @@ namespace ApiDePapas.Infrastructure.Persistence
             // 4. Mapeo de Propiedades Secundarias
             
             // A. Colecciones (Tablas Satélite)
-            //modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.products);
-            modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.products, owned =>
-            {
-                // Asigna explícitamente el nombre de la tabla
-                owned.ToTable("ProductQty"); 
-
-                // Define la Propiedad Sombra 'RowId' que será generada por la DB
-                owned.Property<int>("RowId")
-                    .ValueGeneratedOnAdd(); 
-
-                // Define la Clave Primaria Compuesta: (RowId, ShippingDetailshipping_id)
-                // Esto permite duplicados del product_id ('id') entre pedidos.
-                owned.HasKey("RowId", "ShippingDetailshipping_id"); 
-            
-                // Configura la Clave Foránea al dueño (ShippingDetail)
-                owned.WithOwner()
-                    .HasForeignKey("ShippingDetailshipping_id");
-            });
+            modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.products);
             modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.logs);
 
             // B. Dirección dentro de DistributionCenter (como Value Object)
