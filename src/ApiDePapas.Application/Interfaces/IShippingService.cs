@@ -8,5 +8,7 @@ namespace ApiDePapas.Application.Interfaces
     {
         // El servicio tomará el request y devolverá el response ya creado
         Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest request);
+
+        Task<CancelShippingResponse> CancelShippingAsync(int shippingId);
     }
 }
