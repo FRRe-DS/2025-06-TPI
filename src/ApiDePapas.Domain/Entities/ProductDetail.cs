@@ -12,9 +12,6 @@ namespace ApiDePapas.Domain.Entities
         public int id { get; set; }
 
         [Required]
-        public int base_price { get; set; }
-
-        [Required]
         public float weight { get; set; }
 
         [Required]

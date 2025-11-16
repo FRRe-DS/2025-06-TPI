@@ -18,7 +18,6 @@ namespace ApiDePapas.Application.Services
             var detail = new ProductDetail
             {
                 id = product.id,
-                base_price = product.id * 100,
                 weight = 20,
                 length = 10,
                 width = 5,
