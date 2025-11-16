@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
 using ApiDePapas.Application.DTOs;
-using LogisticsApi.Application.DTOs; //LUEGO CORREGIR ESTE ERROR DE NAMESPACE
 using ApiDePapas.Application.Interfaces;
 using System.Threading.Tasks;
 using ApiDePapas.Domain.Entities;
 using ApiDePapas.Domain.Repositories;
 using System.Collections.Generic;
-//Este using es sospechoso !!!!!!!!!!!!!!!!!!!!!
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiDePapas.Application.Services
@@ -119,8 +117,66 @@ namespace ApiDePapas.Application.Services
         }
 
         // IMPLEMENTACIÓN REINTRODUCIDA (De la rama VIEJA)
-        public async Task<ShippingDetail?> GetAsync(int id)
-        => await _shipping_repository.GetByIdAsync(id);
+        public async Task<ShippingDetailResponse?> GetByIdAsync(int id)
+        {
+            var data = await _shipping_repository.GetByIdAsync(id);
+            if (data is null)
+            {
+                return null; 
+            }
+
+            var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
+
+            // Mapeo al DTO que SÍ tenés
+            var responseDto = new ShippingDetailResponse
+            {
+                shipping_id = data.shipping_id,
+                order_id = data.order_id,
+                user_id = data.user_id,
+                status = data.status,
+                tracking_number = data.tracking_number,
+                carrier_name = data.carrier_name,
+                total_cost = data.total_cost,
+                currency = data.currency,
+                estimated_delivery_at = data.estimated_delivery_at,
+                created_at = data.created_at,
+                updated_at = data.updated_at,
+                
+                transport_type = data.Travel?.TransportMethod?.transport_type.ToString() ?? string.Empty, 
+
+                delivery_address = new AddressReadDto
+                {
+                    address_id = data.DeliveryAddress?.address_id ?? 0,
+                    street = data.DeliveryAddress?.street ?? string.Empty,
+                    number = data.DeliveryAddress?.number ?? 0,
+                    postal_code = data.DeliveryAddress?.postal_code ?? string.Empty,
+                    locality_name = data.DeliveryAddress?.locality_name ?? string.Empty,
+                },
+                
+                departure_address = new AddressReadDto 
+                {
+                    address_id = departureAddressEntity?.address_id ?? 0, 
+                    street = departureAddressEntity?.street ?? string.Empty,
+                    number = departureAddressEntity?.number ?? 0,
+                    postal_code = departureAddressEntity?.postal_code ?? string.Empty,
+                    locality_name = departureAddressEntity?.locality_name ?? string.Empty,
+                },
+                
+                // --- CORRECCIÓN CRÍTICA ---
+                // Tu DTO usa (int id, int quantity)
+                products = data.products.Select(p => new ProductQtyReadDto(product_id: p.id, quantity: p.quantity)).ToList(),
+                
+                // --- CORRECCIÓN CRÍTICA ---
+                // Tu DTO usa (DateTime timestamp, ShippingStatus status, string message)
+                logs = data.logs.Select(l => new ShippingLogReadDto(
+                    timestamp: l.Timestamp ?? DateTime.MinValue, 
+                    status: l.Status ?? ShippingStatus.created, 
+                    message: l.Message
+                )).ToList()
+            };
+            
+            return responseDto;
+        }
 
         // IMPLEMENTACIÓN REINTRODUCIDA (De la rama VIEJA)
         public async Task<CancelShippingResponse> CancelAsync(int id, DateTime whenUtc)

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 using ApiDePapas.Domain.Entities;
 
-namespace LogisticsApi.Application.DTOs
+namespace ApiDePapas.Application.DTOs
 {
     // Representa el resumen de un envío en una lista.
     public record ShipmentSummary(
