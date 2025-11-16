@@ -31,7 +31,6 @@ namespace ApiDePapas.Application.Services
     {
         private readonly IStockService _stockService;
         private readonly IDistanceService _distance;
-        // como no tenemos un servicio de distancia, usamos uno en memoria
         private const string DEFAULT_ORIGIN_CPA = "H3500";
 
         public CalculateCost(IStockService stockService, IDistanceService distance)
@@ -39,6 +38,7 @@ namespace ApiDePapas.Application.Services
             _stockService = stockService;
             _distance = distance;
         }
+
         public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
         {
             float total_cost = 0f;
@@ -50,12 +50,12 @@ namespace ApiDePapas.Application.Services
 
             foreach (var prod in request.products)
             {
-                //Si usamos api real de stock, esto va a ser una llamada HTTP
-                //DistanceServiceExternal : IDistanceService (HTTP → geocoding).
-                //En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
-                //aqui dentro del FOREACH DEBE CAMBIAR:
-                //var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
-                //float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
+                // Si usamos api real de stock, esto va a ser una llamada HTTP
+                // DistanceServiceExternal : IDistanceService (HTTP -> geocoding).
+                // En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
+                // aqui dentro del FOREACH DEBE CAMBIAR:
+                // var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
+                // float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
 
                 ProductDetail prod_detail = _stockService.GetProductDetail(prod);
 
@@ -63,7 +63,6 @@ namespace ApiDePapas.Application.Services
 
                 float prod_volume_cm3 = prod_detail.length * prod_detail.width * prod_detail.height;
                 float total_volume = prod_volume_cm3 * prod.quantity;
-
                 
                 // float distance_km = _CalculateDistance(request.delivery_address.postal_code, prod_detail.postal_code);
                 float distance_km =distance_km_request;

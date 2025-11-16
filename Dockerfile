@@ -10,6 +10,7 @@ COPY src/ApiDePapas/ApiDePapas.csproj src/ApiDePapas/
 COPY src/ApiDePapas.Domain/ApiDePapas.Domain.csproj src/ApiDePapas.Domain/
 COPY src/ApiDePapas.Application/ApiDePapas.Application.csproj src/ApiDePapas.Application/
 COPY src/ApiDePapas.Infrastructure/ApiDePapas.Infrastructure.csproj src/ApiDePapas.Infrastructure/
+COPY test/ApiDePapas.Application.Tests/ApiDePapas.Application.Tests.csproj test/ApiDePapas.Application.Tests/
 RUN dotnet restore "ApiDePapas.sln"
 
 # Copia el resto del código y publica
