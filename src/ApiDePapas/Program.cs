@@ -45,6 +45,7 @@ builder.Services.AddCors(options =>
 
 //Registro de servicios
 builder.Services.AddHttpClient<IStockService, StockService>();
+builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<TransportService>();
