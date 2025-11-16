@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Entities;
-using LogisticsApi.Application.DTOs;
 
 namespace ApiDePapas.Controllers
 {

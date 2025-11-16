@@ -2,7 +2,6 @@
 using System;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Domain.Entities;
-using LogisticsApi.Application.DTOs;
 
 namespace ApiDePapas.Application.Interfaces
 {
@@ -12,7 +11,7 @@ namespace ApiDePapas.Application.Interfaces
         Task<CreateShippingResponse?> CreateNewShipping(CreateShippingRequest request);
         
         // MÉTODOS REINTRODUCIDOS de la rama desactualizada para permitir lectura/cancelación en el service
-        Task<ShippingDetail?> GetAsync(int id);
+        Task<ShippingDetailResponse?> GetByIdAsync(int id);
         Task<CancelShippingResponse> CancelAsync(int id, DateTime whenUtc);
         Task<ShippingListResponse> List(int? userId,ShippingStatus? status,DateOnly? fromDate,DateOnly? toDate,int page,int limit);
     }

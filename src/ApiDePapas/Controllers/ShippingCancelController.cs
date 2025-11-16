@@ -27,7 +27,7 @@ namespace ApiDePapas.Controllers
         public async Task<ActionResult<CancelShippingResponse>> Cancel([FromRoute] int id)
         {
             // 1) buscar en DB (Usando el método reintroducido)
-            var shipping = await _service.GetAsync(id); 
+            var shipping = await _service.GetByIdAsync(id); 
             if (shipping is null)
             {
                 return NotFound(new Error
