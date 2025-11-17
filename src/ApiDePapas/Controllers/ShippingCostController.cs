@@ -9,6 +9,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("shipping/cost")]
+    [Authorize]
     public class ShippingCostController : ControllerBase
     {
         private readonly ICalculateCost _calculateCost;
