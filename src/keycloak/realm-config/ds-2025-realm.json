@@ -500,6 +500,7 @@
       "redirectUris": [
         "*"
       ],
+      "webOrigins": [ "http://localhost:3000" ],
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": true,
       "protocol": "openid-connect",
