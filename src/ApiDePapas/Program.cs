@@ -104,9 +104,10 @@ builder.Services.AddAuthorization();
 // --- JWT AUTHENTICATION CONFIGURATION END ---
 
 //Registro de servicios
+builder.Services.AddHttpClient<IStockService, StockService>();
+builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
-builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>();

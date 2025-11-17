@@ -18,6 +18,7 @@ namespace ApiDePapas.Application.Services
         private readonly ILocalityRepository _locality_repository;
         private readonly IAddressRepository _address_repository;
         private readonly ITravelRepository _travel_repository;
+        private readonly IPurchasingService _purchasing_service;
 
         // Constructor se mantiene
         public ShippingService(
@@ -25,13 +26,15 @@ namespace ApiDePapas.Application.Services
             IShippingRepository shippingRepository,
             ILocalityRepository localityRepository,
             IAddressRepository addressRepository,
-            ITravelRepository travelRepository)
+            ITravelRepository travelRepository,
+            IPurchasingService purchasingService)
         {
             _calculate_cost = calculateCost;
             _shipping_repository = shippingRepository;
             _locality_repository = localityRepository;
             _address_repository = addressRepository;
             _travel_repository = travelRepository;
+            _purchasing_service = purchasingService;
         }
 
         // IMPLEMENTACIÓN DE CREACIÓN (ACTUALIZADA: Manejo de errores con null)
@@ -45,7 +48,7 @@ namespace ApiDePapas.Application.Services
                 req.delivery_address,
                 req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()
             );
-            var cost = _calculate_cost.CalculateShippingCost(costReq);
+            var cost = await _calculate_cost.CalculateShippingCostAsync(costReq);
 
             int default_estimated_days = 3;
 
@@ -190,6 +193,11 @@ namespace ApiDePapas.Application.Services
                     $"Shipping {id} cannot be cancelled in state '{s.status}'.");
 
             await _shipping_repository.UpdateStatusAsync(id, ShippingStatus.cancelled);
+
+            // Notify the purchasing service about the cancellation.
+            // We don't want to block the response while waiting for this, so we don't await the task.
+            // A more robust solution might involve a background job or a message queue.
+            _ = _purchasing_service.NotifyShippingCancellationAsync(id);
 
             return new CancelShippingResponse(
                 shipping_id: id,

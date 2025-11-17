@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using ApiDePapas.Domain.Entities;
-using ApiDePapas.Application.DTOs;
 
 namespace ApiDePapas.Application.Interfaces
 {
     public interface IStockService
     {
-        ProductDetail GetProductDetail(ProductQty product);
+        Task<ProductDetail> GetProductDetailAsync(ProductQty product);
     }
 }

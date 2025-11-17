@@ -3,6 +3,7 @@ using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 /* 
  * Quotes cost for a shipment without creating any resources.
@@ -39,14 +40,14 @@ namespace ApiDePapas.Application.Services
             _stockService = stockService;
             _distance = distance;
         }
-        public ShippingCostResponse CalculateShippingCost(ShippingCostRequest request)
+        public async Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request)
         {
             float total_cost = 0f;
             List<ProductOutput> products_with_cost = new List<ProductOutput>();
 
             // Distancia base: de un CD por defecto al destino
             // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
-            var distance_km_request = (float)_distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code).Result;
+            var distance_km_request = (float)await _distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
 
             foreach (var prod in request.products)
             {
@@ -57,7 +58,7 @@ namespace ApiDePapas.Application.Services
                 //var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
                 //float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
 
-                ProductDetail prod_detail = _stockService.GetProductDetail(prod);
+                ProductDetail prod_detail = await _stockService.GetProductDetailAsync(prod);
 
                 float total_weight_grs = prod_detail.weight * prod.quantity;
 
