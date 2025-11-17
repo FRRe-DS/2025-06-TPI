@@ -3,6 +3,7 @@ using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
 using ApiDePapas.Infrastructure.Persistence; // <-- 1. Añadimos el 'using' de la nueva clase
 using ApiDePapas.Infrastructure.Repositories;
+using ApiDePapas.Infrastructure.Auth;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -114,6 +115,8 @@ builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ITravelRepository, TravelRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
+builder.Services.AddHttpClient("KeycloakClient"); // HttpClient genérico para Keycloak
+builder.Services.AddScoped<ITokenService, KeycloakTokenService>();
 
 var app = builder.Build();
 
