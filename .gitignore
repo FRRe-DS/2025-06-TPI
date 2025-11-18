@@ -2,7 +2,8 @@ bin/
 obj/
 *.user
 *.vs
-.vscode/
+.vscode/*
+!.vscode/settings.json
 *.db
 *.suo
 

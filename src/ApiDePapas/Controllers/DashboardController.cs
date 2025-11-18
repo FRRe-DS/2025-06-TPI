@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
-using ApiDePapas.Attributes;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
@@ -11,7 +11,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/dashboard")]
-    [ApiKeyAuthorize]
+    [Authorize(Roles = "logistica-be")] // Solo accesible para backend de logística
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;
@@ -26,13 +26,18 @@ namespace ApiDePapas.Controllers
         [ProducesResponseType(typeof(PaginatedDashboardShipmentsResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<PaginatedDashboardShipmentsResponse>> GetDashboardShipments(
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? id = null,
+            [FromQuery] string? city = null,
+            [FromQuery] string? status = null,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
         {
             if (page < 1) page = 1;
             if (pageSize < 1) pageSize = 10;
 
-            var shipments = await _dashboardService.GetDashboardShipmentsAsync(page, pageSize);
-            var totalItems = await _dashboardService.GetTotalDashboardShipmentsCountAsync();
+            var shipments = await _dashboardService.GetDashboardShipmentsAsync(page, pageSize, id, city, status, startDate, endDate);
+            var totalItems = await _dashboardService.GetTotalDashboardShipmentsCountAsync(id, city, status, startDate, endDate);
 
             var response = new PaginatedDashboardShipmentsResponse(
                 shipments,

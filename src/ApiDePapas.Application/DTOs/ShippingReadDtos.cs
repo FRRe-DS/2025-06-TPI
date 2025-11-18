@@ -27,7 +27,10 @@ namespace ApiDePapas.Application.DTOs
         // Solo las propiedades básicas del transporte
     }
     
-    public record ProductQtyReadDto(int id, int quantity);
+    public record ProductQtyReadDto(
+        [property: JsonPropertyName("product_id")] int product_id, 
+        [property: JsonPropertyName("quantity")] int quantity
+    );
     public record ShippingLogReadDto(DateTime timestamp, ShippingStatus status, string message);
 
 

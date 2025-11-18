@@ -1,12 +1,16 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
-using ApiDePapas.Infrastructure.Persistence;
+using ApiDePapas.Infrastructure.Persistence; // <-- 1. Añadimos el 'using' de la nueva clase
 using ApiDePapas.Infrastructure.Repositories;
+using ApiDePapas.Infrastructure.Auth;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+// Ya no necesitamos 'MySqlConnector' aquí
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +19,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Base de datos
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        mySqlOptions => mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure")));
+        mySqlOptions => 
+        {
+            mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure");
+            mySqlOptions.EnableStringComparisonTranslations();
+        }));
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
 builder.Services
@@ -42,42 +50,96 @@ builder.Services.AddCors(options =>
 });
 // --- ADD CORS CONFIGURATION END ---
 
+// --- JWT AUTHENTICATION CONFIGURATION START ---
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var keycloakConfig = builder.Configuration.GetSection("Authentication:Keycloak");
+        var authority = keycloakConfig["Authority"];
+        
+        options.Authority = authority;
+        options.RequireHttpsMetadata = false; // Solo para desarrollo local
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false, // Keycloak no siempre incluye audience in client_credentials
+            ValidateIssuer = true,
+            ValidIssuer = authority,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(5)
+            // NO usar RoleClaimType aquí, lo manejamos manualmente
+        };
+        
+        // Logging para debugging (opcional)
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                
+                // Transformar los roles del token en claims de rol reconocidos por .NET
+                var claimsIdentity = context.Principal?.Identity as System.Security.Claims.ClaimsIdentity;
+                if (claimsIdentity != null)
+                {
+                    // Buscar todos los claims "roles" (Keycloak puede enviarlos como múltiples claims)
+                    var rolesClaims = claimsIdentity.FindAll("roles").ToList();
+                    
+                    foreach (var roleClaim in rolesClaims)
+                    {
+                        // Agregar cada rol como claim estándar de .NET
+                        claimsIdentity.AddClaim(new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, roleClaim.Value));
+                    }
+                    
+                    // Debug: Mostrar todos los claims
+                    var claims = claimsIdentity.Claims.Select(c => $"{c.Type}: {c.Value}");
+                    Console.WriteLine("All claims: " + string.Join(" | ", claims));
+                }
+                
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
+// --- JWT AUTHENTICATION CONFIGURATION END ---
+
 //Registro de servicios
+builder.Services.AddHttpClient<IStockService, StockService>();
+builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
-builder.Services.AddScoped<IStockService, ApiDePapas.Application.Services.FakeStockService>();
 builder.Services.AddScoped<TransportService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
-// comento esto porq se usa para devolver un shipping no DB builder.Services.AddScoped<IShippingStore, ShippingStore>();
-builder.Services.AddSingleton<IDistanceService, DistanceServiceInMemory>(); 
+builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>();
 builder.Services.AddScoped<ILocalityRepository, LocalityRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-builder.Services.AddScoped<ITravelRepository, TravelRepository>();           
+builder.Services.AddScoped<ITravelRepository, TravelRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-// Tu store in-memory:
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
-// Nota: singleton para que persista en memoria mientras corre la app
-// (si la reiniciás, se pierde todo, claro)
+builder.Services.AddHttpClient("KeycloakClient"); // HttpClient genérico para Keycloak
+builder.Services.AddScoped<ITokenService, KeycloakTokenService>();
 
 var app = builder.Build();
 
-// Configurar pipeline HTTP
+// Inicialización de base de datos
+await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 
+// Configurar pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
-
-// --- USE CORS MIDDLEWARE START ---
-app.UseCors("AllowFrontend"); // Apply the CORS policy
-// --- USE CORS MIDDLEWARE END ---
-
-app.MapControllers(); //clave para los controllers(?)
-
+app.UseCors("AllowFrontend");
+app.UseAuthentication(); // DEBE ir antes de UseAuthorization
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
 
-
+// 3. Todo el código 'static async Task InitializeDatabaseAsync...'
+//    y 'static async Task LoadCsvDataAsync...'
+//    ha desaparecido de este archivo.

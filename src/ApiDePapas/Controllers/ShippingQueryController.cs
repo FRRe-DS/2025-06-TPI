@@ -1,135 +1,90 @@
 using Microsoft.AspNetCore.Mvc;
-using ApiDePapas.Domain.Repositories; 
-using ApiDePapas.Application.DTOs; 
-using LogisticsApi.Application.DTOs; // Added for ShippingListResponse and ShipmentSummary
+using Microsoft.AspNetCore.Http;
+using ApiDePapas.Application.DTOs;
+using ApiDePapas.Application.Interfaces; 
 using ApiDePapas.Domain.Entities; 
 using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.EntityFrameworkCore; // Added for CountAsync and ToListAsync
+using System;
 
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("api/shipping")]
+    [Route("shipping")]
     public class ShippingQueryController : ControllerBase
     {
-        private readonly IShippingRepository _shipping_repository;
+        private readonly IShippingService _shippingService;
 
-        public ShippingQueryController(IShippingRepository shippingRepository)
+        public ShippingQueryController(IShippingService shippingService)
         {
-            _shipping_repository = shippingRepository;
+            _shippingService = shippingService;
         }
 
-        [HttpGet] // New endpoint for listing all shipments
-        [Produces("application/json")]
+        // ---
+        // MÉTODO 1: Implementa 'GET /shipping' (con filtros)
+        // ---
+        [HttpGet]
         [ProducesResponseType(typeof(ShippingListResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ShippingListResponse>> GetAll(
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ShippingListResponse>> Get(
+            [FromQuery(Name = "user_id")] int? userId,
+            [FromQuery(Name = "status")] string? statusStr,
+            [FromQuery(Name = "from_date")] DateOnly? fromDate,
+            [FromQuery(Name = "to_date")] DateOnly? toDate,
             [FromQuery] int page = 1,
-            [FromQuery] int page_size = 10)
+            [FromQuery] int limit = 20)
         {
-            if (page < 1) page = 1;
-            if (page_size < 1) page_size = 10; // Default page size
+            // 1. Parse tolerante del status
+            ShippingStatus? status = null;
+            if (!string.IsNullOrWhiteSpace(statusStr))
+            {
+                var snake = statusStr.Trim().Replace("-", "_").Replace(" ", "_");
+                if (!Enum.TryParse<ShippingStatus>(snake, true, out var parsed))
+                {
+                    var parts = snake.Split('_', StringSplitOptions.RemoveEmptyEntries);
+                    var pascal = string.Concat(parts.Select(p => char.ToUpper(p[0]) + p.Substring(1)));
+                    if (!Enum.TryParse<ShippingStatus>(pascal, true, out parsed))
+                        return BadRequest(new Error { code = "invalid_status", message = "status inválido." });
+                    status = parsed;
+                }
+                else
+                {
+                    status = parsed;
+                }
+            }
 
-            var query = _shipping_repository.GetAllQueryable();
+            // 2. Validación de fechas
+            if (fromDate.HasValue && toDate.HasValue && toDate < fromDate)
+                return BadRequest(new Error { code = "invalid_range", message = "to_date debe ser >= from_date." });
 
-            var totalItems = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalItems / page_size);
-
-            var paginatedShipments = await query
-                .Skip((page - 1) * page_size)
-                .Take(page_size)
-                .ToListAsync();
-
-            var shipmentSummaries = paginatedShipments.Select(s => new ShipmentSummary(
-                s.shipping_id,
-                s.order_id,
-                s.user_id,
-                s.products.Select(p => new ProductQty(p.id, p.quantity)).ToList(),
-                s.status,
-                s.Travel.TransportMethod.transport_type,
-                s.estimated_delivery_at,
-                s.created_at
-            )).ToList();
-
-            var response = new ShippingListResponse(
-                shipmentSummaries,
-                new PaginationData(
-                    total_items: totalItems,
-                    total_pages: totalPages,
-                    current_page: page,
-                    items_per_page: page_size
-                )
-            );
-
-            return Ok(response);
+            // 3. Delegación TOTAL al servicio
+            var result = await _shippingService.List(userId, status, fromDate, toDate, page, limit);
+            return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
+        // ---
+        // MÉTODO 2: Implementa 'GET /shipping/{shipping_id}'
+        // ---
+        [HttpGet("{shipping_id:int}")] 
         [Produces("application/json")]
         [ProducesResponseType(typeof(ShippingDetailResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ShippingDetailResponse>> GetById([FromRoute] int id)
+        public async Task<ActionResult<ShippingDetailResponse>> GetById([FromRoute] int shipping_id)
         {
-            // 1. Obtener la entidad COMPLETA de la BD 
-            var data = await _shipping_repository.GetByIdAsync(id);
+            // 1. Delegación TOTAL al servicio
+            var responseDto = await _shippingService.GetByIdAsync(shipping_id); 
             
-            if (data is null)
+            // 2. Chequeo de Nulo
+            if (responseDto is null)
             {
                 return NotFound(new Error
                 {
                     code = "not_found",
-                    message = $"Shipping {id} not found."
+                    message = $"Shipping {shipping_id} not found."
                 });
             }
 
-            // Mapeo del DistributionCenter Address para llenar el campo departure_address
-            var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
-
-            // 2. Mapeo a DTO con nombres EXACTOS del YAML
-            var responseDto = new ShippingDetailResponse
-            {
-                // Propiedades Simples
-                shipping_id = data.shipping_id,
-                order_id = data.order_id,
-                user_id = data.user_id,
-                status = data.status,
-                tracking_number = data.tracking_number,
-                carrier_name = data.carrier_name,
-                total_cost = data.total_cost,
-                currency = data.currency,
-                estimated_delivery_at = data.estimated_delivery_at,
-                created_at = data.created_at,
-                updated_at = data.updated_at,
-                
-                // Mapeo de ENUM a STRING
-                transport_type = data.Travel?.TransportMethod?.transport_type.ToString() ?? string.Empty, 
-
-                // Domicilios - Usamos los nombres EXACTOS del YAML
-                delivery_address = new AddressReadDto // Coincide con delivery_address del YAML
-                {
-                    address_id = data.DeliveryAddress?.address_id ?? 0,
-                    street = data.DeliveryAddress?.street ?? string.Empty,
-                    number = data.DeliveryAddress?.number ?? 0,
-                    postal_code = data.DeliveryAddress?.postal_code ?? string.Empty,
-                    locality_name = data.DeliveryAddress?.locality_name ?? string.Empty,
-                },
-                // Mapeo del DEPARTURE ADDRESS (Origen del viaje)
-                departure_address = new AddressReadDto 
-                {
-                    // CORRECCIÓN: Usamos address_id de la entidad DistributionCenter
-                    address_id = departureAddressEntity?.address_id ?? 0, 
-                    // Mapeamos los detalles de la dirección cargada
-                    street = departureAddressEntity?.street ?? string.Empty,
-                    number = departureAddressEntity?.number ?? 0,
-                    postal_code = departureAddressEntity?.postal_code ?? string.Empty,
-                    locality_name = departureAddressEntity?.locality_name ?? string.Empty,
-                },
-                
-                // Colecciones (Logs y Products)
-                products = data.products.Select(p => new ProductQtyReadDto(p.id, p.quantity)).ToList(),
-                logs = data.logs.Select(l => new ShippingLogReadDto(l.Timestamp ?? DateTime.MinValue, l.Status ?? ShippingStatus.created, l.Message)).ToList()
-            };
-            
+            // 3. Retorno del DTO
             return Ok(responseDto);
         }
     }

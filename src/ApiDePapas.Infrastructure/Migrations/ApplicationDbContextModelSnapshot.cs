@@ -51,7 +51,8 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("address_id");
 
-                    b.HasIndex("postal_code", "locality_name");
+                    b.HasIndex("postal_code", "locality_name")
+                        .HasDatabaseName("IX_Addresses_locality_fk");
 
                     b.ToTable("Addresses");
                 });
@@ -69,7 +70,8 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("distribution_center_id");
 
-                    b.HasIndex("address_id");
+                    b.HasIndex("address_id")
+                        .HasDatabaseName("IX_DistributionCenters_address_id");
 
                     b.ToTable("DistributionCenters");
                 });
@@ -97,6 +99,9 @@ namespace ApiDePapas.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("postal_code", "locality_name");
+
+                    b.HasIndex("locality_name")
+                        .HasDatabaseName("IX_Localities_locality_name");
 
                     b.ToTable("Localities");
                 });
@@ -150,9 +155,17 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("shipping_id");
 
-                    b.HasIndex("delivery_address_id");
+                    b.HasIndex("created_at")
+                        .HasDatabaseName("IX_Shippings_created_at");
 
-                    b.HasIndex("travel_id");
+                    b.HasIndex("delivery_address_id")
+                        .HasDatabaseName("IX_Shippings_delivery_address_id");
+
+                    b.HasIndex("status")
+                        .HasDatabaseName("IX_Shippings_status");
+
+                    b.HasIndex("travel_id")
+                        .HasDatabaseName("IX_Shippings_travel_id");
 
                     b.ToTable("Shippings");
                 });
@@ -206,9 +219,11 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("travel_id");
 
-                    b.HasIndex("distribution_center_id");
+                    b.HasIndex("distribution_center_id")
+                        .HasDatabaseName("IX_Travels_distribution_center_id");
 
-                    b.HasIndex("transport_method_id");
+                    b.HasIndex("transport_method_id")
+                        .HasDatabaseName("IX_Travels_transport_method_id");
 
                     b.ToTable("Travels");
                 });
@@ -267,7 +282,14 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id", "id");
 
+<<<<<<< HEAD
                             b1.ToTable("ProductQty");
+=======
+                            b1.HasIndex("ShippingDetailshipping_id")
+                                .HasDatabaseName("IX_ProductQty_ShippingDetailshipping_id");
+
+                            b1.ToTable("ProductQty", (string)null);
+>>>>>>> dev
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
@@ -299,7 +321,10 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id", "Id");
 
-                            b1.ToTable("ShippingLog");
+                            b1.HasIndex("ShippingDetailshipping_id")
+                                .HasDatabaseName("IX_ShippingLog_ShippingDetailshipping_id");
+
+                            b1.ToTable("ShippingLog", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
