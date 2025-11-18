@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
-using ApiDePapas.Attributes;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
@@ -11,7 +11,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/dashboard")]
-    [ApiKeyAuthorize]
+    [Authorize(Roles = "logistica-be")] // Solo accesible para backend de logística
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;

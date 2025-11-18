@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Threading.Tasks;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Application.DTOs;
@@ -22,7 +22,7 @@ namespace ApiDePapas.Controllers
         [ProducesResponseType(typeof(Error), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status500InternalServerError)]
-        public ActionResult<ShippingCostResponse> Post([FromBody] ShippingCostRequest request)
+        public async Task<ActionResult<ShippingCostResponse>> Post([FromBody] ShippingCostRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error { code = "bad_request", message = "Malformed request body." });
@@ -33,7 +33,7 @@ namespace ApiDePapas.Controllers
                 request.products
             );
             
-            var cost = _calculateCost.CalculateShippingCost(costReq);
+            var cost = await _calculateCost.CalculateShippingCostAsync(costReq);
 
             return Ok(cost);
         }

@@ -29,7 +29,7 @@ namespace ApiDePapas.Infrastructure.Persistence
             modelBuilder.Entity<Locality>().HasKey(l => new {l.postal_code, l.locality_name}); // Clave Compuesta
             
             // 3. Mapeo de Relaciones de Entidades
-
+            
             // A. Relación ShippingDetail (N) a Travel (1)
             modelBuilder.Entity<ShippingDetail>()
                 .HasOne(s => s.Travel) 
@@ -69,28 +69,37 @@ namespace ApiDePapas.Infrastructure.Persistence
             // 4. Mapeo de Propiedades Secundarias
             
             // A. Colecciones (Tablas Satélite)
-            //modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.products);
+            // --- MODIFICADO --- (Añadido HasIndex)
             modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.products, owned =>
             {
-                // Asigna explícitamente el nombre de la tabla
                 owned.ToTable("ProductQty"); 
-
-                // Define la Propiedad Sombra 'RowId' que será generada por la DB
-                owned.Property<int>("RowId")
-                    .ValueGeneratedOnAdd(); 
-
-                // Define la Clave Primaria Compuesta: (RowId, ShippingDetailshipping_id)
-                // Esto permite duplicados del product_id ('id') entre pedidos.
+                owned.Property<int>("RowId").ValueGeneratedOnAdd(); 
                 owned.HasKey("RowId", "ShippingDetailshipping_id"); 
             
-                // Configura la Clave Foránea al dueño (ShippingDetail)
                 owned.WithOwner()
-                    .HasForeignKey("ShippingDetailshipping_id");
+                     .HasForeignKey("ShippingDetailshipping_id");
+
+                // --- NUEVO ---
+                // Indexamos la FK para acelerar la carga de productos
+                owned.HasIndex("ShippingDetailshipping_id")
+                     .HasDatabaseName("IX_ProductQty_ShippingDetailshipping_id");
             });
-            modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.logs);
+
+            // --- MODIFICADO --- (Añadido HasIndex)
+            modelBuilder.Entity<ShippingDetail>().OwnsMany(s => s.logs, owned => 
+            {
+                // --- NUEVO ---
+                // Asumimos que la tabla se llama 'ShippingLog'
+                // y que la FK se llama 'ShippingDetailshipping_id'
+                // ¡Ajusta esto si tus logs se configuran diferente!
+                owned.ToTable("ShippingLog");
+                
+                // Indexamos la FK para acelerar la carga de logs
+                owned.HasIndex("ShippingDetailshipping_id")
+                     .HasDatabaseName("IX_ShippingLog_ShippingDetailshipping_id");
+            });
 
             // B. Dirección dentro de DistributionCenter (como Value Object)
-            // Ya que DistributionCenter sigue siendo una clase con su propia PK, esta es la forma de incrustar su dirección.
             modelBuilder.Entity<DistributionCenter>()
                     .HasOne(dc => dc.Address) // Centro tiene UNA Dirección
                     .WithMany() // No necesitamos navegar de vuelta desde Address a DistributionCenter
@@ -103,6 +112,69 @@ namespace ApiDePapas.Infrastructure.Persistence
                     .Property(t => t.transport_type)
                     .HasConversion<string>();
             
+            
+            // --- INICIO DE LA SECCIÓN COMPLETAMENTE NUEVA ---
+
+            // 6. Definición de Índices para Optimización de Rendimiento
+            // (Estos no definen relaciones, solo aceleran las consultas)
+
+            // A. Índices para ShippingDetail (asumo que tu clase se llama así)
+            modelBuilder.Entity<ShippingDetail>(entity =>
+            {
+                // Para acelerar JOINs
+                entity.HasIndex(s => s.travel_id)
+                      .HasDatabaseName("IX_Shippings_travel_id");
+                
+                entity.HasIndex(s => s.delivery_address_id)
+                      .HasDatabaseName("IX_Shippings_delivery_address_id");
+
+                // Para acelerar WHERE (Asumo que tienes estas propiedades)
+                // ¡Borra o edita estas líneas si tus propiedades se llaman diferente!
+                entity.HasIndex(s => s.status)
+                      .HasDatabaseName("IX_Shippings_status");
+                
+                entity.HasIndex(s => s.created_at)
+                      .HasDatabaseName("IX_Shippings_created_at");
+            });
+
+            // B. Índices para Travel
+            modelBuilder.Entity<Travel>(entity =>
+            {
+                // Para acelerar JOINs
+                entity.HasIndex(t => t.transport_method_id)
+                      .HasDatabaseName("IX_Travels_transport_method_id");
+
+                entity.HasIndex(t => t.distribution_center_id)
+                      .HasDatabaseName("IX_Travels_distribution_center_id");
+            });
+
+            // C. Índice para Address
+            modelBuilder.Entity<Address>(entity =>
+            {
+                // Para acelerar el JOIN compuesto con Locality
+                entity.HasIndex(a => new { a.postal_code, a.locality_name })
+                      .HasDatabaseName("IX_Addresses_locality_fk");
+            });
+
+            // D. Índice para DistributionCenter
+            modelBuilder.Entity<DistributionCenter>(entity =>
+            {
+                // Para acelerar JOIN con Address
+                entity.HasIndex(dc => dc.address_id)
+                      .HasDatabaseName("IX_DistributionCenters_address_id");
+            });
+
+            // E. Índice para Locality
+            modelBuilder.Entity<Locality>(entity =>
+            {
+                // Para acelerar búsquedas de texto (WHERE locality_name = '...')
+                entity.HasIndex(l => l.locality_name)
+                      .HasDatabaseName("IX_Localities_locality_name");
+            });
+            
+            // --- FIN DE LA SECCIÓN COMPLETAMENTE NUEVA ---
+
+
             base.OnModelCreating(modelBuilder);
         }
     }

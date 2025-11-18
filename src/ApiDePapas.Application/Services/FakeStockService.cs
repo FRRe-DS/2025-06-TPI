@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using ApiDePapas.Domain.Entities;
 using ApiDePapas.Application.Interfaces;
 
@@ -11,21 +10,20 @@ namespace ApiDePapas.Application.Services
 {
     public class FakeStockService : IStockService
     {
-        public ProductDetail GetProductDetail(ProductQty product)
+        public Task<ProductDetail> GetProductDetailAsync(ProductQty product)
         {
             // ejemplo simple, con datos fijos para simular
 
             var detail = new ProductDetail
             {
                 id = product.id,
-                base_price = product.id * 100,
                 weight = 20,
                 length = 10,
                 width = 5,
                 height = 2,
             };
 
-            return detail;
+            return Task.FromResult(detail);
         }
     }
 }
