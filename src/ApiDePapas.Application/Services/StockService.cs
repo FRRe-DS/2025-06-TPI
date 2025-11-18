@@ -19,7 +19,7 @@ namespace ApiDePapas.Application.Services
         public StockService(HttpClient httpClient, IConfiguration configuration, ILogger<StockService> logger)
         {
             _httpClient = httpClient;
-            _externalApiUrl = configuration["ExternalApi:StockUrl"];
+            _externalApiUrl = configuration["StockApi:BaseUrl"];
             _logger = logger;
         }
 

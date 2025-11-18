@@ -4,6 +4,7 @@ using ApiDePapas.Infrastructure;
 using ApiDePapas.Infrastructure.Persistence; // <-- 1. Añadimos el 'using' de la nueva clase
 using ApiDePapas.Infrastructure.Repositories;
 using ApiDePapas.Infrastructure.Auth;
+using ApiDePapas.Infrastructure.Clients;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -104,7 +105,7 @@ builder.Services.AddAuthorization();
 // --- JWT AUTHENTICATION CONFIGURATION END ---
 
 //Registro de servicios
-builder.Services.AddHttpClient<IStockService, StockService>();
+//builder.Services.AddHttpClient<IStockService, StockService>();
 builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
@@ -118,6 +119,7 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddSingleton<IShippingStore, ApiDePapas.Infrastructure.ShippingStore>();
 builder.Services.AddHttpClient("KeycloakClient"); // HttpClient genérico para Keycloak
 builder.Services.AddScoped<ITokenService, KeycloakTokenService>();
+builder.Services.AddHttpClient<IStockService, StockApiClient>();
 
 var app = builder.Build();
 
