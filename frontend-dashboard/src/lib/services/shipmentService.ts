@@ -38,7 +38,7 @@ export async function getShipmentById(id: string): Promise<ShippingDetail | unde
 }
 
 export async function getAllLocalities(): Promise<Locality[]> {
-  const response = await fetch(`${API_BASE_URL}/locality/all`);
+  const response = await fetch(`${API_BASE_URL}/locality/getall`);
   if (!response.ok) {
     throw new Error(`Failed to fetch localities: ${response.statusText}`);
   }

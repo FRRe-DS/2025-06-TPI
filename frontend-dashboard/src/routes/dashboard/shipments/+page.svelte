@@ -36,6 +36,17 @@
     }
   }
 
+  async function loadUntilFull() {
+    if (isLoading || !hasMore) return;
+
+    await loadShipments();
+
+    // If there's still space and more data, load more
+    if (hasMore && loadMoreElement && loadMoreElement.getBoundingClientRect().top <= window.innerHeight) {
+      await loadUntilFull();
+    }
+  }
+
   function applyFilters() {
     const { id, city, status, startDate, endDate } = currentFilters; // Use currentFilters for filtering
     
@@ -72,17 +83,17 @@
     endDate: ''
   };
 
-  function handleFilterChange(event: CustomEvent<FiltersState>) {
+  async function handleFilterChange(event: CustomEvent<FiltersState>) {
     currentFilters = event.detail;
     // Reset pagination and reload from scratch when filters change
     allShipments = [];
     currentPage = 1;
     hasMore = true;
-    loadShipments();
+    await loadUntilFull();
   }
 
   onMount(async () => {
-    await loadShipments();
+    await loadUntilFull();
 
     observer = new IntersectionObserver(
       (entries) => {
@@ -119,9 +130,9 @@
 <ShipmentList shipments={filteredShipments} />
 
 {#if isLoading}
-  <p>Cargando más pedidos...</p>
+    <p>Cargando más pedidos...</p>
 {:else if !hasMore && allShipments.length > 0}
-  <p>No hay más pedidos para cargar.</p>
+    <p>No hay más pedidos para cargar.</p>
 {/if}
 
 <div bind:this={loadMoreElement} style="height: 1px; margin-top: -1px;"></div>

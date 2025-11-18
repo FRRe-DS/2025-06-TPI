@@ -37,7 +37,10 @@ namespace ApiDePapas.Infrastructure.Repositories
         }
 
         // --- Implementaciones de IGenericRepository<Locality> van aquí ---
-        public Task<IEnumerable<Locality>> GetAllAsync() => throw new NotImplementedException();
+        public async Task<IEnumerable<Locality>> GetAllAsync()
+        {
+            return await _context.Localities.ToListAsync();
+        }
         public Task<Locality?> GetByIdAsync(int id) => throw new NotImplementedException();
         public Task AddAsync(Locality entity) => throw new NotImplementedException();
         public void Update(Locality entity) => throw new NotImplementedException();
