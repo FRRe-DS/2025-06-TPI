@@ -1,4 +1,4 @@
-import type { DashboardShipmentDto, PaginatedDashboardShipmentsResponse, ShippingDetail, Locality } from '$lib/types';
+import type { DashboardShipmentDto, PaginatedDashboardShipmentsResponse, ShippingDetail, Locality, FiltersState } from '$lib/types';
 import { PUBLIC_BACKEND_API_KEY } from '$env/static/public'; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from '$app/environment'; // Import 'browser'
 
@@ -62,8 +62,19 @@ export async function createShipment(shipment: import('$lib/types').CreateShippi
 }
 
 // --- 3. FUNCIÓN DE DASHBOARD (MODIFICADA) ---
-export async function getDashboardShipments(page: number = 1, pageSize: number = 10): Promise<PaginatedDashboardShipmentsResponse> {
-    const url = `${API_BASE_URL}/dashboard/shipments?page=${page}&pageSize=${pageSize}`;
+export async function getDashboardShipments(page: number = 1, pageSize: number = 10, filters: FiltersState): Promise<PaginatedDashboardShipmentsResponse> {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+    });
+
+    if (filters.id) params.append('id', filters.id);
+    if (filters.city) params.append('city', filters.city);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+
+    const url = `${API_BASE_URL}/dashboard/shipments?${params.toString()}`;
 
     try {
         // A. Primero, conseguimos la llave
@@ -92,8 +103,8 @@ export async function getDashboardShipments(page: number = 1, pageSize: number =
 }
 
 // Esta función ahora usa automáticamente la nueva autenticación
-export async function getAllShipments(page: number = 1, page_size: number = 10): Promise<PaginatedDashboardShipmentsResponse> {
-    return getDashboardShipments(page, page_size);
+export async function getAllShipments(page: number = 1, page_size: number = 10, filters: FiltersState): Promise<PaginatedDashboardShipmentsResponse> {
+    return getDashboardShipments(page, page_size, filters);
 }
 
 // Esta función es PÚBLICA (según la guía del profe), así que la dejamos como estaba.
