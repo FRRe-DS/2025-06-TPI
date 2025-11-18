@@ -35,10 +35,6 @@ async function getAuthToken(): Promise<string> {
         console.error("Fallo grave en autenticación:", error);
         throw error; // Detenemos la ejecución si no hay token
     }
-    throw new Error(`Failed to fetch shipment ${id}: ${response.statusText}`);
-  }
-  const detailData: ShippingDetail = await response.json();
-  return detailData;
 }
 
 export async function getAllLocalities(): Promise<Locality[]> {
