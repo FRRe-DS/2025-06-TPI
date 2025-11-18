@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { getDashboardShipments } from '../../../lib/services/shipmentService';
   import type { DashboardShipmentDto, FiltersState, PaginatedDashboardShipmentsResponse } from '$lib/types';
 
@@ -45,11 +45,15 @@
   async function loadUntilFull() {
     if (isLoading || !hasMore) return;
 
+    // Load the first page
     await loadShipments();
+    await tick(); // Wait for DOM to update
 
-    // If there's still space and more data, load more
-    if (hasMore && loadMoreElement && loadMoreElement.getBoundingClientRect().top <= window.innerHeight) {
-      await loadUntilFull();
+    // Keep loading more pages as long as there is more data
+    // and the content is not filling the screen.
+    while (hasMore && !isLoading && loadMoreElement && loadMoreElement.getBoundingClientRect().top <= window.innerHeight) {
+      await loadShipments();
+      await tick(); // Wait for DOM to update
     }
   }
 
@@ -78,12 +82,12 @@
     if (loadMoreElement) {
       observer.observe(loadMoreElement);
     }
-  });
 
-  onDestroy(() => {
-    if (observer) {
-      observer.disconnect();
-    }
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
   });
 </script>
 

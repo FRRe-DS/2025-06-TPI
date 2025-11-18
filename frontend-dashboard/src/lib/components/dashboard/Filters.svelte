@@ -11,6 +11,15 @@
 
   const dispatch = createEventDispatcher<{ filterChange: FiltersState }>();
 
+  let debounceTimer: number;
+
+  function debouncedApplyFilters() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      applyFilters();
+    }, 300); // 300ms delay
+  }
+
   function applyFilters() {
     dispatch('filterChange', {
       id: id.toUpperCase(),
@@ -27,14 +36,14 @@
     type="text"
     placeholder="Buscar por ID..."
     bind:value={id}
-    on:input={applyFilters}
+    on:input={debouncedApplyFilters}
   />
   
   <input
     type="text"
     placeholder="Filtrar por destino..."
     bind:value={city}
-    on:input={applyFilters}
+    on:input={debouncedApplyFilters}
   />
 
   <select bind:value={status} on:change={applyFilters}>
