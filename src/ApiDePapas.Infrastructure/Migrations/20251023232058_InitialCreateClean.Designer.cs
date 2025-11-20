@@ -4,6 +4,7 @@ using ApiDePapas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiDePapas.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023232058_InitialCreateClean")]
+    partial class InitialCreateClean
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,8 +54,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("address_id");
 
-                    b.HasIndex("postal_code", "locality_name")
-                        .HasDatabaseName("IX_Addresses_locality_fk");
+                    b.HasIndex("postal_code", "locality_name");
 
                     b.ToTable("Addresses");
                 });
@@ -70,8 +72,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("distribution_center_id");
 
-                    b.HasIndex("address_id")
-                        .HasDatabaseName("IX_DistributionCenters_address_id");
+                    b.HasIndex("address_id");
 
                     b.ToTable("DistributionCenters");
                 });
@@ -99,9 +100,6 @@ namespace ApiDePapas.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("postal_code", "locality_name");
-
-                    b.HasIndex("locality_name")
-                        .HasDatabaseName("IX_Localities_locality_name");
 
                     b.ToTable("Localities");
                 });
@@ -155,17 +153,9 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("shipping_id");
 
-                    b.HasIndex("created_at")
-                        .HasDatabaseName("IX_Shippings_created_at");
+                    b.HasIndex("delivery_address_id");
 
-                    b.HasIndex("delivery_address_id")
-                        .HasDatabaseName("IX_Shippings_delivery_address_id");
-
-                    b.HasIndex("status")
-                        .HasDatabaseName("IX_Shippings_status");
-
-                    b.HasIndex("travel_id")
-                        .HasDatabaseName("IX_Shippings_travel_id");
+                    b.HasIndex("travel_id");
 
                     b.ToTable("Shippings");
                 });
@@ -219,11 +209,9 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                     b.HasKey("travel_id");
 
-                    b.HasIndex("distribution_center_id")
-                        .HasDatabaseName("IX_Travels_distribution_center_id");
+                    b.HasIndex("distribution_center_id");
 
-                    b.HasIndex("transport_method_id")
-                        .HasDatabaseName("IX_Travels_transport_method_id");
+                    b.HasIndex("transport_method_id");
 
                     b.ToTable("Travels");
                 });
@@ -285,8 +273,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("RowId", "ShippingDetailshipping_id");
 
-                            b1.HasIndex("ShippingDetailshipping_id")
-                                .HasDatabaseName("IX_ProductQty_ShippingDetailshipping_id");
+                            b1.HasIndex("ShippingDetailshipping_id");
 
                             b1.ToTable("ProductQty", (string)null);
 
@@ -320,10 +307,7 @@ namespace ApiDePapas.Infrastructure.Migrations
 
                             b1.HasKey("ShippingDetailshipping_id", "Id");
 
-                            b1.HasIndex("ShippingDetailshipping_id")
-                                .HasDatabaseName("IX_ShippingLog_ShippingDetailshipping_id");
-
-                            b1.ToTable("ShippingLog", (string)null);
+                            b1.ToTable("ShippingLog");
 
                             b1.WithOwner()
                                 .HasForeignKey("ShippingDetailshipping_id");
