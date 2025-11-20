@@ -158,12 +158,12 @@
     margin-top: 1rem;
   }
   th, td {
-    border: 1px solid #444;
+    border: 1px solid var(--border);
     padding: 8px;
     text-align: left;
   }
   th {
-    background-color: #2a2a2a;
+    background-color: var(--card);
   }
   .status-pill {
     padding: 4px 12px;
@@ -174,13 +174,13 @@
     white-space: nowrap;
   }
   a.button {
-    background-color: #3b82f6;
+    background-color: var(--accent);
     color: white;
     padding: 4px 8px;
     border-radius: 4px;
     text-decoration: none;
   }
   a.button:hover {
-    background-color: #2563eb;
+    background-color: #2563eb; /* keep a slightly darker accent on hover */
   }
 </style>
