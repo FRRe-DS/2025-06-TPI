@@ -1,11 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using ApiDePapas.Application.DTOs;
-using ApiDePapas.Application.Interfaces; 
-using ApiDePapas.Domain.Entities; 
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+
+using ApiDePapas.Application.DTOs;
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Application.Utils;
 
 namespace ApiDePapas.Controllers
 {
@@ -33,31 +35,20 @@ namespace ApiDePapas.Controllers
             [FromQuery(Name = "to_date")] DateOnly? toDate,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 20)
+
+            
         {
-            // 1. Parse tolerante del status
-            ShippingStatus? status = null;
-            if (!string.IsNullOrWhiteSpace(statusStr))
+            // Parsing tolerante del status
+            if (!ShippingStatusParser.TryParse(statusStr, out var status))
             {
-                var snake = statusStr.Trim().Replace("-", "_").Replace(" ", "_");
-                if (!Enum.TryParse<ShippingStatus>(snake, true, out var parsed))
-                {
-                    var parts = snake.Split('_', StringSplitOptions.RemoveEmptyEntries);
-                    var pascal = string.Concat(parts.Select(p => char.ToUpper(p[0]) + p.Substring(1)));
-                    if (!Enum.TryParse<ShippingStatus>(pascal, true, out parsed))
-                        return BadRequest(new Error { code = "invalid_status", message = "status inválido." });
-                    status = parsed;
-                }
-                else
-                {
-                    status = parsed;
-                }
+                return BadRequest(new Error { code = "invalid_status", message = "status inválido." });
             }
 
-            // 2. Validación de fechas
+            // Validación de fechas
             if (fromDate.HasValue && toDate.HasValue && toDate < fromDate)
                 return BadRequest(new Error { code = "invalid_range", message = "to_date debe ser >= from_date." });
 
-            // 3. Delegación TOTAL al servicio
+            // Delegación total al servicio
             var result = await _shippingService.List(userId, status, fromDate, toDate, page, limit);
             return Ok(result);
         }
@@ -71,10 +62,10 @@ namespace ApiDePapas.Controllers
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ShippingDetailResponse>> GetById([FromRoute] int shipping_id)
         {
-            // 1. Delegación TOTAL al servicio
+            // Delegación total al servicio
             var responseDto = await _shippingService.GetByIdAsync(shipping_id); 
             
-            // 2. Chequeo de Nulo
+            // Chequeo de null
             if (responseDto is null)
             {
                 return NotFound(new Error

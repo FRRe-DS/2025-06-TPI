@@ -1,11 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using ApiDePapas.Application.Interfaces;
-using ApiDePapas.Application.DTOs;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
-using Microsoft.AspNetCore.Http; // Added for StatusCodes
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Application.DTOs;
 
 namespace ApiDePapas.Controllers
 {

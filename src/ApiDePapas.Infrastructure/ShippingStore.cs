@@ -41,7 +41,7 @@ namespace ApiDePapas.Infrastructure
             var current = _db[shippingId];
             var updated = new CreateShippingResponse(
                 shipping_id: shippingId,
-                status: ShippingStatus.cancelled,
+                status: ShippingStatus.Canceled,
                 transport_type: current.transport_type,
                 estimated_delivery_at: current.estimated_delivery_at
             );
@@ -49,7 +49,7 @@ namespace ApiDePapas.Infrastructure
 
             return new CancelShippingResponse(
                 shipping_id: shippingId,
-                status: ShippingStatus.cancelled,
+                status: ShippingStatus.Canceled,
                 cancelled_at: now
             );
         }

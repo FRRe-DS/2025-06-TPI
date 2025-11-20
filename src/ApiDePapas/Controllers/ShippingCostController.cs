@@ -1,8 +1,9 @@
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+
 using ApiDePapas.Application.Interfaces;
-using ApiDePapas.Application.Services;
 using ApiDePapas.Application.DTOs;
 
 namespace ApiDePapas.Controllers

@@ -1,4 +1,5 @@
 using System;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,6 @@ using ApiDePapas.Application.Services;
 
 namespace ApiDePapas.Controllers
 {
-    // En ShippingCreateController.cs (versión refactorizada)   
     [ApiController]
     [Route("api/shipping")]
     public class ShippingCreateController : ControllerBase

@@ -1,19 +1,18 @@
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
+
 using ApiDePapas.Domain.Repositories;
 using ApiDePapas.Domain.Entities;
-using System.Threading.Tasks;
 
 namespace ApiDePapas.Controllers
 {
-    // Nombre del Controller y Ruta Base
     [ApiController]
     [Route("api/[controller]")]
     public class LocalityController : ControllerBase
     {
-        // Inyectamos la interfaz del Repositorio
         private readonly ILocalityRepository _locality_repository;
 
-        // Inyección de dependencias (constructor)
         public LocalityController(ILocalityRepository localityRepository)
         {
             _locality_repository = localityRepository;
@@ -43,7 +42,7 @@ namespace ApiDePapas.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
-            // 1) Caso clave compuesta → 1 resultado o 404 (tu caso original)
+            // Caso clave compuesta: 0..1 resultado
             if (!string.IsNullOrWhiteSpace(postal_code) && !string.IsNullOrWhiteSpace(locality_name))
             {
                 var one = await _locality_repository.GetByCompositeKeyAsync(postal_code, locality_name);
@@ -56,7 +55,7 @@ namespace ApiDePapas.Controllers
                 return Ok(one);
             }
 
-            // 2) Cualquier otra combinación → lista
+            // Caso clave simple: 0..* resultados
             if (string.IsNullOrWhiteSpace(postal_code) &&
                 string.IsNullOrWhiteSpace(locality_name) &&
                 string.IsNullOrWhiteSpace(state))
@@ -69,7 +68,6 @@ namespace ApiDePapas.Controllers
 
             var list = await _locality_repository.SearchAsync(state, locality_name, postal_code, page, limit);
 
-            // Si la consulta fue “solo state”, devuelvo forma liviana; si no, devuelvo tal cual
             bool onlyState = !string.IsNullOrWhiteSpace(state)
                             && string.IsNullOrWhiteSpace(locality_name)
                             && string.IsNullOrWhiteSpace(postal_code);
@@ -84,7 +82,7 @@ namespace ApiDePapas.Controllers
                 return Ok(light);
             }
 
-            // Resto de casos (state+locality, solo locality, solo postal) → devuelvo la entidad completa
+            // Resto de casos devuelven la entidad completa
             return Ok(list);
         }
         /// <summary>

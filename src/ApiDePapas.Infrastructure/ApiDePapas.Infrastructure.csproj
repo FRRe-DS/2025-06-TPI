@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Referencias a capas internas -->
   <ItemGroup>
     <ProjectReference Include="..\ApiDePapas.Application\ApiDePapas.Application.csproj" />
+    <ProjectReference Include="..\ApiDePapas.Domain\ApiDePapas.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Todos estos están ahora en la versión 8.0.x compatible con tu runtime -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

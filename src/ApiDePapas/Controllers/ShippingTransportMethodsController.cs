@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Services;
-using ApiDePapas.Domain.Entities;
 
 namespace ApiDePapas.Controllers
 {

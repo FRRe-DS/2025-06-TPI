@@ -1,11 +1,12 @@
-// En src/ApiDePapas/Controllers/ShippingQueryFilterController.cs (Reintroducido)
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
+
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
-using ApiDePapas.Domain.Entities;
+using ApiDePapas.Application.Utils;
 
 namespace ApiDePapas.Controllers
 {
@@ -32,31 +33,17 @@ namespace ApiDePapas.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int limit = 20)
         {
-            // Parse tolerante del status (in_transit, in-transit, InTransit, etc.)
-            ShippingStatus? status = null;
-            if (!string.IsNullOrWhiteSpace(statusStr))
+            // Parsing tolerante del status
+            if (!ShippingStatusParser.TryParse(statusStr, out var status))
             {
-                var snake = statusStr.Trim()
-                                       .Replace("-", "_")
-                                       .Replace(" ", "_");
-
-                if (!Enum.TryParse<ShippingStatus>(snake, true, out var parsed))
-                {
-                    var parts = snake.Split('_', StringSplitOptions.RemoveEmptyEntries);
-                    var pascal = string.Concat(parts.Select(p => char.ToUpper(p[0]) + p.Substring(1)));
-                    if (!Enum.TryParse<ShippingStatus>(pascal, true, out parsed))
-                        return BadRequest(new Error { code = "invalid_status", message = "status inválido." });
-                    status = parsed;
-                }
-                else
-                {
-                    status = parsed;
-                }
+                return BadRequest(new Error { code = "invalid_status", message = "status inválido." });
             }
 
             if (fromDate.HasValue && toDate.HasValue && toDate < fromDate)
+            {
                 return BadRequest(new Error { code = "invalid_range", message = "to_date debe ser >= from_date." });
-
+            }
+                
             // Usa el método List reintroducido en IShippingService
             var result = await _shippingService.List(userId, status, fromDate, toDate, page, limit);
             return Ok(result);

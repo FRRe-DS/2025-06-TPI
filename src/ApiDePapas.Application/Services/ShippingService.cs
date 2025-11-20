@@ -96,7 +96,7 @@ namespace ApiDePapas.Application.Services
 
                 products = req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList(),
 
-                status = ShippingStatus.created,
+                status = ShippingStatus.Created,
                 total_cost = (float)cost.total_cost,
                 currency = cost.currency,
                 created_at = DateTime.UtcNow,
@@ -106,7 +106,7 @@ namespace ApiDePapas.Application.Services
 
                 tracking_number = Guid.NewGuid().ToString(),
                 carrier_name = "PENDIENTE",
-                logs = new List<ShippingLog>(new[] { new ShippingLog(DateTime.UtcNow, ShippingStatus.created, "Shipping created in DB.") })
+                logs = new List<ShippingLog>(new[] { new ShippingLog(DateTime.UtcNow, ShippingStatus.Created, "Shipping created in DB.") })
             };
 
             await _shipping_repository.AddAsync(newShipping);
@@ -173,7 +173,7 @@ namespace ApiDePapas.Application.Services
                 // Tu DTO usa (DateTime timestamp, ShippingStatus status, string message)
                 logs = data.logs.Select(l => new ShippingLogReadDto(
                     timestamp: l.Timestamp ?? DateTime.MinValue, 
-                    status: l.Status ?? ShippingStatus.created, 
+                    status: l.Status ?? ShippingStatus.Created, 
                     message: l.Message
                 )).ToList()
             };
@@ -188,11 +188,11 @@ namespace ApiDePapas.Application.Services
             if (s is null)
                 throw new KeyNotFoundException($"Shipping {id} not found");
 
-            if (s.status is ShippingStatus.delivered or ShippingStatus.cancelled)
+            if (s.status is ShippingStatus.Delivered or ShippingStatus.Canceled)
                 throw new InvalidOperationException(
                     $"Shipping {id} cannot be cancelled in state '{s.status}'.");
 
-            await _shipping_repository.UpdateStatusAsync(id, ShippingStatus.cancelled);
+            await _shipping_repository.UpdateStatusAsync(id, ShippingStatus.Canceled);
 
             // Notify the purchasing service about the cancellation.
             // We don't want to block the response while waiting for this, so we don't await the task.
@@ -201,7 +201,7 @@ namespace ApiDePapas.Application.Services
 
             return new CancelShippingResponse(
                 shipping_id: id,
-                status: ShippingStatus.cancelled,
+                status: ShippingStatus.Canceled,
                 cancelled_at: whenUtc
             );
         }

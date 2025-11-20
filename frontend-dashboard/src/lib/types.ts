@@ -1,11 +1,11 @@
 export type ShipmentStatus =
-  | 'in_transit'
-  | 'created'
-  | 'delivered'
-  | 'cancelled'
-  | 'in_distribution'
-  | 'arrived'
-  | 'reserved';
+  | 'InTransit'
+  | 'Created'
+  | 'Derivered'
+  | 'Canceled'
+  | 'InDistribution'
+  | 'Arrived'
+  | 'Reserved';
 
 export interface Shipment {
   id: string;
