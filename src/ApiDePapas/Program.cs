@@ -15,17 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Para habilitar Swagger / OpenAPI
-builder.Services
-    .AddControllers()
-    .AddJsonOptions(o =>
-    {
-        o.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)
-        );
-    });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddApiControllersAndSwagger();
 
 // Cors configuration
 builder.Services.AddApiCors();
@@ -37,10 +27,8 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddHttpClient<IStockService, StockService>();
 builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 
-builder.Services.AddScoped<TransportService>();
-builder.Services.AddScoped<IShippingService, ShippingService>();
-builder.Services.AddScoped<IDistanceService, DistanceServiceInternal>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
+// Registro de servicios
+builder.Services.AddApplicationServices();
 
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 

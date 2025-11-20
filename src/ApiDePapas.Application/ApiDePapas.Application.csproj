@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Referencias a capas internas -->
   <ItemGroup>
     <ProjectReference Include="..\ApiDePapas.Domain\ApiDePapas.Domain.csproj" />
   </ItemGroup>

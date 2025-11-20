@@ -40,6 +40,7 @@ namespace ApiDePapas.Application.Services
             _stockService = stockService;
             _distance = distance;
         }
+        
         public async Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request)
         {
             float total_cost = 0f;
@@ -51,26 +52,19 @@ namespace ApiDePapas.Application.Services
 
             foreach (var prod in request.products)
             {
-                //Si usamos api real de stock, esto va a ser una llamada HTTP
-                //DistanceServiceExternal : IDistanceService (HTTP → geocoding).
-                //En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
-                //aqui dentro del FOREACH DEBE CAMBIAR:
-                //var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
-                //float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
+                // En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
+                // aqui dentro del FOREACH DEBE CAMBIAR:
+                // var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
+                // float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
+
+                // float distance_km = await _distance.GetDistanceKm(request.delivery_address.postal_code, prod_detail.postal_code);
+                float distance_km = distance_km_request;
 
                 ProductDetail prod_detail = await _stockService.GetProductDetailAsync(prod);
 
-                float total_weight_grs = prod_detail.weight * prod.quantity;
+                float prod_volume = prod_detail.length * prod_detail.width * prod_detail.height;
 
-                float prod_volume_cm3 = prod_detail.length * prod_detail.width * prod_detail.height;
-                float total_volume = prod_volume_cm3 * prod.quantity;
-
-                
-                // float distance_km = _CalculateDistance(request.delivery_address.postal_code, prod_detail.postal_code);
-                float distance_km =distance_km_request;
-
-                // Calcular costo, formula de ejemplo
-                float partial_cost = total_weight_grs * 1.2f + prod_volume_cm3 * 0.5f + distance_km * 8.0f;
+                float partial_cost = ProductShippingCost(prod_detail.weight, prod_volume, distance_km) * prod.quantity;
 
                 total_cost += partial_cost;
 
@@ -80,6 +74,20 @@ namespace ApiDePapas.Application.Services
             var response = new ShippingCostResponse("ARS", total_cost, TransportType.plane, products_with_cost);
 
             return response;
+        }
+
+        // Formula de calculo de costo de envio por producto
+        private float ProductShippingCost(float prod_weight_grs, float prod_volume_cm3, float distance_km)
+        {
+            const float weight_factor = 1.2f;
+            const float volume_factor = 0.5f;
+            const float distance_factor = 8.0f;
+
+            float partial_cost = prod_weight_grs * weight_factor +
+                                 prod_volume_cm3 * volume_factor +
+                                 distance_km * distance_factor;
+
+            return partial_cost;
         }
     }
 }

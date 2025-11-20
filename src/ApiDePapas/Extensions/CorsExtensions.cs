@@ -1,4 +1,4 @@
-namespace ApiDePapas.Utils
+namespace ApiDePapas.Extensions
 {
     public static class CorsExtensions
     {

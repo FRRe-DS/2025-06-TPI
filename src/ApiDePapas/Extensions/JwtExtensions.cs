@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ApiDePapas.Utils
+namespace ApiDePapas.Extensions
 {
     public static class JwtExtensions
     {
