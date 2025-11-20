@@ -1,10 +1,22 @@
 <script>
   import { onMount } from 'svelte';
+  import { toggleTheme, isLight } from '$lib/theme.js';
+
+  let light = false;
+
+  function handleToggle() {
+    toggleTheme();
+    // pequeño delay para asegurar que el DOM se actualice
+    light = isLight();
+  }
 
   onMount(() => {
     const header = document.querySelector('header');
     const sidebar = document.querySelector('.sidebar');
     if (!header || !sidebar) return;
+
+    // inicializar estado del label del tema
+    light = isLight();
 
     const handleScroll = () => {
       const scrolledPastHeader = window.scrollY > header.offsetHeight;
@@ -31,6 +43,9 @@
         </ul>
       </nav>
     </details>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" on:click={handleToggle}>{light ? 'Modo claro' : 'Modo oscuro'}</button>
+    </div>
   </aside>
   <main class="content">
     <slot></slot>
@@ -43,15 +58,17 @@
   }
   .sidebar {
     width: 200px;
-    background-color: #1e1e1e;
+    background-color: var(--card);
     padding: 1rem;
-    border-right: 1px solid #444;
+    border-right: 1px solid var(--border);
     position: fixed;
     left: 0;
     top: var(--header-height, 64px);
     height: calc(100vh - var(--header-height, 64px));
     overflow-y: auto;
     z-index: 20;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Cuando el usuario ha scrolleado más allá del header, la sidebar ocupa toda la ventana */
@@ -60,7 +77,7 @@
     height: 100vh;
   }
   h2 {
-    color: #f0f0f0;
+    color: var(--text);
     margin-bottom: 2rem;
   }
   nav ul {
@@ -70,19 +87,19 @@
   nav a {
     display: block;
     padding: 0.75rem 1rem;
-    color: #ccc;
+    color: var(--muted);
     text-decoration: none;
     border-radius: 4px;
     margin-bottom: 0.5rem;
   }
   nav a:hover {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--button-bg);
+    color: var(--text);
   }
   .sidebar-details summary {
     cursor: pointer;
     padding: 0.5rem 0;
-    color: #f0f0f0;
+    color: var(--text);
     font-weight: 600;
     list-style: none;
   }
@@ -106,5 +123,27 @@
     padding: 2rem;
     overflow-y: auto;
     min-height: calc(100vh - var(--header-height, 64px));
+  }
+  .sidebar-details {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+  }
+  .theme-toggle {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transform: translateY(-12px); /* subir un poco más el botón respecto al fondo */
   }
 </style>

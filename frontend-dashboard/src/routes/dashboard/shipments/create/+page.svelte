@@ -157,8 +157,8 @@
     padding: 0.75rem;
     border-radius: 4px;
     border: 1px solid #555;
-    background-color: #2a2a2a;
-    color: #fff;
+    background-color: var(--card);
+    color: var(--text);
     font-size: 1rem;
   }
   input:read-only {
@@ -175,10 +175,10 @@
     grid-template-columns: 1fr 1fr auto;
     gap: 1rem;
     align-items: flex-end;
-    border: 1px solid #444;
+    border: 1px solid var(--border);
     padding: 1rem;
     border-radius: 4px;
-    background-color: #2a2a2a;
+    background-color: var(--card);
   }
   button {
     padding: 0.75rem 1.5rem;

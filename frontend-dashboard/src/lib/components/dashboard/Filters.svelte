@@ -97,17 +97,17 @@
   }
   input, select {
     padding: 0.5rem;
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-    border: 1px solid #444;
+    background-color: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 4px;
     font-size: 14px;
     width: 100%;
     box-sizing: border-box;
   }
   .search-button {
-    background-color: #333; 
-    color: #fff;
+    background-color: var(--button-bg);
+    color: var(--text);
     padding: 0.75rem 1rem;
     border-radius: 4px;
     border: none;
@@ -115,7 +115,7 @@
     font-size: 14px;
   }
   .search-button:hover {
-    background-color: #444;
+    background-color: var(--button-hover);
   }
   .search-button:active { transform: translateY(1px); }
   .date-filter {
