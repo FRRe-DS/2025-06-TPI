@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/dashboard" | "/dashboard/shipments" | "/dashboard/shipments/create" | "/shipments" | "/shipments/[id]" | "/transport-methods";
+		RouteId(): "/" | "/dashboard" | "/dashboard/shipments" | "/dashboard/shipments/create" | "/shipments" | "/shipments/[id]";
 		RouteParams(): {
 			"/shipments/[id]": { id: string }
 		};
@@ -37,10 +37,9 @@ declare module "$app/types" {
 			"/dashboard/shipments": Record<string, never>;
 			"/dashboard/shipments/create": Record<string, never>;
 			"/shipments": { id?: string };
-			"/shipments/[id]": { id: string };
-			"/transport-methods": Record<string, never>
+			"/shipments/[id]": { id: string }
 		};
-		Pathname(): "/" | "/dashboard" | "/dashboard/" | "/dashboard/shipments" | "/dashboard/shipments/" | "/dashboard/shipments/create" | "/dashboard/shipments/create/" | "/shipments" | "/shipments/" | `/shipments/${string}` & {} | `/shipments/${string}/` & {} | "/transport-methods" | "/transport-methods/";
+		Pathname(): "/" | "/dashboard" | "/dashboard/" | "/dashboard/shipments" | "/dashboard/shipments/" | "/dashboard/shipments/create" | "/dashboard/shipments/create/" | "/shipments" | "/shipments/" | `/shipments/${string}` & {} | `/shipments/${string}/` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/robots.txt" | string & {};
 	}
