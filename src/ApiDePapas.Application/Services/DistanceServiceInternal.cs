@@ -86,20 +86,13 @@ namespace ApiDePapas.Application.Services
 
             cartesian_point /= points.Count;
 
-            double hyp = Math.Sqrt(
-                cartesian_point.X * cartesian_point.X +
-                cartesian_point.Y * cartesian_point.Y
+            Coordinates avg = new Coordinates(
+                cartesian_point.X,
+                cartesian_point.Y,
+                cartesian_point.Z
             );
 
-            double lon_center = Math.Atan2(cartesian_point.Y, cartesian_point.X);
-            double lat_center = Math.Atan2(cartesian_point.Z, hyp);
-
-            Coordinates center = new Coordinates(
-                (float)Angle.RadToDeg(lat_center),
-                (float)Angle.RadToDeg(lon_center)
-            );
-
-            return center;
+            return avg;
         }
     }
 }
