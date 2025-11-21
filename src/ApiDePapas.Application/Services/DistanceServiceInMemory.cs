@@ -17,13 +17,13 @@ namespace ApiDePapas.Application.Services
     
     public class DistanceServiceInMemory : IDistanceService
     {
-        public Task<double> GetDistanceKm(string originCpa, string destinationCpa)
+        public Task<float> GetDistanceKm(string originCpa, string destinationCpa)
         {
             char o = FirstLetter(originCpa);
             char d = FirstLetter(destinationCpa);
 
             if (!coords.TryGetValue(o, out var O) || !coords.TryGetValue(d, out var D))
-                return Task.FromResult(300.0); // fallback neutro
+                return Task.FromResult(300.0f); // fallback neutro
 
             return Task.FromResult(HaversineKm(O.lat, O.lon, D.lat, D.lon));
         }
@@ -31,7 +31,7 @@ namespace ApiDePapas.Application.Services
         private static char FirstLetter(string cpa)
             => string.IsNullOrWhiteSpace(cpa) ? 'H' : char.ToUpperInvariant(cpa.Trim()[0]);
 
-        private static double HaversineKm(double lat1, double lon1, double lat2, double lon2)
+        private static float HaversineKm(double lat1, double lon1, double lat2, double lon2)
         {
             const double R = 6371.0;
             double dLat = ToRad(lat2 - lat1);
@@ -40,7 +40,7 @@ namespace ApiDePapas.Application.Services
                        Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
                        Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
+            return (float)(R * c);
         }
 
         private static double ToRad(double deg) => deg * Math.PI / 180.0;

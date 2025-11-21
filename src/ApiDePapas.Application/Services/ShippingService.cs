@@ -1,11 +1,8 @@
-using System;
-using System.Linq;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
-using System.Threading.Tasks;
 using ApiDePapas.Domain.Entities;
 using ApiDePapas.Domain.Repositories;
-using System.Collections.Generic;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiDePapas.Application.Services
