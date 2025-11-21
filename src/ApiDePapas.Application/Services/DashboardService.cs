@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
+
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiDePapas.Application.Services
 {

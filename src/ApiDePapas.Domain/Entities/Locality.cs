@@ -20,9 +20,9 @@ namespace ApiDePapas.Domain.Entities
         public string country { get; set; } = string.Empty;
 
         [Required]
-        public float lat { get; set; } // O double, según tu precisión
+        public float lat { get; set; }
         
         [Required]
-        public float lon { get; set; } // O double
+        public float lon { get; set; }
     }
 }

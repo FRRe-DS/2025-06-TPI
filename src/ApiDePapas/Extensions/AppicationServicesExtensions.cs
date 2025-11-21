@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using ApiDePapas.Application.Services;
-using ApiDePapas.Domain.Services;
+using ApiDePapas.Application.Interfaces;
 
 namespace ApiDePapas.Extensions
 {
@@ -13,6 +13,7 @@ namespace ApiDePapas.Extensions
             services.AddScoped<IShippingService, ShippingService>();
             services.AddScoped<IDistanceService, DistanceServiceInternal>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<ICalculateCost, CalculateCost>();
 
             return services;
         }

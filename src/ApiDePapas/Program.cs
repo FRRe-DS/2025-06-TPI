@@ -1,7 +1,4 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-using ApiDePapas.Utils;
+using ApiDePapas.Extensions;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
@@ -29,8 +26,6 @@ builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
 
 // Registro de servicios
 builder.Services.AddApplicationServices();
-
-builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 

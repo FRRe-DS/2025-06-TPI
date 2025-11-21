@@ -1,9 +1,6 @@
-using ApiDePapas.Domain.Entities;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+using ApiDePapas.Domain.Entities;
 
 /* 
  * Quotes cost for a shipment without creating any resources.
@@ -48,7 +45,7 @@ namespace ApiDePapas.Application.Services
 
             // Distancia base: de un CD por defecto al destino
             // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
-            var distance_km_request = (float)await _distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
+            var distance_km_request = await _distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
 
             foreach (var prod in request.products)
             {
