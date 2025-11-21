@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using ApiDePapas.Application.DTOs;
-using ApiDePapas.Application.Interfaces; 
-using ApiDePapas.Domain.Entities; 
+using ApiDePapas.Application.Interfaces;
+using ApiDePapas.Domain.Entities;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
@@ -10,7 +10,7 @@ using System;
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("shipping")]
+    [Route("api/shipping")]
     public class ShippingQueryController : ControllerBase
     {
         private readonly IShippingService _shippingService;
@@ -65,15 +65,15 @@ namespace ApiDePapas.Controllers
         // ---
         // MÉTODO 2: Implementa 'GET /shipping/{shipping_id}'
         // ---
-        [HttpGet("{shipping_id:int}")] 
+        [HttpGet("{shipping_id:int}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(ShippingDetailResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ShippingDetailResponse>> GetById([FromRoute] int shipping_id)
         {
             // 1. Delegación TOTAL al servicio
-            var responseDto = await _shippingService.GetByIdAsync(shipping_id); 
-            
+            var responseDto = await _shippingService.GetByIdAsync(shipping_id);
+
             // 2. Chequeo de Nulo
             if (responseDto is null)
             {
