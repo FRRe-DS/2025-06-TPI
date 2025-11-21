@@ -1,12 +1,11 @@
-// En src/ApiDePapas.Infrastructure/Repositories/LocalityRepository.cs
+using System.Linq.Expressions;
+
+using Microsoft.EntityFrameworkCore;
+
+using ApiDePapas.Infrastructure.Persistence;
 using ApiDePapas.Domain.Entities;
 using ApiDePapas.Domain.Repositories;
-using ApiDePapas.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Linq; // Necesario para Linq
+
 
 namespace ApiDePapas.Infrastructure.Repositories
 {

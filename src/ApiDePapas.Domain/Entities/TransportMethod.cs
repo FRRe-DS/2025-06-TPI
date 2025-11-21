@@ -1,23 +1,24 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApiDePapas.Domain.Entities{
-    public class TransportMethod{
+using ApiDePapas.Domain.ValueObjects;
 
-        [Required]
-        public int transport_id { get; set; }
+namespace ApiDePapas.Domain.Entities;
 
-        [Required]
-        public TransportType transport_type { get; set; }
+public class TransportMethod
+{
+    [Required]
+    public int transport_id { get; set; }
 
-        [Required]
-        public float average_speed { get; set; }
+    [Required]
+    public TransportType transport_type { get; set; }
 
-        [Required]
-        public string? available { get; set; }
+    [Required]
+    public float average_speed { get; set; }
 
-        [Required]
-        public float max_capacity { get; set; }
+    [Required]
+    public string? available { get; set; }
 
-    }
+    [Required]
+    public float max_capacity { get; set; }
+
 }

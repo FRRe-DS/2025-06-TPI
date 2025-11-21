@@ -1,9 +1,10 @@
+using System.Linq.Expressions;
+
+using Microsoft.EntityFrameworkCore;
+
 using ApiDePapas.Domain.Entities;
 using ApiDePapas.Domain.Repositories;
 using ApiDePapas.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System.Collections.Generic;
 
 namespace ApiDePapas.Infrastructure.Repositories
 {

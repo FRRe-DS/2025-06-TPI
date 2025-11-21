@@ -1,90 +1,92 @@
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Domain.Entities;
-
-/* 
- * Quotes cost for a shipment without creating any resources.
- * Used by Order Management module to show shipping options to customers before purchase.
- *
- * Integration Flow:
- * 1. Order Management sends only: delivery_address + product IDs with quantities
- * 2. Logistics queries Stock module for EACH product:
- *    - GET /products/{id} → returns weight, dimensions, warehouse_postal_code
- * 3. Logistics calculates:
- *    - Total weight = sum(product.weight * quantity)
- *    - Total volume = sum(product dimensions * quantity)
- *    - Distance = from warehouse_postal_code to delivery_address.postal_code
- * 4. Returns estimated cost based on weight, volume, distance, and transport type
- * 5. NO data is persisted (quote only)
- */
+using ApiDePapas.Domain.ValueObjects;
 
 /*
  * Se tiene que tener en cuenta el medio de transporte para calcular el precio?
  * Como se determina qué medio de transporse se utiliza?
+ * Se puede usar avion como transporte a partir de ciertas distancias mínimas.
  */
 
-namespace ApiDePapas.Application.Services
+namespace ApiDePapas.Application.Services;
+
+public class CalculateCost : ICalculateCost
 {
-    public class CalculateCost : ICalculateCost
+    private readonly IStockService _stockService;
+    private readonly IDistanceService _distance;
+
+    // CP constante para centro de distribución inicial
+    private const string DEFAULT_ORIGIN_CPA = "H3500";
+
+    public CalculateCost(IStockService stockService, IDistanceService distance)
     {
-        private readonly IStockService _stockService;
-        private readonly IDistanceService _distance;
-        // como no tenemos un servicio de distancia, usamos uno en memoria
-        private const string DEFAULT_ORIGIN_CPA = "H3500";
+        _stockService = stockService;
+        _distance = distance;
+    }
+    
+    /// <summary>
+    /// Quotes cost for a shipment without creating any resources.
+    /// Used by Order Management module to show shipping options to customers before purchase.
+    /// </summary>
+    /// <remarks>
+    /// Integration Flow:
+    /// 1. Order Management sends only: delivery_address + product IDs with quantities
+    /// 2. Logistics queries Stock module for EACH product:
+    ///    - GET /products/{id} → returns weight, dimensions, warehouse_postal_code
+    /// 3. Logistics calculates:
+    ///    - Total weight = sum(product.weight * quantity)
+    ///    - Total volume = sum(product dimensions * quantity)
+    ///    - Distance = from warehouse_postal_code to delivery_address.postal_code
+    /// 4. Returns estimated cost based on weight, volume, distance, and transport type
+    /// 5. NO data is persisted (quote only)
+    /// </remarks>
+    public async Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request)
+    {
+        float total_cost = 0f;
+        var products_with_cost = new List<ProductOutput>();
 
-        public CalculateCost(IStockService stockService, IDistanceService distance)
+        // Distancia base: de un CD por defecto al destino
+        // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
+        var distance_km_request = await _distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
+
+        foreach (var prod in request.products)
         {
-            _stockService = stockService;
-            _distance = distance;
-        }
-        
-        public async Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request)
-        {
-            float total_cost = 0f;
-            List<ProductOutput> products_with_cost = new List<ProductOutput>();
+            // En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
+            // aqui dentro del FOREACH DEBE CAMBIAR:
+            // var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
+            // float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
 
-            // Distancia base: de un CD por defecto al destino
-            // (Cuando Stock empiece a devolver warehouse_postal_code por producto, lo usamos ahí)
-            var distance_km_request = await _distance.GetDistanceKm(DEFAULT_ORIGIN_CPA, request.delivery_address.postal_code);
+            // float distance_km = await _distance.GetDistanceKm(request.delivery_address.postal_code, prod_detail.postal_code);
+            float distance_km = distance_km_request;
 
-            foreach (var prod in request.products)
-            {
-                // En FakeStockService/Stock real, devolver warehouse_postal_code en ProductDetail.
-                // aqui dentro del FOREACH DEBE CAMBIAR:
-                // var origin = prod_detail.warehouse_postal_code ?? DEFAULT_ORIGIN_CPA;
-                // float distance_km = (float)_distance.GetDistanceKm(origin, request.delivery_address.postal_code);
+            ProductDetail prod_detail = await _stockService.GetProductDetailAsync(prod);
 
-                // float distance_km = await _distance.GetDistanceKm(request.delivery_address.postal_code, prod_detail.postal_code);
-                float distance_km = distance_km_request;
+            float prod_volume = prod_detail.length * prod_detail.width * prod_detail.height;
 
-                ProductDetail prod_detail = await _stockService.GetProductDetailAsync(prod);
+            float partial_cost = ProductShippingCost(prod_detail.weight, prod_volume, distance_km) * prod.quantity;
 
-                float prod_volume = prod_detail.length * prod_detail.width * prod_detail.height;
+            total_cost += partial_cost;
 
-                float partial_cost = ProductShippingCost(prod_detail.weight, prod_volume, distance_km) * prod.quantity;
-
-                total_cost += partial_cost;
-
-                products_with_cost.Add(new ProductOutput(prod.id, partial_cost));
-            }
-
-            var response = new ShippingCostResponse("ARS", total_cost, TransportType.plane, products_with_cost);
-
-            return response;
+            products_with_cost.Add(new ProductOutput(prod.id, partial_cost));
         }
 
-        // Formula de calculo de costo de envio por producto
-        private float ProductShippingCost(float prod_weight_grs, float prod_volume_cm3, float distance_km)
-        {
-            const float weight_factor = 1.2f;
-            const float volume_factor = 0.5f;
-            const float distance_factor = 8.0f;
+        var response = new ShippingCostResponse("ARS", total_cost, TransportType.Plane, products_with_cost);
 
-            float partial_cost = prod_weight_grs * weight_factor +
-                                 prod_volume_cm3 * volume_factor +
-                                 distance_km * distance_factor;
+        return response;
+    }
 
-            return partial_cost;
-        }
+    // Formula de calculo de costo de envio por producto
+    private static float ProductShippingCost(float prod_weight_grs, float prod_volume_cm3, float distance_km)
+    {
+        const float weight_factor = 1.2f;
+        const float volume_factor = 0.5f;
+        const float distance_factor = 8.0f;
+
+        float partial_cost = prod_weight_grs * weight_factor +
+                                prod_volume_cm3 * volume_factor +
+                                distance_km * distance_factor;
+
+        return partial_cost;
     }
 }

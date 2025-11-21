@@ -1,9 +1,9 @@
 namespace ApiDePapas.Application.Interfaces
 {
-    /**
-     * Define el contrato para un servicio que gestiona
-     * la obtención de tokens de autenticación.
-     */
+    /// <summary>
+    /// Define el contrato para un servicio que gestiona
+    /// la obtención de tokens de autenticación.
+    /// </summary>
     public interface ITokenService
     {
         Task<string> GetAccessTokenAsync();

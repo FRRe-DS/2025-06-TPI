@@ -1,4 +1,4 @@
-using ApiDePapas.Domain.Entities;
+using ApiDePapas.Domain.ValueObjects;
 
 namespace ApiDePapas.Application.Utils
 {

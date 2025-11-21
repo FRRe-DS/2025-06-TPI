@@ -1,11 +1,8 @@
-using System.Threading.Tasks;
-
 using ApiDePapas.Application.DTOs;
 
-namespace ApiDePapas.Application.Interfaces
+namespace ApiDePapas.Application.Interfaces;
+
+public interface ICalculateCost
 {
-    public interface ICalculateCost
-    {
-        Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request);
-    }
+    Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request);
 }

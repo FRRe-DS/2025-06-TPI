@@ -1,25 +1,24 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-using ApiDePapas.Domain.Entities;
+using ApiDePapas.Domain.ValueObjects;
 
-namespace ApiDePapas.Application.DTOs
-{
-    public record ShippingCostResponse(
-        [property: JsonPropertyName("currency")]
-        [Required]
-        string currency,
+namespace ApiDePapas.Application.DTOs;
 
-        [property: JsonPropertyName("total_cost")]
-        [Required]
-        double total_cost,
+public record ShippingCostResponse(
+    [property: JsonPropertyName("currency")]
+    [Required]
+    string currency,
 
-        [property: JsonPropertyName("transport_type")]
-        [Required]
-        TransportType transport_type,
+    [property: JsonPropertyName("total_cost")]
+    [Required]
+    double total_cost,
 
-        [property: JsonPropertyName("products")]
-        [Required]
-        List<ProductOutput> products
-    );
-}
+    [property: JsonPropertyName("transport_type")]
+    [Required]
+    TransportType transport_type,
+
+    [property: JsonPropertyName("products")]
+    [Required]
+    List<ProductOutput> products
+);

@@ -4,9 +4,7 @@ using ApiDePapas.Application.Services;
 using ApiDePapas.Infrastructure;
 using ApiDePapas.Infrastructure.Persistence;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+//using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

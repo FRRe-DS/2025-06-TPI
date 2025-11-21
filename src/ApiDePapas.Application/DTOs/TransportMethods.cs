@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-using ApiDePapas.Domain.Entities;
+using ApiDePapas.Domain.ValueObjects;
 
 namespace ApiDePapas.Application.DTOs
 {

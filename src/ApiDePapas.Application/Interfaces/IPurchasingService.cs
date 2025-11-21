@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace ApiDePapas.Application.Interfaces;
 
-namespace ApiDePapas.Application.Interfaces
+public interface IPurchasingService
 {
-    public interface IPurchasingService
-    {
-        Task NotifyShippingCancellationAsync(int shippingId);
-    }
+    Task NotifyShippingCancellationAsync(int shippingId);
 }

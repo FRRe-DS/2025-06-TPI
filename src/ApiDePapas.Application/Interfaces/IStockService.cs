@@ -1,10 +1,9 @@
-using System.Threading.Tasks;
 using ApiDePapas.Domain.Entities;
+using ApiDePapas.Domain.ValueObjects;
 
-namespace ApiDePapas.Application.Interfaces
+namespace ApiDePapas.Application.Interfaces;
+
+public interface IStockService
 {
-    public interface IStockService
-    {
-        Task<ProductDetail> GetProductDetailAsync(ProductQty product);
-    }
+    Task<ProductDetail> GetProductDetailAsync(ProductQty product);
 }

@@ -1,29 +1,27 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Services;
 
-namespace ApiDePapas.Controllers
+namespace ApiDePapas.Controllers;
+
+[ApiController]
+[Route("api/shipping/transport-methods")]
+public class ShippingTransportMethodsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/shipping/transport-methods")]
-    public class ShippingTransportMethodsController : ControllerBase
+    private readonly TransportService _transportService;
+
+    public ShippingTransportMethodsController(TransportService transportService)
     {
-        private readonly TransportService _transportService;
+        _transportService = transportService;
+    }
 
-        public ShippingTransportMethodsController(TransportService transportService)
-        {
-            _transportService = transportService;
-        }
-
-        [HttpGet]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(TransportMethodsResponse), StatusCodes.Status200OK)]
-        public ActionResult<TransportMethodsResponse> Get()
-        {
-            var resp = _transportService.GetAll();
-            return Ok(resp);
-        }
+    [HttpGet]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(TransportMethodsResponse), StatusCodes.Status200OK)]
+    public ActionResult<TransportMethodsResponse> Get()
+    {
+        var resp = _transportService.GetAll();
+        return Ok(resp);
     }
 }

@@ -1,25 +1,24 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-using ApiDePapas.Domain.Entities;
+using ApiDePapas.Domain.ValueObjects;
 
-namespace ApiDePapas.Application.DTOs
-{
-    public record CreateShippingResponse(
-        [property: JsonPropertyName("shipping_id")]
-        [Required]
-        int shipping_id,
+namespace ApiDePapas.Application.DTOs;
 
-        [property: JsonPropertyName("status")]
-        [Required]
-        ShippingStatus status,
+public record CreateShippingResponse(
+    [property: JsonPropertyName("shipping_id")]
+    [Required]
+    int shipping_id,
 
-        [property: JsonPropertyName("transport_type")]
-        [Required]
-        TransportType transport_type,
+    [property: JsonPropertyName("status")]
+    [Required]
+    ShippingStatus status,
 
-        [property: JsonPropertyName("estimated_delivery_at")]
-        [Required]
-        DateTime estimated_delivery_at
-    );
-}
+    [property: JsonPropertyName("transport_type")]
+    [Required]
+    TransportType transport_type,
+
+    [property: JsonPropertyName("estimated_delivery_at")]
+    [Required]
+    DateTime estimated_delivery_at
+);
