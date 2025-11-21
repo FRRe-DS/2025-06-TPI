@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Http; // Added for StatusCodes
+using ApiDePapas.Domain.Entities;
+
 
 namespace ApiDePapas.Controllers
 {
@@ -50,6 +52,21 @@ namespace ApiDePapas.Controllers
             );
 
             return Ok(response);
+        }
+        [HttpPatch("shipments/{id}/status")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateShipmentStatus(int id, [FromBody] UpdateStatusRequest request)
+        {
+            try
+            {
+                await _dashboardService.UpdateShipmentStatusAsync(id, request.NewStatus);
+                return NoContent(); // 204 No Content es estándar para updates exitosos sin cuerpo de respuesta
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new Error { code = "not_found", message = ex.Message });
+            }
         }
     }
 }

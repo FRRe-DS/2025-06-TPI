@@ -6,6 +6,8 @@ using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using ApiDePapas.Domain.Entities;
+
 
 namespace ApiDePapas.Application.Services
 {
@@ -114,6 +116,35 @@ namespace ApiDePapas.Application.Services
             }
 
             return await query.CountAsync();
+        }
+
+        public async Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus)
+        {
+            // 1. Buscar el pedido
+            var shipping = await _shippingRepository.GetByIdAsync(id);
+            if (shipping == null)
+            {
+                throw new KeyNotFoundException($"Pedido con ID {id} no encontrado.");
+            }
+
+            // 2. Validar si realmente cambió el estado (opcional, pero recomendado)
+            if (shipping.status == newStatus) return;
+
+            // 3. Actualizar Estado y Fecha
+            shipping.status = newStatus;
+            shipping.updated_at = DateTime.UtcNow;
+
+            // 4. AGREGAR LOG (La parte más importante)
+            if (shipping.logs == null) shipping.logs = new List<ShippingLog>();
+            
+            shipping.logs.Add(new ShippingLog(
+                Timestamp: DateTime.UtcNow,
+                Status: newStatus,
+                Message: $"Estado actualizado manualmente desde Dashboard a {newStatus}."
+            ));
+
+            // 5. Guardar usando Update (para que EF detecte el cambio en el JSON)
+            _shippingRepository.Update(shipping);
         }
     }
 }

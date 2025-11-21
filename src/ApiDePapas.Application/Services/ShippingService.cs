@@ -130,7 +130,7 @@ namespace ApiDePapas.Application.Services
 
             var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
 
-            // Mapeo al DTO que SÍ tenés
+            // Mapeo al DTO 
             var responseDto = new ShippingDetailResponse
             {
                 shipping_id = data.shipping_id,
@@ -180,23 +180,43 @@ namespace ApiDePapas.Application.Services
             
             return responseDto;
         }
+        private void TransitionToStatus(ShippingDetail shipping, ShippingStatus newStatus, string message)
+        {
+            // 1. Actualizar estado y fecha
+            shipping.status = newStatus;
+            shipping.updated_at = DateTime.UtcNow;
 
+            // 2. Asegurar que la lista de logs exista
+            if (shipping.logs == null) 
+                shipping.logs = new List<ShippingLog>();
+
+            // 3. Agregar el log histórico
+            shipping.logs.Add(new ShippingLog(
+                Timestamp: DateTime.UtcNow,
+                Status: newStatus,
+                Message: message
+            ));
+        }
         // IMPLEMENTACIÓN REINTRODUCIDA (De la rama VIEJA)
         public async Task<CancelShippingResponse> CancelAsync(int id, DateTime whenUtc)
         {
+            // 1. Obtener entidad
             var s = await _shipping_repository.GetByIdAsync(id);
             if (s is null)
                 throw new KeyNotFoundException($"Shipping {id} not found");
 
+            // 2. Validar estado actual
             if (s.status is ShippingStatus.delivered or ShippingStatus.cancelled)
-                throw new InvalidOperationException(
-                    $"Shipping {id} cannot be cancelled in state '{s.status}'.");
+                throw new InvalidOperationException($"Shipping {id} cannot be cancelled in state '{s.status}'.");
 
-            await _shipping_repository.UpdateStatusAsync(id, ShippingStatus.cancelled);
+            // 3. Usar el método auxiliar para cambiar estado y agregar LOG
+            TransitionToStatus(s, ShippingStatus.cancelled, "The shipment was cancelled");
 
-            // Notify the purchasing service about the cancellation.
-            // We don't want to block the response while waiting for this, so we don't await the task.
-            // A more robust solution might involve a background job or a message queue.
+            // 4. Guardar entidad completa 
+            // Usamos el Update genérico del repositorio para que EF Core detecte el cambio en la columna JSON 'logs'
+            _shipping_repository.Update(s);
+
+            // 5. Notificar (Fuego y olvido)
             _ = _purchasing_service.NotifyShippingCancellationAsync(id);
 
             return new CancelShippingResponse(
