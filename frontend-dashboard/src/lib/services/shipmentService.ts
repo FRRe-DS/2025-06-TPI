@@ -23,14 +23,14 @@ const CLIENT_ID = "grupo-06";
 const CLIENT_SECRET = "8dc00e75-ccea-4d1a-be3d-b586733e256c"; // El secreto que ya descubrimos
 
 // --- 2. FUNCIÓN PARA OBTENER EL TOKEN (LA LLAVE) ---
-async function getAuthToken(): Promise<string> {
+async function getAuthToken(fetchFn: typeof fetch = fetch): Promise<string> {
     const body = new URLSearchParams();
     body.append("grant_type", "client_credentials");
     body.append("client_id", CLIENT_ID);
     body.append("client_secret", CLIENT_SECRET);
 
     try {
-        const response = await fetch(KEYCLOAK_URL, {
+        const response = await fetchFn(KEYCLOAK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: body,
@@ -50,8 +50,8 @@ async function getAuthToken(): Promise<string> {
     }
 }
 
-export async function getAllLocalities(): Promise<Locality[]> {
-    const response = await fetch(`${API_BASE_URL}/locality/getall`);
+export async function getAllLocalities(fetchFn: typeof fetch = fetch): Promise<Locality[]> {
+    const response = await fetchFn(`${API_BASE_URL}/locality/getall`);
     if (!response.ok) {
         throw new Error(`Failed to fetch localities: ${response.statusText}`);
     }
@@ -60,8 +60,9 @@ export async function getAllLocalities(): Promise<Locality[]> {
 
 export async function createShipment(
     shipment: CreateShippingRequest,
+    fetchFn: typeof fetch = fetch,
 ): Promise<CreateShippingResponse> {
-    const response = await fetch(`${API_BASE_URL}/shipping`, {
+    const response = await fetchFn(`${API_BASE_URL}/shipping`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -81,6 +82,7 @@ export async function getDashboardShipments(
     page: number = 1,
     pageSize: number = 10,
     filters: FiltersState,
+    fetchFn: typeof fetch = fetch,
 ): Promise<PaginatedDashboardShipmentsResponse> {
     const params = new URLSearchParams({
         page: page.toString(),
@@ -97,10 +99,10 @@ export async function getDashboardShipments(
 
     try {
         // A. Primero, conseguimos la llave
-        const token = await getAuthToken();
+        const token = await getAuthToken(fetchFn);
 
         // B. Segundo, llamamos a la API con la llave
-        const response = await fetch(url, {
+        const response = await fetchFn(url, {
             headers: {
                 // Reemplazamos 'X-Internal-API-Key' por la autenticación correcta
                 Authorization: `Bearer ${token}`,
@@ -130,15 +132,17 @@ export async function getAllShipments(
     page: number = 1,
     page_size: number = 10,
     filters: FiltersState,
+    fetchFn: typeof fetch = fetch,
 ): Promise<PaginatedDashboardShipmentsResponse> {
-    return getDashboardShipments(page, page_size, filters);
+    return getDashboardShipments(page, page_size, filters, fetchFn);
 }
 
 // Esta función es PÚBLICA (según la guía del profe), así que la dejamos como estaba.
 export async function getShipmentById(
     id: string,
+    fetchFn: typeof fetch = fetch,
 ): Promise<ShippingDetail | undefined> {
-    const response = await fetch(`${API_BASE_URL}/shipping/${id}`); // Sin token
+    const response = await fetchFn(`${API_BASE_URL}/shipping/${id}`); // Sin token
     if (!response.ok) {
         if (response.status === 404) {
             return undefined; // Shipment not found

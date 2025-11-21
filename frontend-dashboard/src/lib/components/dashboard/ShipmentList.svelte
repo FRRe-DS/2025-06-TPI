@@ -179,6 +179,8 @@
     padding: 4px 8px;
     border-radius: 4px;
     text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
   }
   a.button:hover {
     background-color: #2563eb; /* keep a slightly darker accent on hover */
