@@ -44,7 +44,7 @@ namespace ApiDePapas.Infrastructure.Repositories
                 q = q.Where(l => l.state_name.ToUpper() == state.ToUpper());
 
             if (!string.IsNullOrWhiteSpace(localityName))
-                q = q.Where(l => l.locality_name.ToUpper() == localityName.ToUpper());
+                q = q.Where(l => l.locality_name.ToUpper().Contains(localityName.ToUpper()));
 
             if (!string.IsNullOrWhiteSpace(postalCode))
                 q = q.Where(l => l.postal_code == postalCode);

@@ -140,7 +140,12 @@
           </span>
         </td>
         <td>{formatDate(shipment.created_at)}</td>
-        <td><a href="/shipments/{shipment.shipping_id}" class="button">Ver Detalles</a></td>
+        <td>
+          <div class="actions-container">
+            <a href="/shipments/{shipment.shipping_id}" class="button">Ver Detalles</a>
+            <a href="/dashboard/shipments/{shipment.shipping_id}/status" class="button secondary">Cambiar Estado</a>
+          </div>
+        </td>
       </tr>
     {:else}
       <tr>
@@ -161,9 +166,15 @@
     border: 1px solid var(--border);
     padding: 8px;
     text-align: left;
+    vertical-align: middle; /* Alinear botones verticalmente */
   }
   th {
     background-color: var(--card);
+  }
+  .actions-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
   }
   .status-pill {
     padding: 4px 12px;
@@ -184,5 +195,11 @@
   }
   a.button:hover {
     background-color: #2563eb; /* keep a slightly darker accent on hover */
+  }
+  a.button.secondary {
+    background-color: #64748b;
+  }
+  a.button.secondary:hover {
+    background-color: #475569;
   }
 </style>

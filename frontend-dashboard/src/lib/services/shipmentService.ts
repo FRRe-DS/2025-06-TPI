@@ -6,6 +6,7 @@ import type {
     FiltersState,
     CreateShippingRequest,
     CreateShippingResponse,
+    ShipmentStatus,
 } from "$lib/types";
 import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from "$app/environment"; // Import 'browser'
@@ -50,11 +51,39 @@ async function getAuthToken(fetchFn: typeof fetch = fetch): Promise<string> {
     }
 }
 
-export async function getAllLocalities(fetchFn: typeof fetch = fetch): Promise<Locality[]> {
+export async function getAllLocalities(
+    fetchFn: typeof fetch = fetch,
+): Promise<Locality[]> {
     const response = await fetchFn(`${API_BASE_URL}/locality/getall`);
     if (!response.ok) {
-        throw new Error(`Failed to fetch localities: ${response.statusText}`);
+        throw new Error(`Error al obtener localidades: ${response.statusText}`);
     }
+
+    return await response.json();
+}
+
+export async function searchLocalities(
+    query: string,
+    page: number = 1,
+    fetchFn: typeof fetch = fetch,
+): Promise<Locality[]> {
+    //No se va a buscar si el texto es corto, para no saturar la API
+    if (query.length < 2) {
+        return Promise.resolve([]);
+    }
+
+    const params = new URLSearchParams({
+        locality_name: query,
+        limit: "20", //Numero de sugerencias a traer
+        page: page.toString(),
+    });
+
+    const url = `${API_BASE_URL}/locality?${params.toString()}`;
+    const response = await fetchFn(url);
+    if (!response.ok) {
+        throw new Error(`Error al buscar localidades: ${response.statusText}`);
+    }
+
     return await response.json();
 }
 
@@ -74,6 +103,11 @@ export async function createShipment(
     if (!response.ok) {
         throw new Error(`Failed to create shipment: ${response.statusText}`);
     }
+
+    // After creating a shipment, we might want to invalidate some caches.
+    // For now, we'll just return the response.
+    // A more advanced implementation could invalidate caches related to shipment lists.
+
     return await response.json();
 }
 
@@ -153,4 +187,33 @@ export async function getShipmentById(
     }
     const detailData: ShippingDetail = await response.json();
     return detailData;
+}
+
+export async function updateShipmentStatus(
+    id: string,
+    newStatus: ShipmentStatus,
+    message: string,
+    fetchFn: typeof fetch = fetch
+): Promise<boolean> {
+    const token = await getAuthToken(fetchFn);
+    const url = `${API_BASE_URL}/shipments/${id}/status`;
+
+    const response = await fetchFn(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            new_status: newStatus,
+            message: message,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update shipment status: ${response.statusText} - ${errorText}`);
+    }
+
+    return true;
 }

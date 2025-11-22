@@ -278,5 +278,22 @@ namespace ApiDePapas.Application.Services
 
             return new ShippingListResponse(summaries, pagination);
         }
+
+        public async Task<bool> UpdateStatusAsync(int shippingId, UpdateStatusRequest request)
+        {
+            var shipping = await _shipping_repository.GetByIdAsync(shippingId);
+            if (shipping == null)
+            {
+                return false; // O lanzar KeyNotFoundException si se prefiere
+            }
+
+            // Usar el método helper para aplicar el cambio de estado y el log
+            TransitionToStatus(shipping, request.NewStatus, request.Message);
+
+            // El método Update del repositorio ya se encarga de llamar a SaveChanges.
+            _shipping_repository.Update(shipping);
+
+            return true;
+        }
     }
 }
