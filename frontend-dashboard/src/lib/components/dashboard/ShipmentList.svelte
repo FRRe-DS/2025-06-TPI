@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DashboardShipmentDto, ShipmentStatus, TransportType } from '$lib/types';
+  import Icon from '$lib/components/Icon.svelte';
 
   export let shipments: DashboardShipmentDto[] = [];
 
@@ -13,10 +14,10 @@
     'arrived': 'Arribado',
   };
 
-  const transportIcons: Record<TransportType, string> = {
-    truck: '🚚',
-    plane: '✈️',
-    boat: '🚢',
+  const transportNameMap: Record<string, string> = {
+    'Road Trucking': 'truck',
+    'Sea Freight': 'boat',
+    'Air Cargo': 'plane'
   };
 
   const statusColors: Record<ShipmentStatus, string> = {
@@ -117,9 +118,7 @@
           </div>
           <div class="cell transport-cell">
             <span class="mobile-label">Transporte:</span>
-            <span class="transport-icon" title={shipment.transport_type}>
-              {transportIcons[shipment.transport_type] || '❔'}
-            </span>
+            <Icon name={transportNameMap[shipment.transport_type] || 'truck'} className="transport-icon" />
           </div>
           <div class="cell date-cell">
             <span class="mobile-label">Ingreso:</span>
@@ -198,10 +197,6 @@
 
   .transport-cell {
     /* Quitamos el centrado para que se alinee a la izquierda como los demás */
-  }
-  .transport-icon {
-    font-size: 1.5rem;
-    color: var(--accent);
   }
 
   .status-pill {

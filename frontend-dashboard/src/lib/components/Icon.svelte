@@ -22,13 +22,14 @@
         try {
             // Usamos `import.meta.glob` de Vite para manejar las importaciones dinámicas.
             // Esto le indica a Vite que todos los archivos .svg en esta carpeta son posibles módulos.
-            const modules = import.meta.glob('/src/lib/assets/icons/*.svg', { as: 'raw' });
-            const path = `/src/lib/assets/icons/${name}.svg`;
+            const modules = import.meta.glob('../assets/icons/*.svg', { as: 'raw' });
+            const iconName = name.trim().toLowerCase();
+            const path = `../assets/icons/${iconName}.svg`;
             
             if (modules[path]) {
                 svgContent = await modules[path]();
             } else {
-                throw new Error(`Icono '${name}' no encontrado.`);
+                throw new Error(`Icono '${iconName}' no encontrado en la ruta '${path}'. Módulos disponibles: ${Object.keys(modules).join(', ')}`);
             }
         } catch (e) {
             if (e instanceof Error) {
