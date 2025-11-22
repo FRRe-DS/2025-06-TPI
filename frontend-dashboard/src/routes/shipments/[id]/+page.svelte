@@ -34,12 +34,6 @@
         "arrived",
     ];
 
-    const transportNameMap: Record<string, string> = {
-        'Road Trucking': 'truck',
-        'Sea Freight': 'boat',
-        'Air Cargo': 'plane'
-    };
-
 	const statusColors: Record<ShipmentStatus, string> = {
 		created: '#f0e68c',
 		reserved: '#ffa07a',
@@ -119,7 +113,7 @@
 					</div>
 					<div class="info-item">
 						<span class="label">Transporte</span>
-						<Icon name={transportNameMap[shipment.transport_type] || 'truck'} className="transport-icon" />
+						<Icon name={shipment.transport_type} className="transport-icon" />
 					</div>
 					<div class="info-item">
 						<span class="label">Costo Total</span>

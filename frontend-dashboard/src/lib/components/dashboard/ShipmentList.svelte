@@ -14,12 +14,6 @@
     'arrived': 'Arribado',
   };
 
-  const transportNameMap: Record<string, string> = {
-    'Road Trucking': 'truck',
-    'Sea Freight': 'boat',
-    'Air Cargo': 'plane'
-  };
-
   const statusColors: Record<ShipmentStatus, string> = {
     'created': '#f0e68c',
     'reserved': '#ffa07a',
@@ -118,7 +112,7 @@
           </div>
           <div class="cell transport-cell">
             <span class="mobile-label">Transporte:</span>
-            <Icon name={transportNameMap[shipment.transport_type] || 'truck'} className="transport-icon" />
+            <Icon name={shipment.transport_type} className="transport-icon" />
           </div>
           <div class="cell date-cell">
             <span class="mobile-label">Ingreso:</span>
