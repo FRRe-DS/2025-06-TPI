@@ -28,12 +28,12 @@ public record DeliveryAddressRequest(
     public AddressQuery ToQuery() =>  new AddressQuery(street, number, postal_code, locality_name);
     public Address ToAddress()
     {
-        var address = new Address();
-        address.street = street;
-        address.number = number;
-        address.postal_code = postal_code;
-        address.locality_name = locality_name;
-
-        return address;
+        return new Address()
+        {
+            street = street,
+            number = number,
+            postal_code = postal_code,
+            locality_name = locality_name    
+        };
     }
 }

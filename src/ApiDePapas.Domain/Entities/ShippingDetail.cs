@@ -48,4 +48,35 @@ public class ShippingDetail
 
     [Required]
     public List<ShippingLog> logs { get; set; } = new List<ShippingLog>();
+
+    public ShippingDetail(
+        int order_id, int user_id, int travel_id, int delivery_address_id, float total_cost,
+        string currency, List<ProductQty> products, double estimated_days
+    )
+    {
+        this.order_id = order_id;
+        this.user_id = user_id;
+
+        this.travel_id = travel_id;
+        this.delivery_address_id = delivery_address_id;
+
+        this.products = products;
+
+        status = ShippingStatus.Created;
+        this.total_cost = total_cost;
+        this.currency = currency;
+        created_at = DateTime.UtcNow;
+        updated_at = DateTime.UtcNow;
+
+        estimated_delivery_at = DateTime.UtcNow.AddDays(estimated_days);
+
+        tracking_number = Guid.NewGuid().ToString();
+        carrier_name = "PENDIENTE";
+        logs = [new ShippingLog(ShippingStatus.Created, "Shipping created in DB.")];
+    }
+
+    public bool IsCancellable()
+    {
+        return !(status is ShippingStatus.Delivered || status is ShippingStatus.Canceled);
+    }
 }

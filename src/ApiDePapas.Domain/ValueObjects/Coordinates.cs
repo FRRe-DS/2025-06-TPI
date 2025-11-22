@@ -2,37 +2,37 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiDePapas.Domain.ValueObjects;
 
-public class Coordinates
+public record Coordinates(
+    [property: Required, Range(-90.0, 90.0)]
+    float Lat,
+
+    [property: Required, Range(-180.0, 180.0)]
+    float Lon
+)
 {
-    [Required]
-    [Range(-90.0, 90.0)]
-    public float Lat { get; set; }
-
-    [Required]
-    [Range(-180.0, 180.0)]
-    public float Lon { get; set; }
-
-    public Coordinates(float lat, float lon)
-    {
-        Lat = lat;
-        Lon = lon;
-    }
-
     // Construir coordenadas utilizando un punto en una esfera unitaria
     public Coordinates(float x, float y, float z)
-    {
-        double hyp = Math.Sqrt(x * x + y * y);
-
-        double _lat = Math.Atan2(z, hyp);
-        double _lon = Math.Atan2(y, x);
-
-        Lat = (float)Angle.RadToDeg(_lat);
-        Lon = (float)Angle.RadToDeg(_lon);
-    }
+        : this(
+            (float)Angle.RadToDeg(Math.Atan2(z, Math.Sqrt(x * x + y * y))),
+            (float)Angle.RadToDeg(Math.Atan2(y, x))
+        )
+    { }
 }
 
-public static class Angle
+public record Angle(double Degrees)
 {
+    public double Radians => DegToRad(Degrees);
+
+    public static Angle FromDegrees(double degrees)
+    {
+        return new Angle(DegToRad(degrees));
+    }
+
+    public static Angle FromRadians(double radians)
+    {
+        return new Angle(radians);
+    }
+
     public static double DegToRad(double degrees) => degrees * Math.PI / 180.0f;
     public static double RadToDeg(double radians) => radians * 180.0f / Math.PI;
 }

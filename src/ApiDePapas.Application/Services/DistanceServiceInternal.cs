@@ -48,13 +48,13 @@ public class DistanceServiceInternal : IDistanceService
     {
         const double R = 6371.0;
 
-        double dLat = Angle.DegToRad(p2.Lat - p1.Lat);
-        double dLon = Angle.DegToRad(p2.Lon - p1.Lon);
+        var dLat = Angle.FromDegrees(p2.Lat - p1.Lat);
+        var dLon = Angle.FromDegrees(p2.Lon - p1.Lon);
 
-        double hv = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+        double hv = Math.Sin(dLat.Radians / 2) * Math.Sin(dLat.Radians / 2) +
                     Math.Cos(Angle.DegToRad(p1.Lat)) *
                     Math.Cos(Angle.DegToRad(p2.Lat)) *
-                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+                    Math.Sin(dLon.Radians / 2) * Math.Sin(dLon.Radians / 2);
 
         double c = 2 * Math.Atan2(Math.Sqrt(hv), Math.Sqrt(1 - hv));
         return (float)(R * c);
@@ -71,14 +71,14 @@ public class DistanceServiceInternal : IDistanceService
 
         foreach (Coordinates p in points)
         {
-            double latRad = Angle.DegToRad(p.Lat);
-            double lonRad = Angle.DegToRad(p.Lon);
+            var pLat = Angle.FromDegrees(p.Lat);
+            var pLon = Angle.FromDegrees(p.Lon);
 
-            double cosLat = Math.Cos(latRad);
+            double cosLat = Math.Cos(pLat.Radians);
 
-            cartesianPoint.X += (float)(cosLat * Math.Cos(lonRad));
-            cartesianPoint.Y += (float)(cosLat * Math.Sin(lonRad));
-            cartesianPoint.Z += (float)Math.Sin(latRad);
+            cartesianPoint.X += (float)(cosLat * Math.Cos(pLon.Radians));
+            cartesianPoint.Y += (float)(cosLat * Math.Sin(pLon.Radians));
+            cartesianPoint.Z += (float)Math.Sin(pLat.Radians);
         }
 
         cartesianPoint /= points.Count;

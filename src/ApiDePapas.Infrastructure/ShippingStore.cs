@@ -54,5 +54,4 @@ public class ShippingStore : IShippingStore
             cancelled_at: now
         );
     }
-
 }
