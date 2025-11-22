@@ -30,6 +30,7 @@ namespace ApiDePapas.Controllers
             var costReq = new ShippingCostRequest
             (
                 request.delivery_address,
+                request.transport_type,
                 request.products
             );
             

@@ -46,11 +46,13 @@ namespace ApiDePapas.Application.Services
 
             var costReq = new ShippingCostRequest(
                 req.delivery_address,
+                req.transport_type,
                 req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()
             );
             var cost = await _calculate_cost.CalculateShippingCostAsync(costReq);
 
-            int default_estimated_days = 3;
+            // 🔽 NUEVO: los días estimados vienen de CalculateCost (máximo según tipo de transporte)
+            int estimated_days = CalculateCost.GetMaxEstimatedDays(req.transport_type);
 
             var locality = await _locality_repository.GetByCompositeKeyAsync(
                 req.delivery_address.postal_code,
@@ -102,7 +104,8 @@ namespace ApiDePapas.Application.Services
                 created_at = DateTime.UtcNow,
                 updated_at = DateTime.UtcNow,
 
-                estimated_delivery_at = DateTime.UtcNow.AddDays(default_estimated_days),
+                // 🔽 AQUÍ USAMOS LOS DÍAS CALCULADOS SEGÚN EL TIPO DE TRANSPORTE
+                estimated_delivery_at = DateTime.UtcNow.AddDays(estimated_days),
 
                 tracking_number = Guid.NewGuid().ToString(),
                 carrier_name = "PENDIENTE",
@@ -264,7 +267,7 @@ namespace ApiDePapas.Application.Services
                 Status: s.status,
                 TransportType: (s.Travel != null && s.Travel.TransportMethod != null)
                                 ? s.Travel.TransportMethod.transport_type
-                                : TransportType.truck,
+                                : TransportType.road,
                 EstimatedDeliveryAt: s.estimated_delivery_at,
                 CreatedAt: s.created_at
             )).ToList();
