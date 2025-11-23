@@ -17,7 +17,7 @@
     let number: number;
     let postal_code: string = "";
     let locality_name: string = "";
-    let transport_type: TransportType = "truck";
+    let transport_type: TransportType = "air";
     let products: { id: number; quantity: number }[] = [{ id: 0, quantity: 1 }];
     
     let errorMessage: string | null = null;
@@ -31,9 +31,10 @@
     let transportError: string | null = null;
 
     const transportNameMap: Record<string, string> = {
-        'Road Trucking': 'truck',
-        'Sea Freight': 'boat',
-        'Air Cargo': 'plane'
+        'Road Transport': 'road',
+        'Sea Freight': 'sea',
+        'rail Freight': 'rail',
+        'Air Freight': 'air'
     };
 
     onMount(async () => {
@@ -148,7 +149,7 @@
                                     {#each transportMethods as method}
                                         <label class="transport-option" class:selected={transport_type === method.name}>
                                             <input type="radio" bind:group={transport_type} name="transport_type" value={method.name}>
-                                            <Icon name={transportNameMap[method.name] || 'truck'} />
+                                            <Icon name={transportNameMap[method.name] || 'road'} />
                                             <span>{method.name}</span>
                                         </label>
                                     {/each}

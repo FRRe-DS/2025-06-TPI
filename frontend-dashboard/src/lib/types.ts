@@ -43,9 +43,10 @@ export interface ProductQty {
 }
 
 export type TransportType =
-  | 'truck'
-  | 'plane'
-  | 'boat';
+  | 'road'
+  | 'air'
+  | 'sea'
+  | 'rail';
 
 export interface AddressReadDto {
   address_id: number;
