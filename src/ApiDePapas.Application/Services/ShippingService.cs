@@ -19,6 +19,7 @@ namespace ApiDePapas.Application.Services
         private readonly IAddressRepository _address_repository;
         private readonly ITravelRepository _travel_repository;
         private readonly IPurchasingService _purchasing_service;
+        private readonly IDistanceService _distance_service;
 
         // Constructor se mantiene
         public ShippingService(
@@ -27,7 +28,8 @@ namespace ApiDePapas.Application.Services
             ILocalityRepository localityRepository,
             IAddressRepository addressRepository,
             ITravelRepository travelRepository,
-            IPurchasingService purchasingService)
+            IPurchasingService purchasingService,
+            IDistanceService distanceService)
         {
             _calculate_cost = calculateCost;
             _shipping_repository = shippingRepository;
@@ -35,6 +37,7 @@ namespace ApiDePapas.Application.Services
             _address_repository = addressRepository;
             _travel_repository = travelRepository;
             _purchasing_service = purchasingService;
+            _distance_service = distanceService;
         }
 
         // IMPLEMENTACIÓN DE CREACIÓN (ACTUALIZADA: Manejo de errores con null)
@@ -83,9 +86,49 @@ namespace ApiDePapas.Application.Services
             }
             int delivery_address_id = existingAddress.address_id;
 
+            // ========================================================================
+            // 🚛 LÓGICA DE SELECCIÓN DE CENTRO DE DISTRIBUCIÓN más cercano al cliente
+            // ==========================================================================
+            
+            // A. Obtener todos los CDs disponibles
+            var distributionCenters = await _travel_repository.GetAllDistributionCentersAsync();
+            
+            int bestDcId = 1; // Default por si acaso
+            double minDistance = double.MaxValue;
+
+            // B. Iterar y buscar el más cercano
+            foreach (var dc in distributionCenters)
+            {
+                // Si el CD no tiene dirección, lo saltamos
+                if (dc.Address == null) continue;
+
+                // Calculamos distancia: CD PostalCode -> Cliente PostalCode
+                double dist = await _distance_service.GetDistanceKm(
+                    dc.Address.postal_code, 
+                    req.delivery_address.postal_code
+                );
+
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    bestDcId = dc.distribution_center_id;
+                }
+            }
+            // ==========================================================
+
+            // Mapeo del transporte (tu código de antes)
+            int transportMethodId = req.transport_type switch
+            {
+                TransportType.road => 1,
+                TransportType.air  => 2001,
+                TransportType.rail => 3,
+                TransportType.sea  => 1001,
+            
+            };
+
             int travel_id = await _travel_repository.AssignToExistingOrCreateNewTravelAsync(
-                distributionCenterId: 1,
-                transportMethodId: 1
+                distributionCenterId: bestDcId, // 
+                transportMethodId: transportMethodId
             );
 
             var newShipping = new ShippingDetail
