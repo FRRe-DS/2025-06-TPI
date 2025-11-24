@@ -44,7 +44,7 @@ namespace ApiDePapas.Application.Services
             if (req == null || req.products == null || req.products.Count == 0)
                 return null;
 
-            var costReq = new ShippingCostRequest(
+            var costReq = new CalculateCostRequest(
                 req.delivery_address,
                 req.transport_type,
                 req.products.Select(p => new ProductQty(p.id, p.quantity)).ToList()

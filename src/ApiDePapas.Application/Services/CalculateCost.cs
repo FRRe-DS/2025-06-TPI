@@ -83,13 +83,14 @@ namespace ApiDePapas.Application.Services
             };
         }
 
-        public async Task<ShippingCostResponse> CalculateShippingCostAsync(ShippingCostRequest request)
+        public async Task<ShippingCostResponse> CalculateShippingCostAsync(CalculateCostRequest request)
         {
             float total_cost = 0f;
             List<ProductOutput> products_with_cost = new();
-
+            //Si es null, usa 'road'.
+            TransportType transporttype = request.transport_type ?? TransportType.road;
             // multiplicador según el transporte que pidió Compras en el request
-            float transportMultiplier = GetTransportMultiplier(request.transport_type);
+            float transportMultiplier = GetTransportMultiplier(transporttype);
 
             foreach (var prod in request.products)
             {
@@ -127,13 +128,13 @@ namespace ApiDePapas.Application.Services
             }
 
             // 🔹 NUEVO: calcular fecha estimada usando el máximo de días para ese transporte
-            int estimated_days = GetMaxEstimatedDays(request.transport_type);
+            int estimated_days = GetMaxEstimatedDays(transporttype);
             DateTime estimated_delivery_at = DateTime.UtcNow.AddDays(estimated_days);
 
             var response = new ShippingCostResponse(
                 currency: "ARS",
                 total_cost: total_cost,
-                transport_type: request.transport_type,
+                transport_type: transporttype,
                 products: products_with_cost,
                 estimated_delivery_at: estimated_delivery_at
             );

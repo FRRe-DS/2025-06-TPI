@@ -10,10 +10,6 @@ namespace ApiDePapas.Application.DTOs
         [Required]
         DeliveryAddressRequest delivery_address,
 
-        [property: JsonPropertyName("transport_type")]
-        [Required]
-        TransportType transport_type,
-
         [property: JsonPropertyName("products")]
         [Required]  
         List<ProductQty> products

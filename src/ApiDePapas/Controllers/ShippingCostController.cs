@@ -27,10 +27,10 @@ namespace ApiDePapas.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new Error { code = "bad_request", message = "Malformed request body." });
 
-            var costReq = new ShippingCostRequest
+            var costReq = new CalculateCostRequest
             (
                 request.delivery_address,
-                request.transport_type,
+                null, // Si es null, usa 'road'.
                 request.products
             );
             
