@@ -5,6 +5,6 @@ namespace ApiDePapas.Domain.Entities
         air,
         road,
         rail,
-        sea, 
-    } 
+        sea,
+    }
 }

@@ -7,7 +7,7 @@ import type {
     CreateShippingRequest,
     CreateShippingResponse,
     ShipmentStatus,
-    TransportMethods
+    TransportMethods,
 } from "$lib/types";
 import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from "$app/environment"; // Import 'browser'
@@ -101,8 +101,11 @@ export async function createShipment(
         body: JSON.stringify(shipment),
     });
 
+    console.log(shipment);
     if (!response.ok) {
-        const error = new Error(`Failed to create shipment: ${response.statusText}`);
+        const error = new Error(
+            `Failed to create shipment: ${response.statusText}`,
+        );
         (error as any).response = response;
         throw error;
     }
@@ -115,11 +118,15 @@ export async function createShipment(
 }
 
 export async function getTransportMethods(
-    fetchFn: typeof fetch = fetch
+    fetchFn: typeof fetch = fetch,
 ): Promise<TransportMethods[]> {
-    const response = await fetchFn(`${API_BASE_URL}/shipping/transport-methods`);
+    const response = await fetchFn(
+        `${API_BASE_URL}/shipping/transport-methods`,
+    );
     if (!response.ok) {
-        throw new Error(`Error al obtener los métodos de transporte: ${response.statusText}`);
+        throw new Error(
+            `Error al obtener los métodos de transporte: ${response.statusText}`,
+        );
     }
     const data = await response.json();
     return data.transport_methods;
@@ -207,16 +214,16 @@ export async function updateShipmentStatus(
     id: string,
     newStatus: ShipmentStatus,
     message: string,
-    fetchFn: typeof fetch = fetch
+    fetchFn: typeof fetch = fetch,
 ): Promise<boolean> {
     const token = await getAuthToken(fetchFn);
     const url = `${API_BASE_URL}/shipments/${id}/status`;
 
     const response = await fetchFn(url, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
             new_status: newStatus,
@@ -226,7 +233,9 @@ export async function updateShipmentStatus(
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to update shipment status: ${response.statusText} - ${errorText}`);
+        throw new Error(
+            `Failed to update shipment status: ${response.statusText} - ${errorText}`,
+        );
     }
 
     return true;

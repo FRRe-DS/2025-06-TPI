@@ -33,7 +33,7 @@
     const transportNameMap: Record<string, string> = {
         'Road Transport': 'road',
         'Sea Freight': 'sea',
-        'rail Freight': 'rail',
+        'Rail Freight': 'rail',
         'Air Freight': 'air'
     };
 
@@ -41,7 +41,8 @@
         try {
             transportMethods = await getTransportMethods();
             if (transportMethods.length > 0) {
-                transport_type = transportMethods[0].name as TransportType;
+                const defaultMethod = transportMethods[0];
+                transport_type = (transportNameMap[defaultMethod.name] || 'air') as TransportType;
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -147,8 +148,8 @@
                             {:else}
                                 <div class="transport-options">
                                     {#each transportMethods as method}
-                                        <label class="transport-option" class:selected={transport_type === method.name}>
-                                            <input type="radio" bind:group={transport_type} name="transport_type" value={method.name}>
+                                        <label class="transport-option" class:selected={transport_type === transportNameMap[method.name]}>
+                                            <input type="radio" bind:group={transport_type} name="transport_type" value={transportNameMap[method.name]}>
                                             <Icon name={transportNameMap[method.name] || 'road'} />
                                             <span>{method.name}</span>
                                         </label>
