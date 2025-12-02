@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/dashboard" | "/dashboard/shipments" | "/dashboard/shipments/create" | "/dashboard/shipments/[id]" | "/dashboard/shipments/[id]/status" | "/shipments" | "/shipments/[id]";
+		RouteId(): "/" | "/dashboard" | "/dashboard/shipments" | "/dashboard/shipments/create" | "/dashboard/shipments/[id]" | "/dashboard/shipments/[id]/status" | "/dashboard/transport-methods" | "/shipments" | "/shipments/[id]";
 		RouteParams(): {
 			"/dashboard/shipments/[id]": { id: string };
 			"/dashboard/shipments/[id]/status": { id: string };
@@ -40,10 +40,11 @@ declare module "$app/types" {
 			"/dashboard/shipments/create": Record<string, never>;
 			"/dashboard/shipments/[id]": { id: string };
 			"/dashboard/shipments/[id]/status": { id: string };
+			"/dashboard/transport-methods": Record<string, never>;
 			"/shipments": { id?: string };
 			"/shipments/[id]": { id: string }
 		};
-		Pathname(): "/" | "/dashboard" | "/dashboard/" | "/dashboard/shipments" | "/dashboard/shipments/" | "/dashboard/shipments/create" | "/dashboard/shipments/create/" | `/dashboard/shipments/${string}` & {} | `/dashboard/shipments/${string}/` & {} | `/dashboard/shipments/${string}/status` & {} | `/dashboard/shipments/${string}/status/` & {} | "/shipments" | "/shipments/" | `/shipments/${string}` & {} | `/shipments/${string}/` & {};
+		Pathname(): "/" | "/dashboard" | "/dashboard/" | "/dashboard/shipments" | "/dashboard/shipments/" | "/dashboard/shipments/create" | "/dashboard/shipments/create/" | `/dashboard/shipments/${string}` & {} | `/dashboard/shipments/${string}/` & {} | `/dashboard/shipments/${string}/status` & {} | `/dashboard/shipments/${string}/status/` & {} | "/dashboard/transport-methods" | "/dashboard/transport-methods/" | "/shipments" | "/shipments/" | `/shipments/${string}` & {} | `/shipments/${string}/` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): "/robots.txt" | string & {};
 	}
