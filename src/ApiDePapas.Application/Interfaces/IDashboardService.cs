@@ -24,6 +24,6 @@ namespace ApiDePapas.Application.Interfaces
             DateTime? startDate,
             DateTime? endDate);
 
-        Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus);
+        Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus, string? message = null);
     }
 }

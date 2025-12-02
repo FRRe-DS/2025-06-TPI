@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using ApiDePapas.Application.DTOs;
 using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Entities;
@@ -11,6 +12,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/shipping")]
+    //[Authorize(Roles = "compras-be, logistica-be")]
     public class ShippingQueryController : ControllerBase
     {
         private readonly IShippingService _shippingService;

@@ -56,16 +56,28 @@ namespace ApiDePapas.Controllers
         [HttpPatch("shipments/{id}/status")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)] // <--- 1. Nuevo: Documentamos el conflicto
         public async Task<IActionResult> UpdateShipmentStatus(int id, [FromBody] UpdateStatusRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new Error { code = "bad_request", message = "Datos inválidos" });
+
             try
             {
-                await _dashboardService.UpdateShipmentStatusAsync(id, request.NewStatus);
-                return NoContent(); // 204 No Content es estándar para updates exitosos sin cuerpo de respuesta
+                // 2. Pasamos el mensaje al servicio
+                // El servicio ya tiene la lógica para usar un mensaje default si este es null
+                await _dashboardService.UpdateShipmentStatusAsync(id, request.NewStatus, request.Message);
+                
+                return NoContent(); 
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new Error { code = "not_found", message = ex.Message });
+            }
+            catch (InvalidOperationException ex) // <--- 3. Nuevo: Capturamos reglas de negocio
+            {
+                // Esto maneja: "No se puede cancelar un pedido entregado", etc.
+                return Conflict(new Error { code = "conflict", message = ex.Message });
             }
         }
     }

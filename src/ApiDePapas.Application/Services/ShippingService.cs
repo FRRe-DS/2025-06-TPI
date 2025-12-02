@@ -333,6 +333,30 @@ namespace ApiDePapas.Application.Services
                 return false; // O lanzar KeyNotFoundException si se prefiere
             }
 
+            // 1. Si ya está Cancelado, no se puede tocar.
+            if (shipping.status == ShippingStatus.cancelled)
+            {
+                throw new InvalidOperationException($"El envío {shippingId} está cancelado y no puede modificarse.");
+            }
+
+            // 2. Si ya está Entregado, no se puede cambiar (a menos que implementes lógica de devoluciones).
+            if (shipping.status == ShippingStatus.delivered)
+            {
+                throw new InvalidOperationException($"El envío {shippingId} ya fue entregado y no puede cambiar de estado.");
+            }
+            // 3. No permitir revertir a 'Created' desde otros estados.
+            if (request.NewStatus == ShippingStatus.created && shipping.status != ShippingStatus.created)
+            {
+                throw new InvalidOperationException($"No se puede revertir el envío {shippingId} al estado 'Created'.");
+            }
+            if (request.NewStatus == ShippingStatus.cancelled)
+            {
+                // CancelAsync se encarga de validar si se puede cancelar 
+                // y de enviar la notificación a Compras.
+                await CancelAsync(shippingId, DateTime.UtcNow);
+                return true;
+            }
+
             // Usar el método helper para aplicar el cambio de estado y el log
             TransitionToStatus(shipping, request.NewStatus, request.Message);
 

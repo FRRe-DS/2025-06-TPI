@@ -14,12 +14,13 @@ namespace ApiDePapas.Application.Services
     public class DashboardService : IDashboardService
     {
         private readonly IShippingRepository _shippingRepository;
+        private readonly IShippingService _shippingService; // <--- 1. Inyectamos esto para usar CancelAsync
 
-        public DashboardService(IShippingRepository shippingRepository)
+        public DashboardService(IShippingRepository shippingRepository, IShippingService shippingService)
         {
             _shippingRepository = shippingRepository;
+            _shippingService = shippingService;
         }
-
         public async Task<IEnumerable<DashboardShipmentDto>> GetDashboardShipmentsAsync(
             int page, int pageSize, string? id, string? city, string? status, DateTime? startDate, DateTime? endDate)
         {
@@ -118,7 +119,7 @@ namespace ApiDePapas.Application.Services
             return await query.CountAsync();
         }
 
-        public async Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus)
+        public async Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus, string? message = null)
         {
             // 1. Buscar el pedido
             var shipping = await _shippingRepository.GetByIdAsync(id);
@@ -127,23 +128,58 @@ namespace ApiDePapas.Application.Services
                 throw new KeyNotFoundException($"Pedido con ID {id} no encontrado.");
             }
 
-            // 2. Validar si realmente cambió el estado (opcional, pero recomendado)
+            // --- INICIO DE LÓGICA ROBUSTA TRAÍDA DE SHIPPING SERVICE ---
+            // Si el nuevo estado es 'Cancelled', delegamos al servicio de envíos.
+            // Esto asegura que se envíe la notificación al módulo de Compras.
+            if (newStatus == ShippingStatus.cancelled)
+            {
+                await _shippingService.CancelAsync(id, DateTime.UtcNow);
+                return; // Salimos porque CancelAsync ya guardó los cambios
+            }
+
+            // 3. Validar estados inmutables
+            // Si ya está Cancelado, no se puede tocar.
+            if (shipping.status == ShippingStatus.cancelled)
+            {
+                throw new InvalidOperationException($"El envío {id} está cancelado y no puede modificarse.");
+            }
+
+            // Si ya está Entregado, no se puede cambiar.
+            if (shipping.status == ShippingStatus.delivered)
+            {
+                throw new InvalidOperationException($"El envío {id} ya fue entregado y no puede cambiar de estado.");
+            }
+
+            // 4. Validar coherencia temporal (No volver al pasado)
+            if (newStatus == ShippingStatus.created && shipping.status != ShippingStatus.created)
+            {
+                throw new InvalidOperationException($"No se puede revertir el envío {id} al estado 'Created'.");
+            }
+
+            // --- FIN DE LÓGICA ROBUSTA ---
+
+            // 5. Validar si realmente cambió el estado (Optimización)
             if (shipping.status == newStatus) return;
 
-            // 3. Actualizar Estado y Fecha
+            // 6. Actualizar Estado y Fecha
             shipping.status = newStatus;
             shipping.updated_at = DateTime.UtcNow;
 
-            // 4. AGREGAR LOG (La parte más importante)
+            // 7. AGREGAR LOG 
             if (shipping.logs == null) shipping.logs = new List<ShippingLog>();
+
+            // Usamos el mensaje personalizado si viene, sino el default
+            string logMessage = !string.IsNullOrEmpty(message) 
+                ? message 
+                : $"Estado actualizado manualmente desde Dashboard a {newStatus}.";
             
             shipping.logs.Add(new ShippingLog(
                 Timestamp: DateTime.UtcNow,
                 Status: newStatus,
-                Message: $"Estado actualizado manualmente desde Dashboard a {newStatus}."
+                Message: logMessage
             ));
 
-            // 5. Guardar usando Update (para que EF detecte el cambio en el JSON)
+            // 8. Guardar
             _shippingRepository.Update(shipping);
         }
     }

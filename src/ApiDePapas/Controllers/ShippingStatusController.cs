@@ -37,14 +37,22 @@ namespace ApiDePapas.Controllers
                 return BadRequest(ModelState);
             }
 
-            var success = await _shippingService.UpdateStatusAsync(id, request);
-
-            if (!success)
+            try 
             {
-                return NotFound(new { message = $"Shipment with ID {id} not found." });
-            }
+                var success = await _shippingService.UpdateStatusAsync(id, request);
 
-            return Ok(new { message = $"Status for shipment {id} updated to {request.NewStatus}." });
+                if (!success)
+                {
+                    return NotFound(new { message = $"Shipment with ID {id} not found." });
+                }
+
+                return Ok(new { message = $"Status for shipment {id} updated to {request.NewStatus}." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Aquí capturamos las reglas de negocio (ej. intentar mover un Delivered)
+                return Conflict(new { code = "invalid_state_transition", message = ex.Message });
+            }
         }
     }
 }
