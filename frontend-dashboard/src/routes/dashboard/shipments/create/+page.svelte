@@ -65,13 +65,15 @@
     }
 </script>
 
-<h2>Crear Nuevo Pedido</h2>
+<div class="create-wrapper">
+    <div class="create-box">
+        <h2>Crear Nuevo Pedido</h2>
 
-{#if errorMessage}
-    <p class="error">{errorMessage}</p>
-{/if}
+        {#if errorMessage}
+            <p class="error">{errorMessage}</p>
+        {/if}
 
-<form on:submit|preventDefault={handleSubmit}>
+        <form on:submit|preventDefault={handleSubmit}>
     <div class="form-group">
         <label for="order_id">Order ID</label>
         <input type="number" id="order_id" bind:value={order_id} required />
@@ -134,14 +136,23 @@
             <button
                 type="button"
                 on:click={() => removeProduct(i)}
-                class="remove-btn">Eliminar</button
-            >
+                class="remove-btn"
+                aria-label="Eliminar producto">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 6h18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 11v6M14 11v6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     {/each}
     <button type="button" on:click={addProduct}>Añadir Producto</button>
 
-    <button type="submit" class="submit-btn">Crear Pedido</button>
-</form>
+            <button type="submit" class="submit-btn">Crear Pedido</button>
+        </form>
+    </div>
+</div>
 
 <style>
     form {
@@ -149,6 +160,18 @@
         flex-direction: column;
         gap: 1rem;
         max-width: 600px;
+    }
+    .create-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - var(--header-height));
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+    .create-box {
+        width: 100%;
+        max-width: 700px;
     }
     .form-group {
         display: flex;
@@ -197,6 +220,17 @@
     .remove-btn {
         background-color: #ef4444;
         color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+    }
+    .remove-btn svg {
+        width: 18px;
+        height: 18px;
+        display: block;
     }
     .submit-btn {
         background-color: #3b82f6;

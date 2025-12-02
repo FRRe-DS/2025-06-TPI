@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { searchLocalities } from '$lib/services/shipmentService';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { searchLocalities, getAllLocalities } from '$lib/services/shipmentService';
   import type { Locality } from '$lib/types';
 
   export let selectedLocality: Locality | undefined = undefined;
 
   let inputValue = '';
   let searchResults: Locality[] = [];
+  // Caché local de todas las localidades (precargadas al montar)
+  let cachedAllLocalities: Locality[] | null = null;
   let isDropdownVisible = false;
   let isLoading = false;
   let debounceTimer: any;
@@ -19,8 +21,8 @@
   const dispatch = createEventDispatcher();
 
   async function performSearch(isPaginating = false) {
+    // Esta función sigue usando la búsqueda del servidor para consultas "completas" (>=2 caracteres).
     if (inputValue.length < 2) {
-      searchResults = [];
       return;
     }
 
@@ -33,8 +35,13 @@
     isLoading = true;
     try {
       const newResults = await searchLocalities(inputValue, currentPage);
+      // ordenar alfabéticamente los nuevos resultados
+      newResults.sort((a, b) => a.locality_name.localeCompare(b.locality_name, 'es', { sensitivity: 'base' }));
+
+      // fusionar y mantener orden alfabético
       searchResults = [...searchResults, ...newResults];
-      
+      searchResults.sort((a, b) => a.locality_name.localeCompare(b.locality_name, 'es', { sensitivity: 'base' }));
+
       if (newResults.length < PAGE_SIZE) {
         hasMore = false;
       }
@@ -50,16 +57,51 @@
   function onInput() {
     isDropdownVisible = true;
     clearTimeout(debounceTimer);
-
+    // Si no hay texto, mostramos la lista precargada (si existe)
     if (!inputValue) {
-      isDropdownVisible = false;
-      searchResults = [];
+      if (cachedAllLocalities) {
+        searchResults = [...cachedAllLocalities];
+        isDropdownVisible = true;
+      } else {
+        searchResults = [];
+        isDropdownVisible = false;
+      }
       return;
     }
 
-    debounceTimer = setTimeout(() => {
+    // Si hay cache local, filtramos primero localmente y mostramos coincidencias inmediatas
+    if (cachedAllLocalities) {
+      const q = inputValue.toLowerCase();
+      const localMatches = cachedAllLocalities.filter((l) =>
+        l.locality_name.toLowerCase().includes(q),
+      );
+
+      if (localMatches.length > 0) {
+        // Ordenar y mostrar coincidencias locales rápidamente
+        localMatches.sort((a, b) => a.locality_name.localeCompare(b.locality_name, 'es', { sensitivity: 'base' }));
+        searchResults = localMatches;
+        isDropdownVisible = true;
+        // También lanzamos en segundo plano la búsqueda servidor si el query es largo, para obtener más resultados
+        if (inputValue.length >= 2) {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => performSearch(false), 400);
+        }
+        return;
+      }
+      // Si no hubo coincidencias locales, dejamos caer al flujo de búsqueda remota
+    }
+
+    // Para 2 o más caracteres, llamamos al servidor (con debounce)
+    if (inputValue.length >= 2) {
+      debounceTimer = setTimeout(() => {
         performSearch(false);
-    }, 300);
+      }, 300);
+    } else {
+      // Para 1 carácter y sin coincidencias locales, mostramos vacío o mensaje tras debounce corto
+      debounceTimer = setTimeout(() => {
+        searchResults = [];
+      }, 200);
+    }
   }
 
   function selectLocality(locality: Locality) {
@@ -79,9 +121,11 @@
   }
 
   function handleFocus() {
-    if(inputValue) {
-        isDropdownVisible = true;
+    // Mostrar sugerencias cuando el campo recibe foco (si hay resultados precargados)
+    if (cachedAllLocalities && !inputValue) {
+      searchResults = [...cachedAllLocalities];
     }
+    isDropdownVisible = true;
   }
 
   function handleBlur() {
@@ -89,6 +133,25 @@
       isDropdownVisible = false;
     }, 200);
   }
+
+  // Precargar la lista al montar la UI y ordenarla alfabéticamente
+  onMount(async () => {
+    try {
+      isLoading = true;
+      const all = await getAllLocalities();
+      all.sort((a, b) => a.locality_name.localeCompare(b.locality_name, 'es', { sensitivity: 'base' }));
+      cachedAllLocalities = all;
+      // Mostrar al inicio la lista completa ordenada
+      searchResults = [...all];
+      hasMore = false; // la carga inicial viene completa desde el backend
+    } catch (err) {
+      console.error('No se pudieron precargar las localidades:', err);
+      cachedAllLocalities = null;
+      searchResults = [];
+    } finally {
+      isLoading = false;
+    }
+  });
 </script>
 
 <div class="combobox-container">
@@ -108,13 +171,14 @@
         <li class="disabled">No se encontraron resultados.</li>
       {:else}
         {#each searchResults as locality, i (locality.postal_code + locality.locality_name + i)}
-          <li
-            role="button"
-            tabindex="0"
-            on:mousedown={() => selectLocality(locality)}
-            on:keydown={(e) => e.key === 'Enter' && selectLocality(locality)}
-          >
-            {locality.locality_name} {#if locality.state_name}({locality.state_name}){/if}
+          <li>
+            <button
+              type="button"
+              on:mousedown={() => selectLocality(locality)}
+              on:keydown={(e) => e.key === 'Enter' && selectLocality(locality)}
+            >
+              {locality.locality_name} {#if locality.province}({locality.province}){/if}
+            </button>
           </li>
         {/each}
         {#if isLoading && searchResults.length > 0}
@@ -154,11 +218,20 @@
     z-index: 10;
   }
   .dropdown li {
-    padding: 0.75rem;
-    cursor: pointer;
+    padding: 0;
   }
-  .dropdown li:hover {
-    background-color: #3b82f6;
+  .dropdown li button {
+    width: 100%;
+    padding: 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+  }
+  .dropdown li button:hover {
+    background-color: var(--accent);
     color: white;
   }
   .dropdown li.disabled {
