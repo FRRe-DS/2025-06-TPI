@@ -13,7 +13,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("shipping/filter")]
-   // [Authorize(Roles = "compras-be, logistica-be")]
+    [Authorize(Roles = "compras-be, logistica-be")]
     public class ShippingQueryFilterController : ControllerBase
     {
         private readonly IShippingService _shippingService;

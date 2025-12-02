@@ -9,7 +9,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/shipping/cost")]
-    //[Authorize(Roles = "compras-be, logistica-be")]
+    [Authorize(Roles = "compras-be, logistica-be")]
     public class ShippingCostController : ControllerBase
     {
         private readonly ICalculateCost _calculateCost;

@@ -13,7 +13,7 @@ import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUB
 import { browser } from "$app/environment"; // Import 'browser'
 
 // --- 1. CONFIGURACIÓN DE URLS ---
-// Tu lógica para la URL de la API (¡esto está perfecto!)
+// Lógica para la URL de la API 
 const API_BASE_URL = browser
     ? import.meta.env.VITE_PUBLIC_API_URL
     : import.meta.env.VITE_PRIVATE_API_URL;
@@ -55,7 +55,12 @@ async function getAuthToken(fetchFn: typeof fetch = fetch): Promise<string> {
 export async function getAllLocalities(
     fetchFn: typeof fetch = fetch,
 ): Promise<Locality[]> {
-    const response = await fetchFn(`${API_BASE_URL}/locality/getall`);
+    const token = await getAuthToken(fetchFn);
+    const response = await fetchFn(`${API_BASE_URL}/locality/getall`, {
+        headers: {
+            Authorization: `Bearer ${token}`, 
+        },
+    });
     if (!response.ok) {
         throw new Error(`Error al obtener localidades: ${response.statusText}`);
     }
@@ -73,6 +78,7 @@ export async function searchLocalities(
         return Promise.resolve([]);
     }
 
+    const token = await getAuthToken(fetchFn);
     const params = new URLSearchParams({
         locality_name: query,
         limit: "20", //Numero de sugerencias a traer
@@ -80,7 +86,11 @@ export async function searchLocalities(
     });
 
     const url = `${API_BASE_URL}/locality?${params.toString()}`;
-    const response = await fetchFn(url);
+    const response = await fetchFn(url, {
+        headers: {
+            Authorization: `Bearer ${token}`, // <--- Enviar Token
+        },
+    });
     if (!response.ok) {
         throw new Error(`Error al buscar localidades: ${response.statusText}`);
     }
@@ -92,11 +102,12 @@ export async function createShipment(
     shipment: CreateShippingRequest,
     fetchFn: typeof fetch = fetch,
 ): Promise<CreateShippingResponse> {
+    const token = await getAuthToken(fetchFn);
     const response = await fetchFn(`${API_BASE_URL}/shipping`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-Internal-API-Key": PUBLIC_BACKEND_API_KEY,
+            Authorization: `Bearer ${token}`, // <--- REEMPLAZADO: "X-Internal-API-Key": PUBLIC_BACKEND_API_KEY,
         },
         body: JSON.stringify(shipment),
     });
@@ -120,9 +131,13 @@ export async function createShipment(
 export async function getTransportMethods(
     fetchFn: typeof fetch = fetch,
 ): Promise<TransportMethods[]> {
+    const token = await getAuthToken(fetchFn);
     const response = await fetchFn(
-        `${API_BASE_URL}/shipping/transport-methods`,
-    );
+        `${API_BASE_URL}/shipping/transport-methods`,{
+        headers: {
+            Authorization: `Bearer ${token}`, // <--- Enviar Token
+        },
+    });
     if (!response.ok) {
         throw new Error(
             `Error al obtener los métodos de transporte: ${response.statusText}`,

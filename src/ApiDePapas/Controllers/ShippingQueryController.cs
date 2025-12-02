@@ -12,7 +12,7 @@ namespace ApiDePapas.Controllers
 {
     [ApiController]
     [Route("api/shipping")]
-    //[Authorize(Roles = "compras-be, logistica-be")]
+    [Authorize(Roles = "compras-be, logistica-be")]
     public class ShippingQueryController : ControllerBase
     {
         private readonly IShippingService _shippingService;
@@ -68,6 +68,7 @@ namespace ApiDePapas.Controllers
         // MÉTODO 2: Implementa 'GET /shipping/{shipping_id}'
         // ---
         [HttpGet("{shipping_id:int}")]
+        [AllowAnonymous]
         [Produces("application/json")]
         [ProducesResponseType(typeof(ShippingDetailResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
