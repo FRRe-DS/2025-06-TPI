@@ -171,7 +171,7 @@
                             <label for="street">Calle</label>
                             <input type="text" id="street" bind:value={street} required />
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label for="number">Número</label>
                             <input type="number" id="number" bind:value={number} required />
                         </div>

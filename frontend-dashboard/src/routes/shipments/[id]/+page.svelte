@@ -115,13 +115,20 @@
 						<span class="label">Transporte</span>
 						<Icon name={shipment.transport_type} className="transport-icon" />
 					</div>
-					<div class="info-item">
-						<span class="label">Costo del Envío</span>
-						<span>{shipment.currency} {shipment.total_cost.toFixed(2)}</span>
-					</div>
+					
 					<div class="info-item">
 						<span class="label">ID de Usuario</span>
 						<span>{shipment.user_id}</span>
+					</div>
+
+					<div class="info-item">
+						<span class="label">Transportista</span>
+						<span>{shipment.carrier_name}</span>
+					</div>
+
+					<div class="info-item full-width">
+						<span class="label">Costo del Envío</span>
+						<span>{shipment.currency} {shipment.total_cost.toFixed(2)}</span>
 					</div>
 					<div class="info-item full-width">
 						<span class="label">Nº de Seguimiento</span>
