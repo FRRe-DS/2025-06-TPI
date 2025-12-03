@@ -7,6 +7,7 @@ import type {
     CreateShippingRequest,
     CreateShippingResponse,
     ShipmentStatus,
+    TransportMethods
 } from "$lib/types";
 import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from "$app/environment"; // Import 'browser'
@@ -101,7 +102,9 @@ export async function createShipment(
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to create shipment: ${response.statusText}`);
+        const error = new Error(`Failed to create shipment: ${response.statusText}`);
+        (error as any).response = response;
+        throw error;
     }
 
     // After creating a shipment, we might want to invalidate some caches.
@@ -109,6 +112,17 @@ export async function createShipment(
     // A more advanced implementation could invalidate caches related to shipment lists.
 
     return await response.json();
+}
+
+export async function getTransportMethods(
+    fetchFn: typeof fetch = fetch
+): Promise<TransportMethods[]> {
+    const response = await fetchFn(`${API_BASE_URL}/shipping/transport-methods`);
+    if (!response.ok) {
+        throw new Error(`Error al obtener los métodos de transporte: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.transport_methods;
 }
 
 // --- 3. FUNCIÓN DE DASHBOARD (MODIFICADA) ---
