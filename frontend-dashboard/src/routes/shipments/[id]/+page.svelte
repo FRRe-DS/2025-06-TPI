@@ -116,7 +116,7 @@
 						<Icon name={shipment.transport_type} className="transport-icon" />
 					</div>
 					<div class="info-item">
-						<span class="label">Costo Total</span>
+						<span class="label">Costo del Envío</span>
 						<span>{shipment.currency} {shipment.total_cost.toFixed(2)}</span>
 					</div>
 					<div class="info-item">
