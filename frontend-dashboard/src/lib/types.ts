@@ -38,7 +38,7 @@ export interface FiltersState {
 }
 
 export interface ProductQty {
-  id: number;
+  product_id: number;
   quantity: number;
 }
 
@@ -81,7 +81,7 @@ export interface ShippingLogReadDto {
 }
 
 export interface ProductQtyReadDto {
-  id: number;
+  product_id: number;
   quantity: number;
 }
 

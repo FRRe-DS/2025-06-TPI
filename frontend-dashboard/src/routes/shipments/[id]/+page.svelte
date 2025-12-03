@@ -202,7 +202,7 @@
 				<ul class="product-list">
 					{#each shipment.products as product}
 						<li>
-							<span>ID Producto: <span class="code">{product.id}</span></span>
+							<span>ID Producto: <span class="code">{product.product_id}</span></span>
 							<span>Cantidad: {product.quantity}</span>
 						</li>
 					{/each}
