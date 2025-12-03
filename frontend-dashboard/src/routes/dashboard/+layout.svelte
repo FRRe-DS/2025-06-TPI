@@ -39,7 +39,7 @@
         <ul>
           <li><a href="/dashboard/shipments">Pedidos</a></li>
           <li><a href="/dashboard/shipments/create">Crear Pedido</a></li>
-          <li><a href="/dashboard/transport-methods">Transport Methods</a></li>
+          <li><a href="/dashboard/transport-methods">Métodos de Transporte</a></li>
         </ul>
       </nav>
     </details>
