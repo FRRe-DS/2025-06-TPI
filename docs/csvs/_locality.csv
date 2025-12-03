@@ -1,4 +1,4 @@
-postal_code;locality_name;state_name;lat;lon
+A4126postal_code;locality_name;state_name;lat;lon
 A3636;POZO CERCADO (EL CHORRO (F), DPTO. RIVADAVIA (S));Salta;"Argentina";-23.4933;-61.9267
 A4123;LAS SALADAS;Salta;"Argentina";-25.7833;-64.5
 A4126;EL JARDIN;Salta;"Argentina";-26.0833;-65.3833
@@ -4116,6 +4116,7 @@ B8508;JARILLA;Buenos Aires;"Argentina";-40.6417;-63.2898
 B8508;PUERTO TRES BONETES;Buenos Aires;"Argentina";-40.6417;-63.2898
 B8512;IGARZABAL;Buenos Aires;"Argentina";-39.7667;-62.6167
 B8512;LOS POZOS;Buenos Aires;"Argentina";-39.7667;-62.6167
+C1000;CIUDAD AUTÓNOMA DE BUENOS AIRES;Buenos Aires;"Argentina";-34.6037;-58.3816
 D4703;ALTO;San Luis;"Argentina";-28.6275;-65.6261
 D5216;LA AURORA (UNION - DPTO. GOBERNADOR V. DUPUY);San Luis;"Argentina";-29.8583;-64.6667
 D5421;LA TRANCA;San Luis;"Argentina";-32.35;-67.2833
