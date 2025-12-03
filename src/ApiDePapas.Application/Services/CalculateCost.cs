@@ -138,7 +138,6 @@ namespace ApiDePapas.Application.Services
                 products: products_with_cost,
                 estimated_delivery_at: estimated_delivery_at
             );
-
             return response;
         }
     }
