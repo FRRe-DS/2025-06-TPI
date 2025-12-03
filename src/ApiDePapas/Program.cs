@@ -109,9 +109,11 @@ builder.Services.AddAuthorization();
 // --- JWT AUTHENTICATION CONFIGURATION END ---
 
 //Registro de servicios
-//builder.Services.AddHttpClient<IStockService, StockService>();
+
+//En integration usamos el StockService real
+builder.Services.AddHttpClient<IStockService, StockService>();
+//builder.Services.AddScoped<IStockService, FakeStockService>();
 builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
-builder.Services.AddScoped<IStockService, FakeStockService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<TransportService>();
