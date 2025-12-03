@@ -8,7 +8,8 @@ using ApiDePapas.Domain.Entities;
 namespace ApiDePapas.Controllers
 {
     [ApiController]
-    [Route("shipping/transport-methods")]
+    [Route("api/shipping/transport-methods")]
+    [Authorize(Roles = "compras-be, logistica-be")]
     public class ShippingTransportMethodsController : ControllerBase
     {
         private readonly TransportService _transportService;

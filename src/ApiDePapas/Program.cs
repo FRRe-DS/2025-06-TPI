@@ -20,7 +20,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Base de datos
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        mySqlOptions => mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure")));
+        mySqlOptions => 
+        {
+            mySqlOptions.MigrationsAssembly("ApiDePapas.Infrastructure");
+            mySqlOptions.EnableStringComparisonTranslations();
+        }));
 
 // Para habilitar Swagger / OpenAPI (documentación interactiva)
 builder.Services
@@ -107,6 +111,7 @@ builder.Services.AddAuthorization();
 //Registro de servicios
 //builder.Services.AddHttpClient<IStockService, StockService>();
 builder.Services.AddHttpClient<IPurchasingService, PurchasingService>();
+builder.Services.AddScoped<IStockService, FakeStockService>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<ICalculateCost, CalculateCost>();
 builder.Services.AddScoped<TransportService>();
