@@ -1,10 +1,12 @@
 <h1>Bienvenido al Dashboard de Papas</h1>
-<p>Seleccione una opción:</p>
+<p>Seleccione una opcion:</p>
 
 <nav class="dashboard-options">
     <ul>
         <li><a href="/dashboard/shipments">Pedidos</a></li>
         <li><a href="/dashboard/shipments/create">Crear Pedido</a></li>
+        <li><a href="/dashboard/transport-methods">Metodos de Transporte</a></li>
+        <li><a href="/dashboard/statistics">Estadisticas</a></li>
     </ul>
 </nav>
 

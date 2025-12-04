@@ -99,7 +99,7 @@
     <form on:submit|preventDefault={handleSubmit}>
         <div class="details-grid">
             <div class="info-card info-general">
-                <h2>Información General</h2>
+                <h2>Informacion General</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="order_id">Order ID</label>
@@ -113,14 +113,14 @@
             </div>
 
             <div class="info-card address">
-                <h2>Dirección de Entrega</h2>
+                <h2>Direccion de Entrega</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="locality">Localidad</label>
                         <LocalityCombobox on:select={handleLocalitySelect} />
                     </div>
                     <div class="form-group">
-                        <label for="postal_code">Código Postal</label>
+                        <label for="postal_code">Codigo Postal</label>
                         <input type="text" id="postal_code" bind:value={postal_code} readonly placeholder="Se autocompleta con la localidad" />
                     </div>
                     <div class="form-group">
@@ -128,7 +128,7 @@
                         <input type="text" id="street" bind:value={street} required />
                     </div>
                      <div class="form-group">
-                        <label for="number">Número</label>
+                        <label for="number">Numero</label>
                         <input type="number" id="number" bind:value={number} required />
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                         </div>
                     {/each}
                 </div>
-                 <button type="button" on:click={addProduct} class="add-btn">Añadir Producto</button>
+                 <button type="button" on:click={addProduct} class="add-btn">Anadir Producto</button>
             </div>
 
             <div class="confirm-card info-card">
