@@ -1,4 +1,5 @@
 using ApiDePapas.Domain.Entities;
+using System.Linq;
 
 namespace ApiDePapas.Domain.Repositories
 {
@@ -15,11 +16,11 @@ namespace ApiDePapas.Domain.Repositories
         
         
         
-                IQueryable<ShippingStatus> GetStatuses();
+                IQueryable<ShippingDetail> GetAllQueryable(); // Used for pagination with complex includes
         
         
         
-                IQueryable<ShippingDetail> GetAllQueryable(); // New method for pagination
+                IQueryable<ShippingDetail> GetQueryableForStatistics(); // New clean method for statistics
         
             }
         

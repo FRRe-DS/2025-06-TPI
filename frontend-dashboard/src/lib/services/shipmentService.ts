@@ -57,10 +57,17 @@ async function getAuthToken(fetchFn: typeof fetch = fetch): Promise<string> {
 
 export async function getShipmentStatusDistribution(
     fetchFn: typeof fetch = fetch,
+    limit: number | null = null,
 ): Promise<ShipmentStatusDistributionDto[]> {
     const token = await getAuthToken(fetchFn);
+    let url = `${API_BASE_URL}/dashboard/shipment-status-distribution`;
+
+    if (limit) {
+        url += `?limit=${limit}`;
+    }
+
     const response = await fetchFn(
-        `${API_BASE_URL}/dashboard/shipment-status-distribution`,
+        url,
         {
             headers: {
                 Authorization: `Bearer ${token}`,

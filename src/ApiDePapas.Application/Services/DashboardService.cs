@@ -175,33 +175,68 @@ namespace ApiDePapas.Application.Services
             _shippingRepository.Update(shipping);
         }
 
-        public async Task<IEnumerable<ShipmentStatusDistributionDto>> GetShipmentStatusDistributionAsync()
-        {
-            _logger.LogInformation("Attempting to get shipment status distribution.");
-            try
-            {
-                var allStatuses = await _shippingRepository.GetStatuses().ToListAsync();
+                public async Task<IEnumerable<ShipmentStatusDistributionDto>> GetShipmentStatusDistributionAsync(int? limit = null)
 
-                _logger.LogInformation("Successfully fetched {Count} statuses from repository.", allStatuses.Count);
+                {
 
-                var distribution = allStatuses
-                    .GroupBy(status => status.ToString())
-                    .Select(g => new ShipmentStatusDistributionDto
+                    // Start with a clean, safe queryable without any includes
+
+                    var query = _shippingRepository.GetQueryableForStatistics();
+
+        
+
+                    // Order by creation date to get the most recent ones first
+
+                    var orderedQuery = query.OrderByDescending(s => s.created_at);
+
+        
+
+                    // Apply the limit if it's provided
+
+                    IQueryable<ShippingDetail> limitedQuery = orderedQuery;
+
+                    if (limit.HasValue)
+
                     {
-                        Status = g.Key,
-                        Count = g.Count()
-                    })
-                    .OrderBy(dto => dto.Status);
 
-                _logger.LogInformation("Successfully grouped statuses into {GroupCount} groups.", distribution.Count());
+                        limitedQuery = orderedQuery.Take(limit.Value);
 
-                return await Task.FromResult(distribution);
+                    }
+
+        
+
+                    // Fetch only the statuses into memory
+
+                    var statuses = await limitedQuery.Select(s => s.status).ToListAsync();
+
+        
+
+                    // Group the results in memory
+
+                    var distribution = statuses
+
+                        .GroupBy(status => status.ToString())
+
+                        .Select(g => new ShipmentStatusDistributionDto
+
+                        {
+
+                            Status = g.Key,
+
+                            Count = g.Count()
+
+                        })
+
+                        .OrderBy(dto => dto.Status);
+
+        
+
+                    return distribution;
+
+                }
+
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "A critical error occurred while getting shipment status distribution.");
-                throw; 
-            }
+
         }
-    }
-}
+
+        

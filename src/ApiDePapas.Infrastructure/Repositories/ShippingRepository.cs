@@ -126,9 +126,9 @@ namespace ApiDePapas.Infrastructure.Repositories
             return await _context.Shippings.AnyAsync(predicate);
         }
 
-        public IQueryable<ShippingStatus> GetStatuses()
+        public IQueryable<ShippingDetail> GetQueryableForStatistics()
         {
-            return _context.Shippings.Select(s => s.status);
+            return _context.Shippings.AsQueryable();
         }
 
         // Implementaciones específicas de IShippingRepository

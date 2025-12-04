@@ -84,9 +84,9 @@ namespace ApiDePapas.Controllers
         [HttpGet("shipment-status-distribution")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<ShipmentStatusDistributionDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ShipmentStatusDistributionDto>>> GetShipmentStatusDistribution()
+        public async Task<ActionResult<IEnumerable<ShipmentStatusDistributionDto>>> GetShipmentStatusDistribution([FromQuery] int? limit = null)
         {
-            var distribution = await _dashboardService.GetShipmentStatusDistributionAsync();
+            var distribution = await _dashboardService.GetShipmentStatusDistributionAsync(limit);
             return Ok(distribution);
         }
     }

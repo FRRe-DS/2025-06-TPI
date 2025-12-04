@@ -1,13 +1,16 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { onMount, onDestroy } from 'svelte';
+  import { goto } from '$app/navigation';
 
   export let data: PageData;
 
-  $: ({ statusDistribution, error } = data);
+  $: ({ statusDistribution, error, limit } = data);
 
   let chartCanvas: HTMLCanvasElement;
   let chart: any;
+
+  const filterOptions = [20, 50, 100, 1000];
 
   // Mapa de traducciones de estados
   const statusTranslations: { [key: string]: string } = {
@@ -20,20 +23,27 @@
     reserved: 'Reservado',
   };
 
+  // --- Bloque Reactivo para Actualizar el Gráfico ---
+  $: if (chart && statusDistribution) {
+    chart.data.labels = statusDistribution.map(d => statusTranslations[d.status] || d.status);
+    chart.data.datasets[0].data = statusDistribution.map(d => d.count);
+    chart.update(); // Re-renderiza el gráfico con los nuevos datos
+  }
+
   onMount(() => {
+    // --- Creación Inicial del Gráfico ---
     if (chartCanvas && statusDistribution && typeof Chart !== 'undefined') {
       const ctx = chartCanvas.getContext('2d');
       if (ctx) {
         chart = new Chart(ctx, {
           type: 'bar',
           data: {
-            // Traducir las etiquetas para el gráfico
             labels: statusDistribution.map(d => statusTranslations[d.status] || d.status),
             datasets: [{
               label: 'Cantidad de Pedidos',
               data: statusDistribution.map(d => d.count),
-              backgroundColor: '#f07c13', // Usar el acento naranja del proyecto
-              borderColor: 'hsl(30, 88%, 41%)', // Un tono de naranja más oscuro para el borde
+              backgroundColor: '#f07c13',
+              borderColor: 'hsl(30, 88%, 41%)',
               borderWidth: 2,
             }]
           },
@@ -56,10 +66,30 @@
       chart.destroy();
     }
   });
+
+  function applyFilter(newLimit: number | null) {
+    if (newLimit) {
+      goto(`/dashboard/statistics?limit=${newLimit}`, { keepFocus: true, noScroll: true });
+    } else {
+      goto('/dashboard/statistics', { keepFocus: true, noScroll: true });
+    }
+  }
 </script>
 
 <div class="statistics-page">
-  <h1>Estadísticas de Pedidos</h1>
+  <div class="header-container">
+    <h1>Estadísticas de Pedidos</h1>
+    <div class="filter-controls">
+      <button class:active={!limit} on:click={() => applyFilter(null)}>
+        Todos
+      </button>
+      {#each filterOptions as option}
+        <button class:active={limit === option} on:click={() => applyFilter(option)}>
+          Últimos {option}
+        </button>
+      {/each}
+    </div>
+  </div>
 
   {#if error}
     <div class="error-message">
@@ -81,7 +111,7 @@
       <canvas bind:this={chartCanvas}></canvas>
     </div>
   {:else}
-    <p>No se encontraron datos de distribución de estados.</p>
+    <p>No se encontraron datos de distribución para el filtro seleccionado.</p>
   {/if}
 
 </div>
@@ -91,9 +121,47 @@
     animation: fadeIn 0.5s ease-out;
   }
 
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
   h1 {
     color: var(--text);
-    margin-bottom: 2rem;
+    margin-bottom: 0; /* Ajustado por el flex container */
+  }
+
+  .filter-controls {
+    display: flex;
+    gap: 0.5rem;
+    background-color: var(--card);
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .filter-controls button {
+    background-color: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .filter-controls button:hover {
+    color: var(--text);
+  }
+
+  .filter-controls button.active {
+    background-color: var(--accent);
+    color: var(--card);
   }
 
   .error-message {
@@ -133,14 +201,12 @@
   .kpi-value {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
+    color: var(--accent);
   }
 
   .kpi-label {
     font-size: 1rem;
     color: var(--muted);
-    /* Removido text-transform: capitalize para permitir traducción manual */
   }
 
   .chart-container {

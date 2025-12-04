@@ -26,6 +26,6 @@ namespace ApiDePapas.Application.Interfaces
 
         Task UpdateShipmentStatusAsync(int id, ShippingStatus newStatus, string? message = null);
 
-        Task<IEnumerable<ShipmentStatusDistributionDto>> GetShipmentStatusDistributionAsync();
+        Task<IEnumerable<ShipmentStatusDistributionDto>> GetShipmentStatusDistributionAsync(int? limit = null);
     }
 }
