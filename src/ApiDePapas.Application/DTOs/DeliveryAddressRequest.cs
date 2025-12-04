@@ -28,7 +28,7 @@ namespace ApiDePapas.Application.DTOs
         // AGREGADO: Para cumplir con el esquema, aunque internamente usemos solo AR
         // los agrego por la api pero frontend puede omitirlos por completo y no pasará nada malo. Son opcionales porque la BDD con localidad los encuentra
         [property: JsonPropertyName("state")]
-        string? state = null,
+        string? state = "",
 
         [property: JsonPropertyName("country")]
         string? country = null

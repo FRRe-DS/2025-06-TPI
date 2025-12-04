@@ -191,9 +191,15 @@ namespace ApiDePapas.Application.Services
             {
                 return null; 
             }
-            var deliverystate= GetStateFromPostalCode(data.DeliveryAddress?.postal_code ?? string.Empty);
             var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
             var departurestate= GetStateFromPostalCode(departureAddressEntity?.postal_code ?? string.Empty);
+            // obtener el estado guardado en la base de datos
+            string deliverystate = data.DeliveryAddress?.Locality.state_name ?? string.Empty;
+            // si es nulo o vacío, usamos el diccionario
+            if (string.IsNullOrEmpty(deliverystate))
+            {
+                deliverystate = GetStateFromPostalCode(data.DeliveryAddress?.postal_code ?? string.Empty);
+            }
             // Mapeo al DTO 
             var responseDto = new ShippingDetailResponse
             {
