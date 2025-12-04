@@ -164,7 +164,25 @@ namespace ApiDePapas.Application.Services
                 estimated_delivery_at: newShipping.estimated_delivery_at
             );
         }
+        private static readonly Dictionary<char, string> _provinceCodes = new()
+            {
+                {'A', "Salta"}, {'B', "Buenos Aires"}, {'C', "CABA"}, {'D', "San Luis"},
+                {'E', "Entre Ríos"}, {'F', "La Rioja"}, {'G', "Santiago del Estero"}, {'H', "Chaco"},
+                {'J', "San Juan"}, {'K', "Catamarca"}, {'L', "La Pampa"}, {'M', "Mendoza"},
+                {'N', "Misiones"}, {'P', "Formosa"}, {'Q', "Neuquén"}, {'R', "Río Negro"},
+                {'S', "Santa Fe"}, {'T', "Tucumán"}, {'U', "Chubut"}, {'V', "Tierra del Fuego"},
+                {'W', "Corrientes"}, {'X', "Córdoba"}, {'Y', "Jujuy"}, {'Z', "Santa Cruz"}
+            };
+        private string GetStateFromPostalCode(string postalCode)
+        {
+            if (string.IsNullOrWhiteSpace(postalCode)) return string.Empty;
+            
+            // Obtenemos la primera letra en mayúscula
+            char firstChar = char.ToUpper(postalCode[0]);
 
+            // Intentamos buscar en el diccionario, si no existe devolvemos "Desconocido" o vacío
+            return _provinceCodes.TryGetValue(firstChar, out var state) ? state : "Desconocido";
+        }
         // IMPLEMENTACIÓN REINTRODUCIDA (De la rama VIEJA)
         public async Task<ShippingDetailResponse?> GetByIdAsync(int id)
         {
@@ -173,9 +191,9 @@ namespace ApiDePapas.Application.Services
             {
                 return null; 
             }
-
+            var deliverystate= GetStateFromPostalCode(data.DeliveryAddress?.postal_code ?? string.Empty);
             var departureAddressEntity = data.Travel?.DistributionCenter?.Address;
-
+            var departurestate= GetStateFromPostalCode(departureAddressEntity?.postal_code ?? string.Empty);
             // Mapeo al DTO 
             var responseDto = new ShippingDetailResponse
             {
@@ -192,7 +210,7 @@ namespace ApiDePapas.Application.Services
                 updated_at = data.updated_at,
                 
                 transport_type = data.Travel?.TransportMethod?.transport_type.ToString() ?? string.Empty, 
-
+                
                 delivery_address = new AddressReadDto
                 {
                     address_id = data.DeliveryAddress?.address_id ?? 0,
@@ -200,6 +218,9 @@ namespace ApiDePapas.Application.Services
                     number = data.DeliveryAddress?.number ?? 0,
                     postal_code = data.DeliveryAddress?.postal_code ?? string.Empty,
                     locality_name = data.DeliveryAddress?.locality_name ?? string.Empty,
+                    
+                    state = deliverystate,
+                    country = "AR"
                 },
                 
                 departure_address = new AddressReadDto 
@@ -209,14 +230,16 @@ namespace ApiDePapas.Application.Services
                     number = departureAddressEntity?.number ?? 0,
                     postal_code = departureAddressEntity?.postal_code ?? string.Empty,
                     locality_name = departureAddressEntity?.locality_name ?? string.Empty,
+                    state = departurestate,
+                    country = "AR"
                 },
                 
-                // --- CORRECCIÓN CRÍTICA ---
-                // Tu DTO usa (int id, int quantity)
+
+                // DTO usa (int id, int quantity)
                 products = data.products.Select(p => new ProductQtyReadDto(product_id: p.id, quantity: p.quantity)).ToList(),
                 
-                // --- CORRECCIÓN CRÍTICA ---
-                // Tu DTO usa (DateTime timestamp, ShippingStatus status, string message)
+
+                // DTO usa (DateTime timestamp, ShippingStatus status, string message)
                 logs = data.logs.Select(l => new ShippingLogReadDto(
                     timestamp: l.Timestamp ?? DateTime.MinValue, 
                     status: l.Status ?? ShippingStatus.created, 

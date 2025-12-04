@@ -17,7 +17,9 @@ namespace ApiDePapas.Application.DTOs
         public int number { get; set; }
         public string postal_code { get; set; } = string.Empty;
         public string locality_name { get; set; } = string.Empty;
+        public string state { get; set; } = string.Empty;
         // Aquí podrías agregar más campos de Locality si son esenciales, ej: state_name
+        public string country { get; set; } = string.Empty;
     }
 
     public class TransportMethodReadDto
