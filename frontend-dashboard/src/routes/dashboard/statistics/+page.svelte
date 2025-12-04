@@ -32,8 +32,8 @@
             datasets: [{
               label: 'Cantidad de Pedidos',
               data: statusDistribution.map(d => d.count),
-              backgroundColor: 'hsl(210, 40%, 50%)',
-              borderColor: 'hsl(210, 40%, 20%)',
+              backgroundColor: '#f07c13', // Usar el acento naranja del proyecto
+              borderColor: 'hsl(30, 88%, 41%)', // Un tono de naranja más oscuro para el borde
               borderWidth: 2,
             }]
           },
