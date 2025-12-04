@@ -1,18 +1,20 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import { onMount, onDestroy } from 'svelte';
-  import { goto } from '$app/navigation';
+  import { onMount, onDestroy, tick } from 'svelte';
+  import { getShipmentStatusDistribution } from '$lib/services/shipmentService';
+  import type { ShipmentStatusDistributionDto } from '$lib/types';
 
-  export let data: PageData;
+  // --- State Management ---
+  let statusDistribution: ShipmentStatusDistributionDto[] = [];
+  let error: string | null = null;
+  let limit: number | null = null;
+  let isLoading = true;
 
-  $: ({ statusDistribution, error, limit } = data);
-
+  // --- Charting ---
   let chartCanvas: HTMLCanvasElement;
-  let chart: any;
+  let chart: any; 
+  let ChartConstructor: any;
 
   const filterOptions = [20, 50, 100, 1000];
-
-  // Mapa de traducciones de estados
   const statusTranslations: { [key: string]: string } = {
     in_transit: 'En Tránsito',
     created: 'Creado',
@@ -23,102 +25,183 @@
     reserved: 'Reservado',
   };
 
-  // --- Bloque Reactivo para Actualizar el Gráfico ---
+  // --- Data Fetching ---
+  async function fetchData(newLimit: number | null) {
+    console.log('Fetching data with limit:', newLimit);
+    
+    // We do NOT destroy the chart here. We want to keep it alive
+    // and just update its data. This prevents DOM thrashing.
+    
+    isLoading = true;
+    limit = newLimit;
+
+    try {
+      const data = await getShipmentStatusDistribution(fetch, limit);
+      console.log('Data received:', data);
+      statusDistribution = data;
+      error = null;
+    } catch (e: any) {
+      console.error('Error fetching data:', e);
+      error = e.message || 'Ocurrió un error al cargar los datos.';
+      // We keep the old data on error or clear it? 
+      // Let's clear it to avoid confusion
+      statusDistribution = [];
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // --- Reactive Chart Updater ---
   $: if (chart && statusDistribution) {
+    console.log('Updating chart with data', statusDistribution.length);
     chart.data.labels = statusDistribution.map(d => statusTranslations[d.status] || d.status);
     chart.data.datasets[0].data = statusDistribution.map(d => d.count);
-    chart.update(); // Re-renderiza el gráfico con los nuevos datos
+    chart.update();
   }
 
-  onMount(() => {
-    // --- Creación Inicial del Gráfico ---
-    if (chartCanvas && statusDistribution && typeof Chart !== 'undefined') {
-      const ctx = chartCanvas.getContext('2d');
-      if (ctx) {
-        chart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: statusDistribution.map(d => statusTranslations[d.status] || d.status),
-            datasets: [{
-              label: 'Cantidad de Pedidos',
-              data: statusDistribution.map(d => d.count),
-              backgroundColor: '#f07c13',
-              borderColor: 'hsl(30, 88%, 41%)',
-              borderWidth: 2,
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      }
+  // --- Lifecycle & Initialization ---
+  onMount(async () => {
+    console.log('Component mounted');
+    
+    // 1. Dynamic Import of Chart.js (Client-side only)
+    if (typeof window !== 'undefined') {
+        try {
+            const module = await import('chart.js');
+            ChartConstructor = module.Chart;
+            const { BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title } = module;
+            ChartConstructor.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
+            console.log('Chart.js loaded and registered');
+        } catch (err) {
+            console.error('Failed to load Chart.js', err);
+        }
     }
+
+    // 2. Fetch initial data
+    await fetchData(null);
   });
+
+  // --- Chart Creation ---
+  // This runs when:
+  // 1. Canvas exists (it's bound)
+  // 2. Chart.js is loaded
+  // 3. Chart instance doesn't exist yet
+  $: if (chartCanvas && ChartConstructor && !chart) {
+    console.log('Initializing chart instance');
+    const ctx = chartCanvas.getContext('2d');
+    if (ctx) {
+      chart = new ChartConstructor(ctx, {
+        type: 'bar',
+        data: {
+          labels: [], 
+          datasets: [{
+            label: 'Cantidad de Pedidos',
+            data: [], 
+            backgroundColor: '#f07c13',
+            borderColor: 'hsl(30, 88%, 41%)',
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } },
+          animation: { duration: 500 },
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'Distribución de Estados' }
+          }
+        }
+      });
+    }
+  }
 
   onDestroy(() => {
-    if (chart) {
-      chart.destroy();
-    }
+    if (chart) chart.destroy();
   });
-
-  function applyFilter(newLimit: number | null) {
-    if (newLimit) {
-      goto(`/dashboard/statistics?limit=${newLimit}`, { keepFocus: true, noScroll: true });
-    } else {
-      goto('/dashboard/statistics', { keepFocus: true, noScroll: true });
-    }
-  }
 </script>
 
 <div class="statistics-page">
   <div class="header-container">
     <h1>Estadísticas de Pedidos</h1>
     <div class="filter-controls">
-      <button class:active={!limit} on:click={() => applyFilter(null)}>
+      <button class:active={limit === null} on:click={() => fetchData(null)}>
         Todos
       </button>
       {#each filterOptions as option}
-        <button class:active={limit === option} on:click={() => applyFilter(option)}>
+        <button class:active={limit === option} on:click={() => fetchData(option)}>
           Últimos {option}
         </button>
       {/each}
     </div>
   </div>
 
+  <!-- Loading Indicator (Overlay) -->
+  {#if isLoading}
+    <div class="loading-indicator">
+        <p>Cargando datos...</p>
+    </div>
+  {/if}
+
   {#if error}
     <div class="error-message">
       <p>{error}</p>
     </div>
-  {:else if statusDistribution && statusDistribution.length > 0}
-    <div class="kpi-grid">
-      {#each statusDistribution as item}
-        <div class="kpi-card">
-          <span class="kpi-value">{item.count}</span>
-          <span class="kpi-label">
-            {statusTranslations[item.status] || item.status}
-          </span>
-        </div>
-      {/each}
-    </div>
-
-    <div class="chart-container">
-      <canvas bind:this={chartCanvas}></canvas>
-    </div>
-  {:else}
-    <p>No se encontraron datos de distribución para el filtro seleccionado.</p>
   {/if}
+  
+  <!-- Main Content -->
+  <!-- We keep this in the DOM even when loading to preserve the Chart instance -->
+  <!-- We hide it only if there is NO data and NOT loading (e.g. empty result or error) -->
+  <div class="content-wrapper" class:opacity-50={isLoading}>
+      
+      {#if statusDistribution.length > 0}
+        <div class="kpi-grid">
+          {#each statusDistribution as item}
+            <div class="kpi-card">
+              <span class="kpi-value">{item.count}</span>
+              <span class="kpi-label">
+                {statusTranslations[item.status] || item.status}
+              </span>
+            </div>
+          {/each}
+        </div>
 
+        <div class="chart-container">
+          <canvas bind:this={chartCanvas}></canvas>
+        </div>
+      {:else if !isLoading && !error}
+        <p>No se encontraron datos de distribución.</p>
+      {/if}
+  </div>
 </div>
 
 <style>
   .statistics-page {
     animation: fadeIn 0.5s ease-out;
+    position: relative;
+  }
+
+  .content-wrapper {
+      transition: opacity 0.2s;
+  }
+  
+  .opacity-50 {
+      opacity: 0.5;
+      pointer-events: none;
+  }
+
+  .loading-indicator {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 10;
+      font-weight: bold;
+      color: var(--accent);
+      border: 1px solid var(--border);
   }
 
   .header-container {
@@ -132,7 +215,7 @@
 
   h1 {
     color: var(--text);
-    margin-bottom: 0; /* Ajustado por el flex container */
+    margin-bottom: 0;
   }
 
   .filter-controls {
@@ -170,6 +253,7 @@
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid var(--error-border);
+    margin-bottom: 1rem;
   }
 
   .kpi-grid {

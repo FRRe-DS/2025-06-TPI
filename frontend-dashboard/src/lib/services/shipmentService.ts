@@ -10,7 +10,6 @@ import type {
     TransportMethods,
     ShipmentStatusDistributionDto,
 } from "$lib/types";
-import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from "$app/environment"; // Import 'browser'
 
 // --- 1. CONFIGURACIÓN DE URLS ---

@@ -9,7 +9,15 @@
   <div class="header-art-background">
     <!-- Generamos 20 cajas para la animación -->
     {#each { length: 20 } as _, i}
-      <div class="box" style:--i={i}></div>
+      <div 
+        class="box" 
+        class:even={i % 2 === 0}
+        style:width="{20 + (i * 13) % 40}px"
+        style:height="{20 + (i * 13) % 40}px"
+        style:opacity="{0.2 + ((i * 7) % 40) / 100}"
+        style:top="{(i * 23) % 80}%"
+        style:left="{(i * 41) % 95}%"
+      ></div>
     {/each}
   </div>
 
@@ -93,16 +101,8 @@
     border: 1px solid hsla(var(--accent-hsl), 0.4); 
     /* Fondo sutil para dar cuerpo */
     background-color: hsla(var(--accent-hsl), 0.05);
-
-    /* Usamos una variable --i (índice) para generar valores pseudo-aleatorios */
-    width: calc(20px + (var(--i) * 13) % 40px);
-    height: calc(20px + (var(--i) * 13) % 40px);
-    /* Opacidad aumentada */
-    opacity: calc(0.2 + (var(--i) * 7) % 0.4); 
-    top: calc((var(--i) * 23) % 80%);
-    left: calc((var(--i) * 41) % 95%);
   }
-  .box:nth-child(even) {
+  .box.even {
     border-top: none;
     border-bottom-width: 2px; /* Damos más peso al fondo de la caja abierta */
   }

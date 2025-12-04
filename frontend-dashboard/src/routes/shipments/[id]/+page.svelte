@@ -1,14 +1,16 @@
 <script lang="ts">
-	import type { ShipmentStatus, ShippingDetail, TransportType } from '$lib/types';
+	import type { ShipmentStatus, ShippingDetail, TransportType, ShippingLogReadDto } from '$lib/types';
 	import { updateShipmentStatus } from '$lib/services/shipmentService';
     import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
     import Icon from '$lib/components/Icon.svelte';
 
-	export let data;
-	let { shipmentDetails: shipment }: { shipment: ShippingDetail } = data;
+	export let data: { shipmentDetails: ShippingDetail };
+	$: shipment = data.shipmentDetails;
 
-	let selectedStatus: ShipmentStatus = shipment.status;
+	let selectedStatus: ShipmentStatus;
+    $: if (shipment) selectedStatus = shipment.status;
+
 	let statusMessage: string = '';
 	let isLoading = false;
 	let error: string | null = null;
@@ -34,7 +36,7 @@
         "arrived",
     ];
 
-	const statusColors: Record<ShipmentStatus, string> = {
+	const statusColors: Record<string, string> = {
 		created: '#f0e68c',
 		reserved: '#ffa07a',
 		in_transit: '#add8e6',
@@ -70,7 +72,9 @@
 		successMessage = null;
 
 		try {
-			await updateShipmentStatus($page.params.id, selectedStatus, statusMessage);
+            const id = $page.params.id;
+            if (!id) throw new Error('ID de envío no válido.');
+			await updateShipmentStatus(id, selectedStatus, statusMessage);
 			successMessage = 'Estado actualizado con éxito.';
 			// Refresh data after update
             window.location.reload();

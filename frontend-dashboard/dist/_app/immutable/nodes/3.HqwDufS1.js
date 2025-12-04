@@ -1,0 +1,1 @@
+import"../chunks/DsnmJJEf.js";import"../chunks/BfMTlK6c.js";import{o as p}from"../chunks/BGtgH5ej.js";import{p as r,b as t}from"../chunks/BCZT5Dbg.js";import{i as a}from"../chunks/Ck-BG2pa.js";import{g as m}from"../chunks/iSigOcxx.js";function h(i,o){r(o,!1),p(()=>{m("/dashboard")}),a(),t()}export{h as component};

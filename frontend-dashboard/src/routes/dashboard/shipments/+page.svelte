@@ -66,8 +66,8 @@
     await loadUntilFull();
   }
 
-  onMount(async () => {
-    await loadUntilFull();
+  onMount(() => {
+    loadUntilFull();
 
     observer = new IntersectionObserver(
       (entries) => {

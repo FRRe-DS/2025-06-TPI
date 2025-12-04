@@ -107,7 +107,7 @@ export interface ShippingDetail {
 export interface Locality {
   postal_code: string;
   locality_name: string;
-  province: string;
+  state_name: string;
   country: string;
 }
 
@@ -137,6 +137,12 @@ export interface CreateShippingResponse {
     transport_type: TransportType;
     estimated_delivery_at: string;
   }
+
+  export interface TransportMethods {
+    type: TransportType;
+    name: string;
+    estimated_days: string;
+}
   
   export interface ShipmentStatusDistributionDto {
     status: string;
