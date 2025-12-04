@@ -8,6 +8,7 @@ import type {
     CreateShippingResponse,
     ShipmentStatus,
     TransportMethods,
+    ShipmentStatusDistributionDto,
 } from "$lib/types";
 import { PUBLIC_BACKEND_API_KEY } from "$env/static/public"; // Keep this if PUBLIC_BACKEND_API_KEY is defined elsewhere
 import { browser } from "$app/environment"; // Import 'browser'
@@ -18,9 +19,11 @@ const API_BASE_URL = browser
     ? import.meta.env.VITE_PUBLIC_API_URL
     : import.meta.env.VITE_PRIVATE_API_URL;
 
-// Configuración de Keycloak (como corre en el navegador, 'localhost' está bien)
-const KEYCLOAK_URL =
-    "http://localhost:8080/realms/ds-2025-realm/protocol/openid-connect/token";
+// Lógica para la URL de Keycloak
+const KEYCLOAK_URL = browser
+    ? "http://localhost:8080/realms/ds-2025-realm/protocol/openid-connect/token"
+    : "http://host.docker.internal:8080/realms/ds-2025-realm/protocol/openid-connect/token";
+
 const CLIENT_ID = "grupo-06";
 const CLIENT_SECRET = "8dc00e75-ccea-4d1a-be3d-b586733e256c"; // El secreto que ya descubrimos
 
@@ -50,6 +53,27 @@ async function getAuthToken(fetchFn: typeof fetch = fetch): Promise<string> {
         console.error("Fallo grave en autenticación:", error);
         throw error; // Detenemos la ejecución si no hay token
     }
+}
+
+export async function getShipmentStatusDistribution(
+    fetchFn: typeof fetch = fetch,
+): Promise<ShipmentStatusDistributionDto[]> {
+    const token = await getAuthToken(fetchFn);
+    const response = await fetchFn(
+        `${API_BASE_URL}/dashboard/shipment-status-distribution`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Error al obtener la distribución de estados: ${response.statusText}`,
+        );
+    }
+    return await response.json();
 }
 
 export async function getAllLocalities(

@@ -9,9 +9,20 @@ namespace ApiDePapas.Domain.Repositories
         Task<ShippingDetail?> GetByOrderIdAsync(int orderId);
         Task<IEnumerable<ShippingDetail>> GetByUserIdAsync(int userId);
         
-        // Operación para el patrón CQRS/actualización atómica
-        Task UpdateStatusAsync(int shippingId, ShippingStatus newStatus);
-
-        IQueryable<ShippingDetail> GetAllQueryable(); // New method for pagination
-    }
-}
+                // Operación para el patrón CQRS/actualización atómica
+        
+                Task UpdateStatusAsync(int shippingId, ShippingStatus newStatus);
+        
+        
+        
+                IQueryable<ShippingStatus> GetStatuses();
+        
+        
+        
+                IQueryable<ShippingDetail> GetAllQueryable(); // New method for pagination
+        
+            }
+        
+        }
+        
+        

@@ -9,7 +9,7 @@ COPY package*.json ./
 
 # Instalar dependencias
 # Usamos 'ci' que es más rápido y seguro para entornos de CI/CD y Docker
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # El comando para iniciar la aplicación será manejado por docker-compose
 # para mayor flexibilidad. Dejamos el CMD por defecto o lo omitimos.

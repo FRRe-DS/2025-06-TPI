@@ -7,20 +7,26 @@ using ApiDePapas.Application.Interfaces;
 using ApiDePapas.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ApiDePapas.Domain.Entities;
-
+using Microsoft.Extensions.Logging;
 
 namespace ApiDePapas.Application.Services
 {
     public class DashboardService : IDashboardService
     {
         private readonly IShippingRepository _shippingRepository;
-        private readonly IShippingService _shippingService; // <--- 1. Inyectamos esto para usar CancelAsync
+        private readonly IShippingService _shippingService;
+        private readonly ILogger<DashboardService> _logger;
 
-        public DashboardService(IShippingRepository shippingRepository, IShippingService shippingService)
+        public DashboardService(
+            IShippingRepository shippingRepository,
+            IShippingService shippingService,
+            ILogger<DashboardService> logger)
         {
             _shippingRepository = shippingRepository;
             _shippingService = shippingService;
+            _logger = logger;
         }
+
         public async Task<IEnumerable<DashboardShipmentDto>> GetDashboardShipmentsAsync(
             int page, int pageSize, string? id, string? city, string? status, DateTime? startDate, DateTime? endDate)
         {
@@ -128,50 +134,37 @@ namespace ApiDePapas.Application.Services
                 throw new KeyNotFoundException($"Pedido con ID {id} no encontrado.");
             }
 
-            // --- INICIO DE LÓGICA ROBUSTA TRAÍDA DE SHIPPING SERVICE ---
-            // Si el nuevo estado es 'Cancelled', delegamos al servicio de envíos.
-            // Esto asegura que se envíe la notificación al módulo de Compras.
             if (newStatus == ShippingStatus.cancelled)
             {
                 await _shippingService.CancelAsync(id, DateTime.UtcNow);
-                return; // Salimos porque CancelAsync ya guardó los cambios
+                return;
             }
 
-            // 3. Validar estados inmutables
-            // Si ya está Cancelado, no se puede tocar.
             if (shipping.status == ShippingStatus.cancelled)
             {
                 throw new InvalidOperationException($"El envío {id} está cancelado y no puede modificarse.");
             }
 
-            // Si ya está Entregado, no se puede cambiar.
             if (shipping.status == ShippingStatus.delivered)
             {
                 throw new InvalidOperationException($"El envío {id} ya fue entregado y no puede cambiar de estado.");
             }
 
-            // 4. Validar coherencia temporal (No volver al pasado)
             if (newStatus == ShippingStatus.created && shipping.status != ShippingStatus.created)
             {
                 throw new InvalidOperationException($"No se puede revertir el envío {id} al estado 'Created'.");
             }
 
-            // --- FIN DE LÓGICA ROBUSTA ---
-
-            // 5. Validar si realmente cambió el estado (Optimización)
             if (shipping.status == newStatus) return;
 
-            // 6. Actualizar Estado y Fecha
             shipping.status = newStatus;
             shipping.updated_at = DateTime.UtcNow;
 
-            // 7. AGREGAR LOG 
             if (shipping.logs == null) shipping.logs = new List<ShippingLog>();
 
-            // Usamos el mensaje personalizado si viene, sino el default
             string logMessage = !string.IsNullOrEmpty(message) 
                 ? message 
-                : $"Estado actualizado manualmente desde Dashboard a {newStatus}.";
+                : $"Estado actualizado manually desde Dashboard a {newStatus}.";
             
             shipping.logs.Add(new ShippingLog(
                 Timestamp: DateTime.UtcNow,
@@ -179,8 +172,36 @@ namespace ApiDePapas.Application.Services
                 Message: logMessage
             ));
 
-            // 8. Guardar
             _shippingRepository.Update(shipping);
+        }
+
+        public async Task<IEnumerable<ShipmentStatusDistributionDto>> GetShipmentStatusDistributionAsync()
+        {
+            _logger.LogInformation("Attempting to get shipment status distribution.");
+            try
+            {
+                var allStatuses = await _shippingRepository.GetStatuses().ToListAsync();
+
+                _logger.LogInformation("Successfully fetched {Count} statuses from repository.", allStatuses.Count);
+
+                var distribution = allStatuses
+                    .GroupBy(status => status.ToString())
+                    .Select(g => new ShipmentStatusDistributionDto
+                    {
+                        Status = g.Key,
+                        Count = g.Count()
+                    })
+                    .OrderBy(dto => dto.Status);
+
+                _logger.LogInformation("Successfully grouped statuses into {GroupCount} groups.", distribution.Count());
+
+                return await Task.FromResult(distribution);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "A critical error occurred while getting shipment status distribution.");
+                throw; 
+            }
         }
     }
 }

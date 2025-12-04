@@ -133,7 +133,13 @@ export interface CreateShippingRequest {
 
 export interface CreateShippingResponse {
   shipping_id: number;
-  status: ShipmentStatus;
-  transport_type: TransportType;
-  estimated_delivery_at: string;
-}
+    status: ShipmentStatus;
+    transport_type: TransportType;
+    estimated_delivery_at: string;
+  }
+  
+  export interface ShipmentStatusDistributionDto {
+    status: string;
+    count: number;
+  }
+  

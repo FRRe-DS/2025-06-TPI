@@ -80,5 +80,14 @@ namespace ApiDePapas.Controllers
                 return Conflict(new Error { code = "conflict", message = ex.Message });
             }
         }
+
+        [HttpGet("shipment-status-distribution")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<ShipmentStatusDistributionDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ShipmentStatusDistributionDto>>> GetShipmentStatusDistribution()
+        {
+            var distribution = await _dashboardService.GetShipmentStatusDistributionAsync();
+            return Ok(distribution);
+        }
     }
 }

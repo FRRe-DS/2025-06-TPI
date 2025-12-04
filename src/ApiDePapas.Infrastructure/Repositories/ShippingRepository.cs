@@ -126,6 +126,11 @@ namespace ApiDePapas.Infrastructure.Repositories
             return await _context.Shippings.AnyAsync(predicate);
         }
 
+        public IQueryable<ShippingStatus> GetStatuses()
+        {
+            return _context.Shippings.Select(s => s.status);
+        }
+
         // Implementaciones específicas de IShippingRepository
         public async Task<ShippingDetail?> GetByOrderIdAsync(int orderId)
         {
